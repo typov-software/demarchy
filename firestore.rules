@@ -1,0 +1,178 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function ownsResource(uid) {
+      return request.auth.uid == uid;
+    }
+
+    // Each `configId` is a named identifier like 'plans' or 'features' and should be readable by any client
+    match /configs/{configId} {
+      allow read;
+    }
+
+    function isValidHandle(handle) {
+      let isOwner = ownsResource(request.resource.data.uid);
+      let isValidLength = handle.size() >= 3 && handle.size() <= 32;
+      let isValidDoc = getAfter(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.handle == handle;
+      return isOwner && isValidLength && isValidDoc;
+    }
+
+    match /handles/{handle} {
+      allow read;
+      allow create: if isValidHandle(handle);
+    }
+
+    function isValidProfile(userId) {
+      let isOwner = request.auth.uid == userId;
+      let handle = request.resource.data.handle;
+      let createdValidHandle = existsAfter(/databases/$(database)/documents/handles/$(handle));
+      return isOwner && createdValidHandle;
+    }
+
+    // Each `profileId` corresponds to a user's `uid`. Signed in users may see these profiles, but only owners of the
+    // resource may edit it
+    match /profiles/{profileId} {
+      allow read: if isSignedIn();
+      allow create: if isValidProfile(profileId);
+      allow update: if ownsResource(profileId);
+    }
+
+    match /inboxes/{inboxId} {
+      allow read: if ownsResource(inboxId);
+
+      match /notification/{notificationId} {
+        allow read: if ownsResource(inboxId);
+        allow update: if ownsResource(inboxId);
+        allow delete: if ownsResource(inboxId);
+      }
+    }
+
+    match /vouchers/{voucherId} {
+      allow read: if ownsResource(resource.data.uid);
+      allow update: if ownsResource(resource.data.uid);
+    }
+
+    // Each `settingsId` corresponds to a user's `uid`
+    match /settings/{settingsId} {
+      allow read, write: if ownsResource(settingsId);
+    }
+
+    function isValidSlug(slug) {
+      let isValidLength = slug.size() >= 3 && slug.size() <= 32;
+      let isValidDoc = getAfter(/databases/$(database)/documents/organizations/$(request.resource.data.organization_id)).data.slug == slug;
+      return isValidLength && isValidDoc;
+    }
+
+    match /slugs/{slug} {
+      allow read;
+      allow create: if isValidSlug(slug);
+    }
+
+    function isValidOrganization() {
+      let slug = request.resource.data.slug;
+      let createdValidSlug = existsAfter(/databases/$(database)/documents/slugs/$(slug));
+      return createdValidSlug;
+    }
+
+    match /organizations/{organizationId} {
+      allow read: if canReadOrg();
+      allow create: if isSignedIn() && isValidOrganization();
+
+      function getMembershipInfo() {
+        return get(/databases/$(database)/documents/organizations/$(organizationId)/memberships/$(request.auth.uid)).data;
+      }
+
+      function verifyRoles(id, levels, info) {
+        return info.standing == 'ok' && info.roles[id] in levels;
+      }
+
+      function canReadOrg() {
+        // even if membership standing is not ok, allow read level access
+        return verifyRoles(organizationId, ['obs', 'mem', 'mod', 'adm'], getMembershipInfo());
+      }
+
+      function isOrgMemberOrHigher() {
+        return verifyRoles(organizationId, ['mem', 'mod', 'adm'], getMembershipInfo());
+      }
+
+      function isWorkspaceMemberOrHigher(id) {
+        let info = getMembershipInfo();
+        let org = verifyRoles(organizationId, ['mem', 'mod', 'adm'], info);
+        let ws = verifyRoles(id, ['mem', 'mod', 'adm'], info);
+        return org && (ws || ownsResource(id));
+      }
+
+      function isWorkspaceAdmin(id) {
+        let info = getMembershipInfo();
+        let org = verifyRoles(organizationId, ['mem', 'mod', 'adm'], info);
+        let ws = verifyRoles(id, ['adm'], info);
+        return org && (ws || ownsResource(id));
+      }
+
+      match /invitations/{invitationId} {
+        allow read: if ownsResource(resource.data.user_id) || isWorkspaceMemberOrHigher(resource.data.workspace_id);
+        allow create: if isWorkspaceMemberOrHigher(resource.data.workspace_id);
+        allow delete: if ownsResource(resource.data.created_by) || isWorkspaceAdmin(resource.data.workspace_id);
+      }
+
+      match /memberships/{membershipId} {
+        allow read: if ownsResource(membershipId) && canReadOrg();
+      }
+
+      match /workspaces/{wid} {
+        allow read: if canReadOrg();
+        allow create: if isOrgMemberOrHigher();
+        allow update: if isWorkspaceMemberOrHigher(wid); 
+
+        match /members/{memberId} {
+          allow read: if canReadOrg();
+          // admin only
+          allow write: if isWorkspaceAdmin(wid);
+        }
+
+        match /libraries/{libraryId} {
+          allow read: if canReadOrg();
+        }
+
+        match /docs/{docId} {
+          allow read: if canReadOrg();
+          allow create: if isWorkspaceMemberOrHigher(wid);
+          allow update: if isWorkspaceMemberOrHigher(wid) && resource.data.draft;
+        }
+
+        match /proposals/{proposalId} {
+          allow read: if canReadOrg();
+          allow create: if isWorkspaceMemberOrHigher(wid);
+          allow update: if isWorkspaceMemberOrHigher(wid) && !resource.data.archived;
+        }
+
+        match /ballots/{ballotId} {
+          allow read: if canReadOrg();
+
+          match /votes/{voteId} {
+            allow read: if ownsResource(voteId);
+            allow create: if isWorkspaceMemberOrHigher(wid) && ownsResource(voteId);
+          }
+        }
+
+        match /polls/{pollId} {
+          allow read: if canReadOrg();
+
+          match /votes/{voteId} {
+            allow read: if ownsResource(voteId);
+            allow create: if isWorkspaceMemberOrHigher(wid) && ownsResource(voteId);
+          }
+        }
+
+        match /activities/{activity_id} {
+          allow read: if isWorkspaceMemberOrHigher(wid);
+        }
+      }
+    }
+  }
+}

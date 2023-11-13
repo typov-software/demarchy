@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  min-height: 100%;
+}
+
+body {
+  height: 100%;
+  min-height: 100vh;
+}
+
+#root {
+  height: 100%;
+}
+
+.fill-icon,
+.fill-primary,
+.fill-secondary {
+  transition: fill 200ms;
+}
+
+[data-theme='light'] .fill-icon {
+  fill: #000000;
+}
+
+[data-theme='dark'] .fill-icon {
+  fill: #ffffff;
+}
+
+.fill-primary {
+  fill: oklch(var(--p));
+}
+
+.fill-secondary {
+  fill: oklch(var(--s));
+}
+
+.btn-square {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+}
+
+.btn-ghost {
+  border-width: 1px;
+  border-style: solid;
+  border-color: oklch(var(--b2));
+}
