@@ -1,0 +1,28 @@
+[debug] [2023-11-14T06:31:02.950Z] ----------------------------------------------------------------------
+[debug] [2023-11-14T06:31:02.951Z] Command:       /home/davidglivar/.nvm/versions/node/v18.18.2/bin/node /home/davidglivar/.nvm/versions/node/v18.18.2/bin/firebase deploy
+[debug] [2023-11-14T06:31:02.951Z] CLI Version:   12.8.1
+[debug] [2023-11-14T06:31:02.951Z] Platform:      linux
+[debug] [2023-11-14T06:31:02.951Z] Node Version:  v18.18.2
+[debug] [2023-11-14T06:31:02.952Z] Time:          Mon Nov 13 2023 22:31:02 GMT-0800 (Pacific Standard Time)
+[debug] [2023-11-14T06:31:02.952Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-11-14T06:31:02.984Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-11-14T06:31:02.984Z] > authorizing via signed-in user (david@typov.com)
+[debug] [2023-11-14T06:31:02.984Z] [iam] checking project typov-demarchy for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]
+[debug] [2023-11-14T06:31:02.985Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/typov-demarchy:testIamPermissions [none]
+[debug] [2023-11-14T06:31:02.985Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/typov-demarchy:testIamPermissions x-goog-quota-user=projects/typov-demarchy
+[debug] [2023-11-14T06:31:02.985Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/typov-demarchy:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}
+[debug] [2023-11-14T06:31:03.139Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/typov-demarchy:testIamPermissions 200
+[debug] [2023-11-14T06:31:03.139Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/typov-demarchy:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}
+[debug] [2023-11-14T06:31:03.139Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/typov-demarchy/serviceAccounts/typov-demarchy@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2023-11-14T06:31:03.139Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/typov-demarchy/serviceAccounts/typov-demarchy@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2023-11-14T06:31:03.290Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/typov-demarchy/serviceAccounts/typov-demarchy@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2023-11-14T06:31:03.290Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/typov-demarchy/serviceAccounts/typov-demarchy@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2023-11-14T06:31:03.290Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/typov-demarchy [none]
+[debug] [2023-11-14T06:31:33.312Z] *** [apiv2] error from fetch(https://firebase.googleapis.com/v1beta1/projects/typov-demarchy, {"headers":{},"method":"GET","signal":{}}): AbortError: The user aborted a request.
+[debug] [2023-11-14T06:31:33.312Z] Timeout reached making request to https://firebase.googleapis.com/v1beta1/projects/typov-demarchy (original: The user aborted a request.)
+[debug] [2023-11-14T06:31:33.313Z] FirebaseError: Timeout reached making request to https://firebase.googleapis.com/v1beta1/projects/typov-demarchy
+    at RetryOperation._fn (/home/davidglivar/.nvm/versions/node/v18.18.2/lib/node_modules/firebase-tools/lib/apiv2.js:235:35)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+[error] 
+[error] Error: Failed to get Firebase project typov-demarchy. Please make sure the project exists and your account has permission to access it.
