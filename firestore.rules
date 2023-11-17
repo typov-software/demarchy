@@ -2,8 +2,66 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if false;
+
+    function isSignedIn() {
+      return request.auth !== null;
+    }
+
+    function ownsResource(uid) {
+      return request.auth.uid === uid;
+    }
+
+    // Each `configId` is a named identifier like 'plans' or 'features' and should be readable by any client
+    match /configs/{configId} {
+      allow read;
+    }
+
+    // Each `profileId` corresponds to a user's `uid`. Signed in users may see these profiles, but only owners of the
+    // resource may edit it
+    match /profiles/{profileId} {
+      allow read: if isSignedIn();
+      allow write: if ownsResource(profileId);
+    }
+
+    match /communities/{communityId} {
+      function getRoles() {
+        return get(/databases/$(database)/documents/communities/$(communityId)/members/$(request.auth.uid)).data.roles;
+      }
+
+      match /ballots/{ballotId} {
+        allow read;
+
+        match /votes/{voteId} {
+          allow read;
+        }
+      }
+
+      match /docs/{docId} {
+        function canRead() {
+          // return isSignedIn() && getRoles().filter(role => resource.data.roles.includes(role));
+          return false;
+        }
+      }
+
+      match /groups/{groupId} {
+        allow read;
+      }
+
+      match /libraries/{libraryId} {
+        allow read;
+      }
+
+      match /polls/{pollId} {
+        allow read;
+
+        match /votes/{voteId} {
+          allow read;
+        }
+      }
+
+      match /proposals/{proposalId} {
+        allow read;
+      }
     }
   }
 }
