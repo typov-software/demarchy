@@ -39,6 +39,7 @@
 	"type": "module",
 	"dependencies": {
 		"@tailwindcss/typography": "^0.5.10",
-		"firebase": "^10.6.0"
+		"firebase": "^10.6.0",
+		"firebase-admin": "^11.11.0"
 	}
 }
