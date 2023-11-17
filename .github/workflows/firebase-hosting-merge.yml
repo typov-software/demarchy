@@ -13,8 +13,8 @@ jobs:
       - uses: actions/checkout@v3
       - run: npm ci && npm run build
         env:
-          FB_PROJECT_ID: '${{ secrets.FB_PROJECT_ID }}'
-          FB_CLIENT_EMAIL: '${{ secrets.FB_CLIENT_EMAIL }}'
+          FB_PROJECT_ID: '${{ vars.FB_PROJECT_ID }}'
+          FB_CLIENT_EMAIL: '${{ vars.FB_CLIENT_EMAIL }}'
           FB_PRIVATE_KEY: '${{ secrets.FB_PRIVATE_KEY }}'
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
