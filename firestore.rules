@@ -4,11 +4,11 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     function isSignedIn() {
-      return request.auth !== null;
+      return request.auth != null;
     }
 
     function ownsResource(uid) {
-      return request.auth.uid === uid;
+      return request.auth.uid == uid;
     }
 
     // Each `configId` is a named identifier like 'plans' or 'features' and should be readable by any client

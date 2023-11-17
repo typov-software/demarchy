@@ -1,16 +1,15 @@
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
+import { FB_CLIENT_EMAIL, FB_PRIVATE_KEY, FB_PROJECT_ID } from '$env/static/private';
 import pkg from 'firebase-admin';
-import { applicationDefault } from 'firebase-admin/app';
 
 try {
 	pkg.initializeApp({
-		credential: applicationDefault()
-		// credential: pkg.credential.cert({
-		// 	projectId: FB_PROJECT_ID,
-		// 	clientEmail: FB_CLIENT_EMAIL,
-		// 	privateKey: `"${FB_PRIVATE_KEY}"`
-		// })
+		credential: pkg.credential.cert({
+			projectId: FB_PROJECT_ID,
+			clientEmail: FB_CLIENT_EMAIL,
+			privateKey: FB_PRIVATE_KEY
+		})
 	});
 } catch (err: unknown) {
 	const error = err as Error;
