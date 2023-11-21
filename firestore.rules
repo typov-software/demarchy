@@ -42,6 +42,11 @@ service cloud.firestore {
       allow update: if ownsResource(profileId);
     }
 
+    // Each `settingsId` corresponds to a user's `uid`
+    match /settings/{settingsId} {
+      allow read, write: if ownsResource(settingsId);
+    }
+
     match /communities/{communityId} {
       // function getRoles() {
       //   return get(/databases/$(database)/documents/communities/$(communityId)/members/$(request.auth.uid)).data.roles;

@@ -64,5 +64,5 @@
 		</div>
 	</form>
 
-	<a href="/dashboard" class="btn btn-success">Get started</a>
+	<a href="/app/dashboard" class="btn btn-success">Get started</a>
 </AuthCheck>

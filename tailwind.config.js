@@ -4,7 +4,7 @@ const sharedThemeOptions = {
 	'--rounded-badge': '1.9rem', // border radius rounded-badge utility class, used in badges and similar
 	'--animation-btn': '0.25s', // duration of animation when you click on button
 	'--animation-input': '0.2s', // duration of animation for inputs like checkbox, toggle, radio, etc
-	'--btn-focus-scale': '0.95', // scale transform of button when you focus on it
+	'--btn-focus-scale': '1', // scale transform of button when you focus on it
 	'--border-btn': '1px', // border width of buttons
 	'--tab-border': '1px', // border width of tabs
 	'--tab-radius': '0.5rem' // border radius of tabs
@@ -20,7 +20,7 @@ export default {
 	daisyui: {
 		themes: [
 			{
-				light_demarchy: {
+				light: {
 					...sharedThemeOptions,
 					'color-scheme': 'light',
 					primary: '#0D0D0D',
@@ -42,7 +42,7 @@ export default {
 				}
 			},
 			{
-				dark_demarchy: {
+				dark: {
 					...sharedThemeOptions,
 					'color-scheme': 'dark',
 					primary: '#373737',
@@ -59,7 +59,6 @@ export default {
 					error: '#ff0000'
 				}
 			}
-		],
-		darkTheme: 'dark_demarchy'
+		]
 	}
 };
