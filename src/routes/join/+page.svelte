@@ -16,7 +16,7 @@
 		});
 		const status = (await res.json()).status === 'started';
 		if (status) {
-			goto('/join/name');
+			goto('/join/handle');
 		}
 	}
 

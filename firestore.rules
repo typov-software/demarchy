@@ -2,7 +2,6 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
     function isSignedIn() {
       return request.auth != null;
     }
@@ -11,22 +10,47 @@ service cloud.firestore {
       return request.auth.uid == uid;
     }
 
+    function isValidHandle(handle) {
+      let isOwner = ownsResource(request.resource.data.uid);
+      let isValidLength = handle.size() >= 3 && handle.size() <= 32;
+      let isValidDoc = getAfter(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.handle == handle;
+      return isOwner && isValidLength && isValidDoc;
+    }
+
+    function isValidProfile(userId) {
+      let isOwner = request.auth.uid == userId;
+      let handle = request.resource.data.handle;
+      let createdValidHandle = existsAfter(/databases/$(database)/documents/handles/$(handle));
+      return isOwner && createdValidHandle;
+    }
+
     // Each `configId` is a named identifier like 'plans' or 'features' and should be readable by any client
     match /configs/{configId} {
       allow read;
+    }
+
+    match /handles/{handle} {
+      allow read;
+      allow create: if isValidHandle(handle);
     }
 
     // Each `profileId` corresponds to a user's `uid`. Signed in users may see these profiles, but only owners of the
     // resource may edit it
     match /profiles/{profileId} {
       allow read: if isSignedIn();
-      allow write: if ownsResource(profileId);
+      allow create: if isValidProfile(profileId);
+      allow update: if ownsResource(profileId);
+    }
+
+    // Each `settingsId` corresponds to a user's `uid`
+    match /settings/{settingsId} {
+      allow read, write: if ownsResource(settingsId);
     }
 
     match /communities/{communityId} {
-      function getRoles() {
-        return get(/databases/$(database)/documents/communities/$(communityId)/members/$(request.auth.uid)).data.roles;
-      }
+      // function getRoles() {
+      //   return get(/databases/$(database)/documents/communities/$(communityId)/members/$(request.auth.uid)).data.roles;
+      // }
 
       match /ballots/{ballotId} {
         allow read;
@@ -37,10 +61,7 @@ service cloud.firestore {
       }
 
       match /docs/{docId} {
-        function canRead() {
-          // return isSignedIn() && getRoles().filter(role => resource.data.roles.includes(role));
-          return false;
-        }
+        allow read;
       }
 
       match /groups/{groupId} {
