@@ -1,12 +1,21 @@
 <script lang="ts">
 	import AuthCheck from '$lib/components/AuthCheck.svelte';
-	import { user, profile, storage, db } from '$lib/firebase';
-	import { doc, updateDoc } from 'firebase/firestore';
+	import { db, profile, storage, user } from '$lib/firebase';
+	import { emptyString } from '$lib/utils/string';
+	import { doc, setDoc } from 'firebase/firestore';
 	import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+
+	$: profileName = $profile?.name;
+	$: name = profileName ?? '';
+	$: disabled = !$profile || (!emptyString(profileName) && profileName === name);
 
 	let previewURL: string;
 	let uploading = false;
 	$: href = `/${$profile?.id}/edit`;
+
+	async function confirmName() {
+		await setDoc(doc(db, 'profiles', $user!.uid), { name }, { merge: true });
+	}
 
 	async function upload(e: any) {
 		uploading = true;
@@ -16,13 +25,19 @@
 		const result = await uploadBytes(storageRef, file);
 		const url = await getDownloadURL(result.ref);
 
-		await updateDoc(doc(db, 'profiles', $user!.uid), { photo_url: url });
+		await setDoc(doc(db, 'profiles', $user!.uid), { photo_url: url }, { merge: true });
 		uploading = false;
 	}
 </script>
 
 <AuthCheck>
-	<h2>Photo</h2>
+	<form class="w-2/5 flex flex-row items-center" on:submit|preventDefault={confirmName}>
+		<div class="flex flex-1 w-full">
+			<input type="text" placeholder="Name" class="input w-full" bind:value={name} />
+		</div>
+		<button {disabled} type="submit" class="btn btn-success ml-5">Confirm</button>
+	</form>
+
 	<form class="max-w-screen-md w-full">
 		<div class="form-control w-full max-w-xs my-10 mx-auto text-center">
 			<img
@@ -48,4 +63,6 @@
 			{/if}
 		</div>
 	</form>
+
+	<a href="/dashboard" class="btn btn-success">Get started</a>
 </AuthCheck>
