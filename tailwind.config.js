@@ -15,7 +15,10 @@ export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   plugins: [require('@tailwindcss/typography'), require('daisyui')],
   theme: {
-    extend: {}
+    extend: {},
+    fontFamily: {
+      sans: ['Fira Code', 'monospace']
+    }
   },
   daisyui: {
     themes: [
