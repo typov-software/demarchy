@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+[data-theme='light'] .fill-target {
+  fill: #000000;
+}
+
+[data-theme='dark'] .fill-target {
+  fill: #ffffff;
+}
+
 .btn-square {
   width: 44px;
   height: 44px;

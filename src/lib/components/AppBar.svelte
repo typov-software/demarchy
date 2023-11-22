@@ -1,5 +1,7 @@
 <script lang="ts">
   import { profile } from '$lib/firebase';
+  import AppNav from './AppNav.svelte';
+  import UserNav from './UserNav.svelte';
 
   let theme: string | null = null;
 
@@ -35,25 +37,7 @@
 </script>
 
 <header class="flex flex-row items-center">
-  <button class="btn btn-square btn-ghost">
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      class="d-menu"
-    >
-      <g clip-path="url(#clip0_154_35)">
-        <path d="M3 18H21V16H3V18ZM3 13H21V11H3V13ZM3 6V8H21V6H3Z" class="fill-target" />
-      </g>
-      <defs>
-        <clipPath id="clip0_154_35">
-          <rect width="24" height="24" fill="white" />
-        </clipPath>
-      </defs>
-    </svg>
-  </button>
+  <AppNav />
 
   <div>
     <svg
@@ -113,11 +97,7 @@
     </svg>
   </button>
 
-  <div class="avatar">
-    <div class="rounded-full">
-      <img src={$profile?.photo_url} alt={$profile?.name} />
-    </div>
-  </div>
+  <UserNav photo_url={$profile?.photo_url} name={$profile?.name} />
 </header>
 
 <style lang="scss">
@@ -132,9 +112,6 @@
   }
 
   [data-theme='dark'] {
-    svg path.fill-target {
-      fill: #ffffff;
-    }
     .theme-toggle {
       .moon {
         opacity: 1;
@@ -145,9 +122,6 @@
     }
   }
   [data-theme='light'] {
-    svg path.fill-target {
-      fill: #000000;
-    }
     .theme-toggle {
       .moon {
         opacity: 0.2;
