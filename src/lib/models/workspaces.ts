@@ -6,10 +6,10 @@ import type { WithId } from './utils';
  * Members can apply for workspaces, which are voted on by workspace members.
  */
 export interface WorkspaceProps {
-	name: string;
-	description: string;
-	// latest published library id
-	library_id: string;
+  name: string;
+  description: string;
+  // latest published library id
+  library_id: string;
 }
 
 export type Workspace = WorkspaceProps & WithId;
