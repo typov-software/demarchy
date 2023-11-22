@@ -1,3 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+[data-theme='light'] .fill-target {
+  fill: #000000;
+}
+
+[data-theme='dark'] .fill-target {
+  fill: #ffffff;
+}
+
+.btn-square {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+}
+
+.btn-ghost {
+  border-width: 1px;
+  border-style: solid;
+  border-color: oklch(var(--b2));
+}

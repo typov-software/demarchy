@@ -1,3 +1,3 @@
 export function emptyString(str?: string) {
-	return str && str.trim() === '';
+  return str && str.trim() === '';
 }
