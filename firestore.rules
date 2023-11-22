@@ -51,68 +51,34 @@ service cloud.firestore {
       allow read: if canReadOrg();
 
       function getMembershipInfo() {
-        let membership = get(/databases/$(database)/documents/organizations/$(organizationId)/memberships/$(request.auth.uid)).data;
-        return {
-          roles: membership.roles,
-          standing: membership.standing
-        };
+        return get(/databases/$(database)/documents/organizations/$(organizationId)/memberships/$(request.auth.uid)).data;
       }
 
-      function verifyRoles(payload) {
-        let info = getMembershipInfo();
-        let results = [];
-        Object.keys(payload).forEach(gid => {
-          let levels = payload[gid];
-          results.push(levels.include(info.roles[gid]));
-        });
-        return {
-          passed: results.filter(passed => !passed).length == 0,
-          standing: info.standing
-        }
+      function verifyRoles(id, levels, info) {
+        return info.standing == 'ok' && info.roles[id] in levels;
       }
 
       function canReadOrg() {
         // even if membership standing is not ok, allow read level access
-        return verifyRoles({ [organizationId]: ['obs', 'mem', 'mod', 'adm'] });
+        return verifyRoles(organizationId, ['obs', 'mem', 'mod', 'adm'], getMembershipInfo());
       }
 
       function isOrgMemberOrHigher() {
-        let verification = verifyRoles({ [organizationId]: ['mem', 'mod', 'adm'] });
-        return verification.passed && verification.standing == 'ok';
-      }
-
-      function isOrgModeratorOrHigher() {
-        let verification = verifyRoles({ [organizationId]: ['mod', 'adm'] });
-        return verification.passed && verification.standing == 'ok';
-      }
-
-      function isOrgAdmin() {
-        let verification = verifyRoles({ [organizationId]: ['adm'] });
-        return verification.passed && verification.standing == 'ok';
+        return verifyRoles(organizationId, ['mem', 'mod', 'adm'], getMembershipInfo());
       }
 
       function isWorkspaceMemberOrHigher(id) {
-        let verification = verifyRoles({
-          [organizationId]: ['mem', 'mod', 'adm'],
-          [id]: ['mem', 'mod', 'adm']
-        });
-        return verification.standing == 'ok' && (verification.passed || ownsResource(id));
-      }
-
-      function isWorkspaceModeratorOrHigher(id) {
-        let verification = verifyRoles({
-          [organizationId]: ['mem', 'mod', 'adm'],
-          [id]: ['mod', 'adm']
-        });
-        return verification.standing == 'ok' && (verification.passed || ownsResource(id));
+        let info = getMembershipInfo();
+        let org = verifyRoles(organizationId, ['mem', 'mod', 'adm'], info);
+        let ws = verifyRoles(id, ['mem', 'mod', 'adm'], info);
+        return org && (ws || ownsResource(id));
       }
 
       function isWorkspaceAdmin(id) {
-        let verification = verifyRoles({
-          [organizationId]: ['mem', 'mod', 'adm'],
-          [id]: ['adm']
-        });
-        return verification.standing == 'ok' && (verification.passed || ownsResource(id));
+        let info = getMembershipInfo();
+        let org = verifyRoles(organizationId, ['mem', 'mod', 'adm'], info);
+        let ws = verifyRoles(id, ['adm'], info);
+        return org && (ws || ownsResource(id));
       }
 
       match /memberships/{membershipId} {
@@ -127,7 +93,7 @@ service cloud.firestore {
         match /members/{memberId} {
           allow read: if canReadOrg();
           // admin only
-          allow write: if isWorkspaceAdmin();
+          allow write: if isWorkspaceAdmin(wid);
         }
 
         match /libraries/{libraryId} {
