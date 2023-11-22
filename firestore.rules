@@ -10,6 +10,11 @@ service cloud.firestore {
       return request.auth.uid == uid;
     }
 
+    // Each `configId` is a named identifier like 'plans' or 'features' and should be readable by any client
+    match /configs/{configId} {
+      allow read;
+    }
+
     function isValidHandle(handle) {
       let isOwner = ownsResource(request.resource.data.uid);
       let isValidLength = handle.size() >= 3 && handle.size() <= 32;
@@ -17,21 +22,16 @@ service cloud.firestore {
       return isOwner && isValidLength && isValidDoc;
     }
 
+    match /handles/{handle} {
+      allow read;
+      allow create: if isValidHandle(handle);
+    }
+
     function isValidProfile(userId) {
       let isOwner = request.auth.uid == userId;
       let handle = request.resource.data.handle;
       let createdValidHandle = existsAfter(/databases/$(database)/documents/handles/$(handle));
       return isOwner && createdValidHandle;
-    }
-
-    // Each `configId` is a named identifier like 'plans' or 'features' and should be readable by any client
-    match /configs/{configId} {
-      allow read;
-    }
-
-    match /handles/{handle} {
-      allow read;
-      allow create: if isValidHandle(handle);
     }
 
     // Each `profileId` corresponds to a user's `uid`. Signed in users may see these profiles, but only owners of the
@@ -47,41 +47,126 @@ service cloud.firestore {
       allow read, write: if ownsResource(settingsId);
     }
 
-    match /communities/{communityId} {
-      // function getRoles() {
-      //   return get(/databases/$(database)/documents/communities/$(communityId)/members/$(request.auth.uid)).data.roles;
-      // }
+    match /organization/{organizationId} {
+      allow read: if canReadOrg();
 
-      match /ballots/{ballotId} {
-        allow read;
+      function getMembershipInfo() {
+        let membership = get(/databases/$(database)/documents/organizations/$(organizationId)/memberships/$(request.auth.uid)).data;
+        return {
+          roles: membership.roles,
+          standing: membership.standing
+        };
+      }
 
-        match /votes/{voteId} {
-          allow read;
+      function verifyRoles(payload) {
+        let info = getMembershipInfo();
+        let results = [];
+        Object.keys(payload).forEach(gid => {
+          let levels = payload[gid];
+          results.push(levels.include(info.roles[gid]));
+        });
+        return {
+          passed: results.filter(passed => !passed).length == 0,
+          standing: info.standing
         }
       }
 
-      match /docs/{docId} {
-        allow read;
+      function canReadOrg() {
+        // even if membership standing is not ok, allow read level access
+        return verifyRoles({ [organizationId]: ['obs', 'mem', 'mod', 'adm'] });
       }
 
-      match /groups/{groupId} {
-        allow read;
+      function isOrgMemberOrHigher() {
+        let verification = verifyRoles({ [organizationId]: ['mem', 'mod', 'adm'] });
+        return verification.passed && verification.standing == 'ok';
       }
 
-      match /libraries/{libraryId} {
-        allow read;
+      function isOrgModeratorOrHigher() {
+        let verification = verifyRoles({ [organizationId]: ['mod', 'adm'] });
+        return verification.passed && verification.standing == 'ok';
       }
 
-      match /polls/{pollId} {
-        allow read;
+      function isOrgAdmin() {
+        let verification = verifyRoles({ [organizationId]: ['adm'] });
+        return verification.passed && verification.standing == 'ok';
+      }
 
-        match /votes/{voteId} {
-          allow read;
+      function isWorkspaceMemberOrHigher(id) {
+        let verification = verifyRoles({
+          [organizationId]: ['mem', 'mod', 'adm'],
+          [id]: ['mem', 'mod', 'adm']
+        });
+        return verification.standing == 'ok' && (verification.passed || ownsResource(id));
+      }
+
+      function isWorkspaceModeratorOrHigher(id) {
+        let verification = verifyRoles({
+          [organizationId]: ['mem', 'mod', 'adm'],
+          [id]: ['mod', 'adm']
+        });
+        return verification.standing == 'ok' && (verification.passed || ownsResource(id));
+      }
+
+      function isWorkspaceAdmin(id) {
+        let verification = verifyRoles({
+          [organizationId]: ['mem', 'mod', 'adm'],
+          [id]: ['adm']
+        });
+        return verification.standing == 'ok' && (verification.passed || ownsResource(id));
+      }
+
+      match /memberships/{membershipId} {
+        allow read: if ownsResource(membershipId) && canReadOrg();
+      }
+
+      match /workspaces/{wid} {
+        allow read: if canReadOrg();
+        allow create: if isOrgMemberOrHigher();
+        allow update: if isWorkspaceMemberOrHigher(wid); 
+
+        match /members/{memberId} {
+          allow read: if canReadOrg();
+          // admin only
+          allow write: if isWorkspaceAdmin();
         }
-      }
 
-      match /proposals/{proposalId} {
-        allow read;
+        match /libraries/{libraryId} {
+          allow read: if canReadOrg();
+        }
+
+        match /docs/{docId} {
+          allow read: if canReadOrg();
+          allow create: if isWorkspaceMemberOrHigher(wid);
+          allow update: if isWorkspaceMemberOrHigher(wid) && resource.data.draft;
+        }
+
+        match /proposals/{proposalId} {
+          allow read: if canReadOrg();
+          allow create: if isWorkspaceMemberOrHigher(wid);
+          allow update: if isWorkspaceMemberOrHigher(wid) && !resource.data.archived;
+        }
+
+        match /ballots/{ballotId} {
+          allow read: if canReadOrg();
+
+          match /votes/{voteId} {
+            allow read: if ownsResource(voteId);
+            allow create: if isWorkspaceMemberOrHigher(wid) && ownsResource(voteId);
+          }
+        }
+
+        match /polls/{pollId} {
+          allow read: if canReadOrg();
+
+          match /votes/{voteId} {
+            allow read: if ownsResource(voteId);
+            allow create: if isWorkspaceMemberOrHigher(wid) && ownsResource(voteId);
+          }
+        }
+
+        match /activities/{activity_id} {
+          allow read: if isWorkspaceMemberOrHigher(wid);
+        }
       }
     }
   }
