@@ -48,8 +48,9 @@
 </script>
 
 <AuthCheck>
-  <form class="w-2/5" on:submit|preventDefault={confirmHandle}>
+  <form class="w-full" on:submit|preventDefault={confirmHandle}>
     <input
+      disabled={$profile?.handle !== undefined}
       type="text"
       placeholder="Handle"
       class="input w-full"
@@ -59,9 +60,9 @@
       class:input-warning={isTaken && profileHandle !== handle}
       class:input-success={isAvailable && isValid && !loading}
     />
-    <div class="my-4 min-h-16 px-8 w-full">
+    <div class="mt-4 w-full">
       {#if loading}
-        <p class="text-secondary">Checking availability of @{handle}...</p>
+        <p class="text-secondary text-sm">Checking availability of @{handle}...</p>
       {/if}
 
       {#if !isValid && isTouched}
@@ -75,9 +76,12 @@
       {/if}
 
       {#if isValid && !isAvailable && !loading && profileHandle === handle}
-        <p class="text-secondary text-sm">
-          @{handle} is your handle
-        </p>
+        <div>
+          <p class="text-accent text-sm mb-4">
+            @{handle} is your handle, rejoice!
+          </p>
+          <a href="/join/profile" class="btn btn-primary">Next</a>
+        </div>
       {/if}
 
       {#if isAvailable}

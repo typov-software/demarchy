@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { auth } from '$lib/firebase';
+  import { theme, toggleTheme } from '$lib/stores/themes';
   import { signOut } from 'firebase/auth';
 
   export let photo_url: string | undefined;
@@ -77,7 +78,7 @@
             <g clip-path="url(#clip0_66_373)">
               <path
                 d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"
-                class="fill-target"
+                class="fill-icon"
               />
             </g>
             <defs>
@@ -91,7 +92,7 @@
 
       <ul class="menu">
         <li>
-          <a href="/app/profile" on:click={closeDrawer}>
+          <a href="/d/profile" on:click={closeDrawer}>
             <svg
               width="24"
               height="24"
@@ -102,7 +103,7 @@
               <g clip-path="url(#clip0_154_116)">
                 <path
                   d="M12 12C14.21 12 16 10.21 16 8.00003C16 5.79003 14.21 4.00003 12 4.00003C9.79 4.00003 8 5.79003 8 8.00003C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
-                  class="fill-target"
+                  class="fill-icon"
                 />
               </g>
               <defs>
@@ -115,7 +116,7 @@
           </a>
         </li>
         <li>
-          <a href="/app/settings" on:click={closeDrawer}>
+          <a href="/d/settings" on:click={closeDrawer}>
             <svg
               width="24"
               height="24"
@@ -126,7 +127,7 @@
               <g clip-path="url(#clip0_154_121)">
                 <path
                   d="M3 17V19H9V17H3ZM3 5.00003V7.00003H13V5.00003H3ZM13 21V19H21V17H13V15H11V21H13ZM7 9.00003V11H3V13H7V15H9V9.00003H7ZM21 13V11H11V13H21ZM15 9.00003H17V7.00003H21V5.00003H17V3.00003H15V9.00003Z"
-                  class="fill-target"
+                  class="fill-icon"
                 />
               </g>
               <defs>
@@ -138,6 +139,18 @@
 
             Your settings
           </a>
+        </li>
+        <li>
+          <div class="theme-toggle flex flex-row">
+            <span role="img" class="sun">☀️</span>
+            <input
+              type="checkbox"
+              class="toggle"
+              checked={$theme === 'dark'}
+              on:change={toggleTheme}
+            />
+            <span role="img" class="moon">🌘</span>
+          </div>
         </li>
       </ul>
       <div class="divider" />

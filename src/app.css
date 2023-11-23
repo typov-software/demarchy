@@ -4,12 +4,39 @@
 @tailwind components;
 @tailwind utilities;
 
-[data-theme='light'] .fill-target {
+html {
+  min-height: 100%;
+}
+
+body {
+  height: 100%;
+  min-height: 100vh;
+}
+
+#root {
+  height: 100%;
+}
+
+.fill-icon,
+.fill-primary,
+.fill-secondary {
+  transition: fill 200ms;
+}
+
+[data-theme='light'] .fill-icon {
   fill: #000000;
 }
 
-[data-theme='dark'] .fill-target {
+[data-theme='dark'] .fill-icon {
   fill: #ffffff;
+}
+
+.fill-primary {
+  fill: oklch(var(--p));
+}
+
+.fill-secondary {
+  fill: oklch(var(--s));
 }
 
 .btn-square {
