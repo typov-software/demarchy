@@ -33,7 +33,9 @@ export function toggleTheme() {
 
 export function applyStoredTheme() {
   const stored = localStorage.getItem('theme') as Theme;
-  if (stored) {
-    updateTheme(stored);
+  const prefersDark = matchMedia('(prefers-color-scheme: dark').matches;
+  const lastTheme = stored ? stored : prefersDark ? 'dark' : 'light';
+  if (lastTheme) {
+    updateTheme(lastTheme);
   }
 }
