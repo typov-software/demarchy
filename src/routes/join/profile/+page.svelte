@@ -31,9 +31,16 @@
 </script>
 
 <AuthCheck>
-  <form class="w-2/5 flex flex-row items-center" on:submit|preventDefault={confirmName}>
+  <form class="w-full flex flex-row items-center" on:submit|preventDefault={confirmName}>
     <div class="flex flex-1 w-full">
-      <input type="text" placeholder="Name" class="input w-full" bind:value={name} />
+      <input
+        type="text"
+        id="name"
+        autocomplete="name"
+        placeholder="Name"
+        class="input w-full"
+        bind:value={name}
+      />
     </div>
     <button {disabled} type="submit" class="btn btn-success ml-5">Confirm</button>
   </form>
@@ -43,15 +50,14 @@
       <img
         src={previewURL ?? $profile?.photo_url ?? '/user.png'}
         alt="photo_url"
-        width="256"
-        height="256"
-        class="mx-auto"
+        class="mx-auto w-full"
       />
-      <label for="photoURL" class="label">
+      <label for="photo_url" class="label">
         <span class="label-text">Pick a file</span>
       </label>
       <input
         on:change={upload}
+        id="photo_url"
         name="photo_url"
         type="file"
         class="file-input file-input-bordered w-full max-w-xs"
@@ -64,5 +70,5 @@
     </div>
   </form>
 
-  <a href="/d" class="btn btn-success">Get started</a>
+  <a href="/d" class="btn btn-success">Go to dashboard</a>
 </AuthCheck>

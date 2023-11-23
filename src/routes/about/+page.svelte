@@ -1,3 +1,7 @@
+<script>
+  import { user } from '$lib/firebase';
+</script>
+
 <div class="hero min-h-screen bg-base-200">
   <div class="hero-content text-center">
     <div class="max-w-md">
@@ -13,7 +17,11 @@
         We're building a document editor with democracy as a core user experience instead of just a
         value.
       </p>
-      <a href="/join" class="btn btn-primary">Get Started</a>
+      {#if $user}
+        <a href="/d" class="btn btn-primary">Go to dashboard</a>
+      {:else}
+        <a href="/join" class="btn btn-primary">Join</a>
+      {/if}
     </div>
   </div>
 </div>

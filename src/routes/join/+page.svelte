@@ -26,12 +26,20 @@
   }
 </script>
 
-<h2>Connect with a provider</h2>
+<div class="flex-col items-center">
+  {#if $user}
+    <p class="pb-6">
+      Welcome, {$user.displayName}!
+      <span role="img" title="Hi">👋</span>
+    </p>
+  {:else}
+    <p class="pb-6">Connect with a provider</p>
+  {/if}
 
-{#if $user}
-  <h2 class="card-title">Welcome, {$user.displayName}</h2>
-  <p class="text-center text-success">You are signed in</p>
-  <button class="btn btn-warning" on:click={endSession}>Sign out</button>
-{:else}
-  <button class="btn btn-primary" on:click={signUpWithGoogle}>Sign in with Google</button>
-{/if}
+  {#if $user}
+    <button class="btn btn-warning" on:click={endSession}>Sign out</button>
+    <a href="/join/handle" class="btn btn-primary">Next</a>
+  {:else}
+    <button class="btn btn-primary" on:click={signUpWithGoogle}> Sign up with Google </button>
+  {/if}
+</div>
