@@ -7,7 +7,7 @@
 <header class="flex flex-row items-center bordered">
   <AppNav />
 
-  <div>
+  <a href="/d">
     <svg
       width="36"
       height="36"
@@ -18,7 +18,7 @@
       <path d="M26 74V14H62V26H74V62H62V74H26ZM38 62H61.52V26H38V62Z" class="fill-secondary" />
       <path d="M26 86V26H62V38H74V74H62V86H26ZM38 74H61.52V38H38V74Z" class="fill-primary" />
     </svg>
-  </div>
+  </a>
 
   <div class="flex flex-1" />
 
