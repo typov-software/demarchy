@@ -2,41 +2,9 @@
   import { profile } from '$lib/firebase';
   import AppNav from './AppNav.svelte';
   import UserNav from './UserNav.svelte';
-
-  let theme: string | null = null;
-
-  function updateTheme(t: string) {
-    document.querySelector('html')?.setAttribute('data-theme', t);
-    localStorage.setItem('theme', t);
-  }
-
-  function onToggleMode() {
-    const stored = window.localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark').matches;
-    const lastTheme = stored ? stored : prefersDark ? 'dark' : 'light';
-    if (stored) {
-      theme = lastTheme === 'dark' ? 'light' : 'dark';
-    } else {
-      theme = prefersDark ? 'light' : 'dark';
-    }
-    updateTheme(theme);
-  }
-
-  function applyStored() {
-    let stored = window.localStorage.getItem('theme');
-    if (stored) {
-      theme = stored;
-      updateTheme(stored);
-    }
-  }
-
-  // once the window is available look for localStorage value
-  if (typeof window !== 'undefined' && window?.localStorage) {
-    applyStored();
-  }
 </script>
 
-<header class="flex flex-row items-center">
+<header class="flex flex-row items-center bordered">
   <AppNav />
 
   <div>
@@ -54,13 +22,7 @@
 
   <div class="flex flex-1" />
 
-  <div class="theme-toggle flex flex-row">
-    <span role="img" class="sun">☀️</span>
-    <input type="checkbox" class="toggle" checked={theme === 'dark'} on:change={onToggleMode} />
-    <span role="img" class="moon">🌘</span>
-  </div>
-
-  <button class="btn btn-square btn-ghost">
+  <a href="/d/discussions" class="btn btn-square btn-ghost">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         class="fill-target"
@@ -68,9 +30,9 @@
         fill="black"
       />
     </svg>
-  </button>
+  </a>
 
-  <button class="btn btn-square btn-ghost">
+  <a href="/d/proposals" class="btn btn-square btn-ghost">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         class="fill-target"
@@ -78,9 +40,9 @@
         fill="black"
       />
     </svg>
-  </button>
+  </a>
 
-  <button class="btn btn-square btn-ghost">
+  <a href="/d/inbox" class="btn btn-square btn-ghost">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clip-path="url(#clip0_154_52)">
         <path
@@ -95,7 +57,7 @@
         </clipPath>
       </defs>
     </svg>
-  </button>
+  </a>
 
   <UserNav photo_url={$profile?.photo_url} name={$profile?.name} />
 </header>
@@ -130,5 +92,9 @@
         opacity: 1;
       }
     }
+  }
+
+  .bordered {
+    border-bottom: 1px solid oklch(var(--b2));
   }
 </style>

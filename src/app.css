@@ -4,6 +4,19 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  min-height: 100%;
+}
+
+body {
+  height: 100%;
+  min-height: 100vh;
+}
+
+#root {
+  height: 100%;
+}
+
 [data-theme='light'] .fill-target {
   fill: #000000;
 }

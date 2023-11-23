@@ -36,23 +36,6 @@
 
     <div class="min-h-full bg-base-100 text-base-content flex flex-col">
       <div class="flex flex-row items-center justify-between h-16 ml-3 mr-3">
-        <svg
-          width="36"
-          height="36"
-          viewBox="0 0 36 36"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M9.36011 26.64V5.04001H22.3201V9.36001H26.6401V22.32H22.3201V26.64H9.36011ZM13.6801 22.32H22.1473V9.36001H13.6801V22.32Z"
-            fill="#FF0000"
-          />
-          <path
-            d="M9.36011 30.96V9.36001H22.3201V13.68H26.6401V26.64H22.3201V30.96H9.36011ZM13.6801 26.64H22.1473V13.68H13.6801V26.64Z"
-            fill="#0000FF"
-          />
-        </svg>
-
         <button class="btn btn-square btn-ghost" on:click={closeDrawer}>
           <svg
             width="24"
@@ -74,11 +57,27 @@
             </defs>
           </svg>
         </button>
+        <svg
+          width="36"
+          height="36"
+          viewBox="0 0 36 36"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M9.36011 26.64V5.04001H22.3201V9.36001H26.6401V22.32H22.3201V26.64H9.36011ZM13.6801 22.32H22.1473V9.36001H13.6801V22.32Z"
+            fill="#FF0000"
+          />
+          <path
+            d="M9.36011 30.96V9.36001H22.3201V13.68H26.6401V26.64H22.3201V30.96H9.36011ZM13.6801 26.64H22.1473V13.68H13.6801V26.64Z"
+            fill="#0000FF"
+          />
+        </svg>
       </div>
 
       <ul class="menu">
         <li>
-          <a href="/app/dashboard" on:click={closeDrawer}>
+          <a href="/d" on:click={closeDrawer}>
             <svg
               width="24"
               height="24"
@@ -102,7 +101,7 @@
           </a>
         </li>
         <li>
-          <a href="/app/proposals" on:click={closeDrawer}>
+          <a href="/d/proposals" on:click={closeDrawer}>
             <svg
               width="24"
               height="24"
@@ -119,7 +118,7 @@
           </a>
         </li>
         <li>
-          <a href="/app/discussions" on:click={closeDrawer}>
+          <a href="/d/discussions" on:click={closeDrawer}>
             <svg
               width="24"
               height="24"

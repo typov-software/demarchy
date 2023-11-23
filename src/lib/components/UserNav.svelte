@@ -21,6 +21,38 @@
     await signOut(auth);
     await goto('/login');
   }
+
+  let theme: string | null = null;
+
+  function updateTheme(t: string) {
+    document.querySelector('html')?.setAttribute('data-theme', t);
+    localStorage.setItem('theme', t);
+  }
+
+  function onToggleMode() {
+    const stored = window.localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark').matches;
+    const lastTheme = stored ? stored : prefersDark ? 'dark' : 'light';
+    if (stored) {
+      theme = lastTheme === 'dark' ? 'light' : 'dark';
+    } else {
+      theme = prefersDark ? 'light' : 'dark';
+    }
+    updateTheme(theme);
+  }
+
+  function applyStored() {
+    let stored = window.localStorage.getItem('theme');
+    if (stored) {
+      theme = stored;
+      updateTheme(stored);
+    }
+  }
+
+  // once the window is available look for localStorage value
+  if (typeof window !== 'undefined' && window?.localStorage) {
+    applyStored();
+  }
 </script>
 
 <div class="drawer drawer-end w-auto">
@@ -91,7 +123,7 @@
 
       <ul class="menu">
         <li>
-          <a href="/app/profile" on:click={closeDrawer}>
+          <a href="/d/profile" on:click={closeDrawer}>
             <svg
               width="24"
               height="24"
@@ -115,7 +147,7 @@
           </a>
         </li>
         <li>
-          <a href="/app/settings" on:click={closeDrawer}>
+          <a href="/d/settings" on:click={closeDrawer}>
             <svg
               width="24"
               height="24"
@@ -138,6 +170,18 @@
 
             Your settings
           </a>
+        </li>
+        <li>
+          <div class="theme-toggle flex flex-row">
+            <span role="img" class="sun">☀️</span>
+            <input
+              type="checkbox"
+              class="toggle"
+              checked={theme === 'dark'}
+              on:change={onToggleMode}
+            />
+            <span role="img" class="moon">🌘</span>
+          </div>
         </li>
       </ul>
       <div class="divider" />
