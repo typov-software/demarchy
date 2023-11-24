@@ -68,32 +68,6 @@
     gap: 10px;
   }
 
-  .avatar .rounded-full {
-    width: 40px;
-    height: 40px;
-  }
-
-  [data-theme='dark'] {
-    .theme-toggle {
-      .moon {
-        opacity: 1;
-      }
-      .sun {
-        opacity: 0.2;
-      }
-    }
-  }
-  [data-theme='light'] {
-    .theme-toggle {
-      .moon {
-        opacity: 0.2;
-      }
-      .sun {
-        opacity: 1;
-      }
-    }
-  }
-
   .bordered {
     border-bottom: 1px solid oklch(var(--b2));
   }

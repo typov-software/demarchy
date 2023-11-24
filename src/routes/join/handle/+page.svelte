@@ -10,7 +10,7 @@
   let debounceTimer: NodeJS.Timeout;
 
   const re = /^(?=[a-zA-Z0-9._]{3,33}$)(?!.*[_.]{2})[^_.].*[^_.]$/;
-  $: isValid = handle?.length > 2 && handle.length <= 32 && re.test(handle);
+  $: isValid = handle.length > 2 && handle.length <= 32 && re.test(handle);
   $: isTouched = handle.length > 0;
   $: isTaken = isValid && !isAvailable && !loading;
 
@@ -20,17 +20,14 @@
 
     loading = true;
     debounceTimer = setTimeout(async () => {
-      console.log(`Checking availability of ${handle}`);
       const ref = doc(db, 'handles', handle);
       const exists = await getDoc(ref).then((doc) => doc.exists());
-
       isAvailable = !exists;
       loading = false;
     }, 500);
   }
 
   async function confirmHandle() {
-    console.log('confirming handle', handle);
     const batch = writeBatch(db);
     batch.set(doc(db, 'handles', handle), { uid: $user!.uid });
     batch.set(
@@ -41,7 +38,6 @@
       { merge: true }
     );
     await batch.commit();
-
     handle = '';
     isAvailable = false;
   }
