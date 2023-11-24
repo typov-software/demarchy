@@ -12,7 +12,7 @@
     <div class="flex-1" />
     <div class="divider -z-10" />
 
-    <footer class="flex flex-row justify-around items-center py-5 ml-4 mb-3">
+    <footer class="flex md:flex-row flex-col justify-around items-center py-5 ml-4 mb-3">
       <div class="flex flex-row items-center">
         <a href="/">
           <svg
@@ -92,7 +92,7 @@
         <p class="text-sm ml-2 mt-1">&copy; 2023 Typov LLC</p>
       </div>
 
-      <ul class="flex flex-row gap-x-2 text-sm text-primary">
+      <ul class="flex flex-row flex-wrap justify-center gap-x-2 text-sm text-primary">
         <li>
           <a href="/terms" class="link-hover">Terms</a>
         </li>

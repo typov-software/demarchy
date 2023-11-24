@@ -1,6 +1,8 @@
-import type { WorkspaceProps } from './workspaces';
 import type { WithId } from './utils';
 
-export interface OrganizationProps extends WorkspaceProps {}
+export interface OrganizationProps {
+  name: string;
+  slug: string;
+}
 
 export type Organization = OrganizationProps & WithId;
