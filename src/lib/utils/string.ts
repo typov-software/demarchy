@@ -1,4 +1,4 @@
-import Slugify from 'url-slug';
+import { convert } from 'url-slug';
 
 export function emptyString(str?: string) {
   return str && str.trim() === '';
@@ -9,5 +9,5 @@ export function titleCase(str: string) {
 }
 
 export function slugify(str: string) {
-  return Slugify(str);
+  return convert(str);
 }
