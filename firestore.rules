@@ -42,13 +42,36 @@ service cloud.firestore {
       allow update: if ownsResource(profileId);
     }
 
+    match /vouchers/{voucherId} {
+      allow read: if ownsResource(resource.data.uid);
+      allow update: if ownsResource(resource.data.uid);
+    }
+
     // Each `settingsId` corresponds to a user's `uid`
     match /settings/{settingsId} {
       allow read, write: if ownsResource(settingsId);
     }
 
-    match /organization/{organizationId} {
+    function isValidSlug(slug) {
+      let isValidLength = slug.size() >= 3 && slug.size() <= 32;
+      let isValidDoc = getAfter(/databases/$(database)/documents/organizations/$(request.resource.data.organization_id)).data.slug == slug;
+      return isValidLength && isValidDoc;
+    }
+
+    match /slugs/{slug} {
+      allow read;
+      allow create: if isValidSlug(slug);
+    }
+
+    function isValidOrganization() {
+      let slug = request.resource.data.slug;
+      let createdValidSlug = existsAfter(/databases/$(database)/documents/slugs/$(slug));
+      return createdValidSlug;
+    }
+
+    match /organizations/{organizationId} {
       allow read: if canReadOrg();
+      allow create: if isSignedIn() && isValidOrganization();
 
       function getMembershipInfo() {
         return get(/databases/$(database)/documents/organizations/$(organizationId)/memberships/$(request.auth.uid)).data;
