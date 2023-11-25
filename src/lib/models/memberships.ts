@@ -12,6 +12,8 @@ export interface MembershipProps {
    */
   uid: string;
 
+  organization_id: string;
+
   /**
    * A record of roles by id. The id could be the organization id, group id, or user id.
    */

@@ -1,4 +1,8 @@
 <script lang="ts">
+  import type { Organization } from '$lib/models/organizations';
+
+  export let organizations: Organization[] = [];
+
   function closeDrawer() {
     const node = document.querySelector('[for="app-nav"].drawer-overlay');
     node?.dispatchEvent(new MouseEvent('click'));

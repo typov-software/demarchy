@@ -1,11 +1,15 @@
 <script lang="ts">
-  import { profile } from '$lib/firebase';
+  import type { Organization } from '$lib/models/organizations';
+  import type { Profile } from '$lib/models/profiles';
   import AppNav from './AppNav.svelte';
   import UserNav from './UserNav.svelte';
+
+  export let organizations: Organization[];
+  export let profile: Profile;
 </script>
 
-<header class="flex flex-row items-center bordered">
-  <AppNav />
+<header class="flex flex-row items-center bordered z-50">
+  <AppNav {organizations} />
 
   <a href="/d">
     <svg
@@ -59,7 +63,7 @@
     </svg>
   </a>
 
-  <UserNav photo_url={$profile?.photo_url} name={$profile?.name} />
+  <UserNav photo_url={profile?.photo_url} name={profile?.name} />
 </header>
 
 <style lang="scss">
