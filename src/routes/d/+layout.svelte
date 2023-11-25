@@ -10,7 +10,7 @@
     <slot />
 
     <div class="flex-1" />
-    <div class="divider -z-10" />
+    <div class="divider" />
 
     <footer class="flex md:flex-row flex-col justify-around items-center py-5 ml-4 mb-3">
       <div class="flex flex-row items-center">

@@ -4,7 +4,7 @@
   import UserNav from './UserNav.svelte';
 </script>
 
-<header class="flex flex-row items-center bordered">
+<header class="flex flex-row items-center bordered z-50">
   <AppNav />
 
   <a href="/d">

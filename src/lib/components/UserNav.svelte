@@ -116,7 +116,7 @@
           </a>
         </li>
         <li>
-          <a href="/d/vouchers">
+          <a href="/d/vouchers" on:click={closeDrawer}>
             <svg
               width="24"
               height="24"

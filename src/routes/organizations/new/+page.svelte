@@ -67,7 +67,7 @@
             <option disabled selected value="">Choose an unused voucher</option>
             {#each data.vouchers as voucher}
               <option value={voucher.id} class="text-sm">
-                {titleCase(voucher.type.split('_').join(' '))}
+                {voucher.type}
                 ({voucher.id})
               </option>
             {/each}
