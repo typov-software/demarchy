@@ -2,6 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { adminDB } from '$lib/server/admin';
 import type { Voucher, VoucherProps } from '$lib/models/vouchers';
+import type { MembershipProps } from '$lib/models/memberships';
 
 export const load = (async ({ locals }) => {
   const uid = locals.user_id;
@@ -48,11 +49,12 @@ export const actions = {
     // Create the membership document for this user with member access to this organization
     batch.set(orgRef.collection('memberships').doc(uid), {
       uid,
+      organization_id: orgRef.id,
       roles: {
         [orgRef.id]: 'mem'
       },
       standing: 'ok'
-    });
+    } as MembershipProps);
     // Create the workspace associated with this organization
     batch.set(orgRef.collection('workspaces').doc(orgRef.id), {
       name,

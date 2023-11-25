@@ -4,7 +4,7 @@
   import { db } from '$lib/firebase';
   import { slugify, titleCase } from '$lib/utils/string';
   import AuthCheck from '$lib/components/AuthCheck.svelte';
-  import DemarchyHeaderLogo from '$lib/components/DemarchyHeaderLogo.svelte';
+  import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
 
   export let data: PageData;
 
@@ -45,7 +45,7 @@
 <AuthCheck>
   <section class="hero min-h-screen h-full">
     <div class="hero-content flex-col w-full min-h-full">
-      <DemarchyHeaderLogo />
+      <DemarchyLogo />
 
       <form method="POST" class="flex flex-col gap-4">
         <div>
