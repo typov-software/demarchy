@@ -144,6 +144,14 @@
       </ul>
 
       <div class="divider" />
+      <ul class="menu">
+        {#each organizations as organization}
+          <li>
+            <a href="/d/{organization.slug}" on:click={closeDrawer}>{organization.name}</a>
+          </li>
+        {/each}
+      </ul>
+
       <div class="flex flex-1" />
       <div class="divider" />
 

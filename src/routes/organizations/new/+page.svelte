@@ -5,6 +5,7 @@
   import { slugify, titleCase } from '$lib/utils/string';
   import AuthCheck from '$lib/components/AuthCheck.svelte';
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
+  import PageView from '$lib/components/PageView.svelte';
 
   export let data: PageData;
 
@@ -133,4 +134,5 @@
       </form>
     </div>
   </section>
+  <PageView />
 </AuthCheck>

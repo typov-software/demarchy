@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import PageView from '$lib/components/PageView.svelte';
   import { auth, user } from '$lib/firebase';
   import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 
@@ -43,3 +44,5 @@
     <button class="btn btn-primary" on:click={signUpWithGoogle}> Sign up with Google </button>
   {/if}
 </div>
+
+<PageView />

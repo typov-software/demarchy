@@ -1,5 +1,6 @@
 <script lang="ts">
   import AuthCheck from '$lib/components/AuthCheck.svelte';
+  import PageView from '$lib/components/PageView.svelte';
   import { db, profile, user } from '$lib/firebase';
   import { doc, getDoc, writeBatch } from 'firebase/firestore';
 
@@ -85,4 +86,5 @@
       {/if}
     </div>
   </form>
+  <PageView />
 </AuthCheck>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import AuthCheck from '$lib/components/AuthCheck.svelte';
+  import PageView from '$lib/components/PageView.svelte';
   import { db, profile, storage, user } from '$lib/firebase';
   import { emptyString } from '$lib/utils/string';
   import { doc, setDoc } from 'firebase/firestore';
@@ -71,4 +72,5 @@
   </form>
 
   <a href="/d" class="btn btn-success">Go to dashboard</a>
+  <PageView />
 </AuthCheck>
