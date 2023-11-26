@@ -8,7 +8,7 @@
   export let profile: Profile;
 </script>
 
-<header class="flex flex-row items-center bordered z-50">
+<header class="flex flex-row items-center z-50">
   <AppNav {organizations} />
 
   <a href="/d">
@@ -70,9 +70,5 @@
   header {
     padding: 10px;
     gap: 10px;
-  }
-
-  .bordered {
-    border-bottom: 1px solid oklch(var(--b2));
   }
 </style>
