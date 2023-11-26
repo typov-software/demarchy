@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PageView from '$lib/components/PageView.svelte';
   import { auth, user } from '$lib/firebase';
   import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
   import { backIn } from 'svelte/easing';
@@ -120,3 +121,5 @@
     </div>
   </div>
 </main>
+
+<PageView />

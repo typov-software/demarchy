@@ -1,5 +1,6 @@
 <script lang="ts">
   import AuthCheck from '$lib/components/AuthCheck.svelte';
+  import PageView from '$lib/components/PageView.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -16,4 +17,5 @@
       class="mx-auto"
     />
   </main>
+  <PageView />
 </AuthCheck>
