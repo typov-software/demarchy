@@ -7,7 +7,7 @@ import type { Profile } from './models/profiles';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCKo_Q3VhZDpYlHWd9__-yFpYdqTi6ZW9s',
-  authDomain: 'typov-demarchy.firebaseapp.com',
+  authDomain: 'demarchy.app',
   projectId: 'typov-demarchy',
   storageBucket: 'typov-demarchy.appspot.com',
   messagingSenderId: '298582394066',
