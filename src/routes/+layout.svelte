@@ -7,4 +7,8 @@
   }
 </script>
 
+<svelte:head>
+  <title>Demarchy</title>
+</svelte:head>
+
 <slot />
