@@ -1,7 +1,8 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
   import PageView from '$lib/components/PageView.svelte';
-  import { auth, user } from '$lib/firebase';
+  import { auth, db, profile, user } from '$lib/firebase';
   import { SUPPORTED_PROVIDER_IDS, type AuthProvider } from '$lib/models/profiles';
   import { titleCase } from '$lib/utils/string';
   import {
@@ -11,6 +12,7 @@
     signInWithPopup,
     signOut
   } from 'firebase/auth';
+  import { doc, getDoc } from 'firebase/firestore';
 
   const providers: Record<AuthProvider, any> = {
     'google.com': new GoogleAuthProvider(),
@@ -31,6 +33,12 @@
         },
         body: JSON.stringify({ idToken })
       });
+      const profileExists = (await getDoc(doc(db, `profiles/${credential.user.uid}`))).exists();
+      if (!profileExists) {
+        await goto('/join/handle');
+      } else {
+        await goto('/d');
+      }
     };
   }
 
@@ -57,9 +65,11 @@
 
         <div class="card">
           <div class="card-body bg-base-200">
-            {#if $user}
+            {#if $user && $profile}
               <a href="/d" class="btn btn-primary">Go to dashboard</a>
               <button class="btn btn-warning" on:click={endSession}>Sign out</button>
+            {:else if $user && !$profile}
+              <a href="/join/handle" class="btn btn-primary">Finish signing up</a>
             {:else}
               {#each SUPPORTED_PROVIDER_IDS as pid}
                 <button class="btn btn-primary {pid}" on:click={handleSignIn(pid)}>
