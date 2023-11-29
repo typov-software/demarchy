@@ -104,6 +104,12 @@ service cloud.firestore {
         return org && (ws || ownsResource(id));
       }
 
+      match /invitations/{invitationId} {
+        allow read: if ownsResource(resource.data.user_id) || isWorkspaceMemberOrHigher(resource.data.workspace_id);
+        allow create: if isWorkspaceMemberOrHigher(resource.data.workspace_id);
+        allow delete: if ownsResource(resource.data.created_by) || isWorkspaceAdmin(resource.data.workspace_id);
+      }
+
       match /memberships/{membershipId} {
         allow read: if ownsResource(membershipId) && canReadOrg();
       }
