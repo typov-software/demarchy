@@ -10,6 +10,7 @@ export interface MemberProps {
   uid: string;
   workspace_id: string;
   role: RoleAccess;
+  joined_at: Date;
   // TODO: name and handle need to be updated when a user info changes
   // this doesnt need to be a cloud function, it could be an api endpoint or
   // cloud task triggered by a user action.

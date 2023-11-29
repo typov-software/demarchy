@@ -3,6 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { adminDB } from '$lib/server/admin';
 import type { Voucher, VoucherProps } from '$lib/models/vouchers';
 import type { MembershipProps } from '$lib/models/memberships';
+import { FieldValue } from 'firebase-admin/firestore';
 
 export const load = (async ({ locals }) => {
   const uid = locals.user_id;
@@ -58,7 +59,7 @@ export const actions = {
     // Create the workspace associated with this organization
     batch.set(orgRef.collection('workspaces').doc(orgRef.id), {
       name,
-      description: 'Organization library',
+      description: 'Organization workspace',
       library_id: null
     });
     // Create the member document within the new workspace to record this user as member for all to see
@@ -66,6 +67,7 @@ export const actions = {
       uid,
       workspace_id: orgRef.id,
       role: 'mem',
+      joined_at: FieldValue.serverTimestamp(),
       name: profile.data()!.name,
       handle: profile.data()!.handle
     });

@@ -29,7 +29,7 @@ export const GET: RequestHandler = async ({ locals, setHeaders }) => {
   }));
   const organizationIds = memberships.map((membership) => membership.organization_id);
   const refs = organizationIds.map((oid) => adminDB.collection('organizations').doc(oid));
-  const orgDocs = await adminDB.getAll(...refs);
+  const orgDocs = refs.length ? await adminDB.getAll(...refs) : [];
   const organizations: Organization[] = orgDocs.map((doc) => ({
     id: doc.id,
     ...(doc.data() as OrganizationProps)
