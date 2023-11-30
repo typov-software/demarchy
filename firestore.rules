@@ -42,6 +42,16 @@ service cloud.firestore {
       allow update: if ownsResource(profileId);
     }
 
+    match /inboxes/{inboxId} {
+      allow read: if ownsResource(inboxId);
+
+      match /notification/{notificationId} {
+        allow read: if ownsResource(inboxId);
+        allow update: if ownsResource(inboxId);
+        allow delete: if ownsResource(inboxId);
+      }
+    }
+
     match /vouchers/{voucherId} {
       allow read: if ownsResource(resource.data.uid);
       allow update: if ownsResource(resource.data.uid);
@@ -102,6 +112,12 @@ service cloud.firestore {
         let org = verifyRoles(organizationId, ['mem', 'mod', 'adm'], info);
         let ws = verifyRoles(id, ['adm'], info);
         return org && (ws || ownsResource(id));
+      }
+
+      match /invitations/{invitationId} {
+        allow read: if ownsResource(resource.data.user_id) || isWorkspaceMemberOrHigher(resource.data.workspace_id);
+        allow create: if isWorkspaceMemberOrHigher(resource.data.workspace_id);
+        allow delete: if ownsResource(resource.data.created_by) || isWorkspaceAdmin(resource.data.workspace_id);
       }
 
       match /memberships/{membershipId} {

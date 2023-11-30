@@ -5,4 +5,5 @@
   export let data: PageData;
 </script>
 
+<div class="flex-1" />
 <PageView />

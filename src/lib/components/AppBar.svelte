@@ -1,11 +1,28 @@
 <script lang="ts">
   import type { Organization } from '$lib/models/organizations';
   import type { Profile } from '$lib/models/profiles';
+  import { onMount } from 'svelte';
   import AppNav from './AppNav.svelte';
   import UserNav from './UserNav.svelte';
+  import { doc, onSnapshot } from 'firebase/firestore';
+  import { db, user } from '$lib/firebase';
+  import type { Inbox, InboxProps } from '$lib/models/inboxes';
 
   export let organizations: Organization[];
   export let profile: Profile;
+
+  let inbox: Inbox | undefined;
+
+  onMount(() => {
+    const inboxRef = doc(db, 'inboxes', $user!.uid);
+    const unsubscribe = onSnapshot(inboxRef, (snapshot) => {
+      inbox = {
+        id: snapshot.id,
+        ...(snapshot.data() as InboxProps)
+      };
+    });
+    return () => unsubscribe();
+  });
 </script>
 
 <header class="flex flex-row items-center z-50">
@@ -46,7 +63,7 @@
     </svg>
   </a>
 
-  <a href="/d/inbox" class="btn btn-square btn-ghost">
+  <a href="/d/inbox" class="btn btn-square btn-ghost relative">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clip-path="url(#clip0_154_52)">
         <path
@@ -61,6 +78,9 @@
         </clipPath>
       </defs>
     </svg>
+    {#if inbox?.unread}
+      <mark class="mark w-3 h-3 -top-1.5 -right-1.5 bg-accent absolute" />
+    {/if}
   </a>
 
   <UserNav photo_url={profile?.photo_url} name={profile?.name} />

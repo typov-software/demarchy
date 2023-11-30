@@ -13,9 +13,7 @@
 
     <slot />
 
-    <div class="flex-1" />
-    <div class="divider" />
-    <footer class="flex md:flex-row flex-col justify-around items-center py-5 ml-4 mb-3">
+    <footer class="flex md:flex-row flex-col justify-around items-center py-8">
       <div class="flex flex-row items-center">
         <DemarchyLogo width={127} />
         <p class="text-sm ml-2 mt-1">
@@ -59,10 +57,7 @@
   main {
     min-height: 100vh;
   }
-
-  .divider {
-    opacity: 0.25;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+  footer {
+    border-top: 1px solid oklch(var(--b2));
   }
 </style>

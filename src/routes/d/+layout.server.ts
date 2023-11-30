@@ -1,5 +1,8 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
+import type { Membership } from '$lib/models/memberships';
+import type { Organization } from '$lib/models/organizations';
+import type { Profile } from '$lib/models/profiles';
 
 export const load = (async ({ locals, fetch }) => {
   const uid = locals.user_id;
@@ -11,6 +14,8 @@ export const load = (async ({ locals, fetch }) => {
   const data = await res.json();
 
   return {
-    ...data
+    memberships: data.memberships as Membership[],
+    organizations: data.organizations as Organization[],
+    profile: data.profile as Profile
   };
 }) satisfies LayoutServerLoad;
