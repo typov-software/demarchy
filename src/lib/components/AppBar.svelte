@@ -7,6 +7,7 @@
   import { doc, onSnapshot } from 'firebase/firestore';
   import { db, user } from '$lib/firebase';
   import type { Inbox, InboxProps } from '$lib/models/inboxes';
+  import DemarchyDLoader from './DemarchyDLoader.svelte';
 
   export let organizations: Organization[];
   export let profile: Profile;
@@ -29,16 +30,7 @@
   <AppNav {organizations} />
 
   <a href="/d">
-    <svg
-      width="36"
-      height="36"
-      viewBox="0 0 100 100"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M26 74V14H62V26H74V62H62V74H26ZM38 62H61.52V26H38V62Z" class="fill-secondary" />
-      <path d="M26 86V26H62V38H74V74H62V86H26ZM38 74H61.52V38H38V74Z" class="fill-primary" />
-    </svg>
+    <DemarchyDLoader />
   </a>
 
   <div class="flex flex-1" />
@@ -63,7 +55,7 @@
     </svg>
   </a>
 
-  <a href="/d/inbox" class="btn btn-square btn-ghost relative">
+  <a href="/d/inbox" class="btn btn-square btn-ghost relative -z-10">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clip-path="url(#clip0_154_52)">
         <path
