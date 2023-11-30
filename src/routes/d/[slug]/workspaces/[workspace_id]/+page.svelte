@@ -19,11 +19,21 @@
     searchParams.set('direction', direction);
     await goto(`${$page.url.pathname}?${searchParams.toString()}`);
   }
+
+  let workspacesPath = `/d/${$page.params.slug}/workspaces`;
+  let workspacePath = `${workspacesPath}/${data.workspace!.id}`;
 </script>
 
-<section class="flex flex-col items-center py-6 px-4 gap-8">
+<div class="text-sm breadcrumbs self-start py-4 px-4">
+  <ul>
+    <li><a href={workspacesPath}>Workspaces</a></li>
+    <li><a href={workspacePath}>{data.workspace?.name}</a></li>
+  </ul>
+</div>
+
+<section class="flex flex-col items-center px-4 gap-8">
   <div class="flex flex-row w-full items-center">
-    <h2 class="flex text-lg">Access to {data.workspace.name}</h2>
+    <h2 class="flex text-lg">Access to {data.workspace?.name}</h2>
 
     <div class="flex flex-1" />
 

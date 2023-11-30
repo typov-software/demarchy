@@ -42,6 +42,16 @@ service cloud.firestore {
       allow update: if ownsResource(profileId);
     }
 
+    match /inboxes/{inboxId} {
+      allow read: if ownsResource(inboxId);
+
+      match /notification/{notificationId} {
+        allow read: if ownsResource(inboxId);
+        allow update: if ownsResource(inboxId);
+        allow delete: if ownsResource(inboxId);
+      }
+    }
+
     match /vouchers/{voucherId} {
       allow read: if ownsResource(resource.data.uid);
       allow update: if ownsResource(resource.data.uid);

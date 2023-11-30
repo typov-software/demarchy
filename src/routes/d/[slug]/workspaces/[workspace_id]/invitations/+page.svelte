@@ -11,6 +11,7 @@
   import { enhance } from '$app/forms';
 
   export let data: PageData;
+  $: uid = $user?.uid;
 
   let invitations: Invitation[] = [];
 
@@ -64,9 +65,21 @@
       loadingHandle = false;
     }, 500);
   }
+
+  let workspacesPath = `/d/${$page.params.slug}/workspaces`;
+  let workspacePath = `${workspacesPath}/${data.workspace!.id}`;
+  let invitationsPath = `${workspacePath}/invitations`;
 </script>
 
-<section class="flex flex-col items-center py-6 px-4 gap-8">
+<div class="text-sm breadcrumbs self-start py-4 px-4">
+  <ul>
+    <li><a href={workspacesPath}>Workspaces</a></li>
+    <li><a href={workspacePath}>{data.workspace?.name}</a></li>
+    <li><a href={invitationsPath}>Invitations</a></li>
+  </ul>
+</div>
+
+<section class="flex flex-col items-center px-4 gap-8">
   <div class="flex flex-row w-full items-center">
     <h2 class="flex text-lg">Invitations for {data.workspace?.name}</h2>
     <div class="flex flex-1" />
@@ -85,6 +98,8 @@
       <tr>
         <th>Handle</th>
         <th>Role</th>
+        <th>Status</th>
+        <th />
       </tr>
     </thead>
     <tbody>
@@ -92,6 +107,23 @@
         <tr>
           <td>@{invitation.handle}</td>
           <td>{getRoleName(invitation.role)}</td>
+          <td>{invitation.rejected ? 'Rejected' : 'Pending'}</td>
+          <td>
+            <div class="flex">
+              <div class="flex-1" />
+              <form method="POST" action="?/uninvite" use:enhance>
+                <input type="hidden" name="organization_id" value={invitation.organization_id} />
+                <input type="hidden" name="invitation_id" value={invitation.id} />
+                <button
+                  type="submit"
+                  class="btn btn-sm btn-secondary"
+                  disabled={invitation.created_by !== uid}
+                >
+                  {invitation.rejected ? 'Remove' : 'Uninvite'}
+                </button>
+              </form>
+            </div>
+          </td>
         </tr>
       {/each}
     </tbody>

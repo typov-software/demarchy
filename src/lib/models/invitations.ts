@@ -7,6 +7,7 @@ export interface InvitationProps {
   user_id: string;
   handle: string;
   role: RoleAccess;
+  rejected: boolean;
   created_by: string;
   created_at: Date;
 }

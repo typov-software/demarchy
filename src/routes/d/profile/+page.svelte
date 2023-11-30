@@ -19,3 +19,5 @@
   </main>
   <PageView />
 </AuthCheck>
+
+<div class="flex-1" />

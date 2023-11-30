@@ -5,6 +5,5 @@
   export let data: PageData;
 </script>
 
-<h2>Proposals</h2>
-
+<div class="flex-1" />
 <PageView />

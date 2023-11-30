@@ -8,6 +8,7 @@ import type { WithId } from './utils';
  */
 export interface MemberProps {
   uid: string;
+  organization_id: string;
   workspace_id: string;
   role: RoleAccess;
   joined_at: Date;

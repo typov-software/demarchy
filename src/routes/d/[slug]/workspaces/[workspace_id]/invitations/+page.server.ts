@@ -4,6 +4,7 @@ import type { Actions } from './$types';
 import { adminDB } from '$lib/server/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import type { InvitationProps } from '$lib/models/invitations';
+import type { NotificationInvitationData } from '$lib/models/notifications';
 
 export const actions = {
   invite: async ({ request, url }) => {
@@ -24,17 +25,54 @@ export const actions = {
       user_id,
       organization_id,
       workspace_id,
-      role
+      role,
+      rejected: false
     };
+    const invitationRef = adminDB
+      .collection('organizations')
+      .doc(organization_id)
+      .collection('invitations')
+      .doc();
+
+    const batch = adminDB.batch();
+    batch.create(invitationRef, {
+      ...invitation,
+      created_at: FieldValue.serverTimestamp()
+    });
+    batch.set(
+      adminDB.collection('inboxes').doc(user_id),
+      {
+        unread: FieldValue.increment(1)
+      },
+      {
+        merge: true
+      }
+    );
+    batch.create(adminDB.collection('inboxes').doc(user_id).collection('notifications').doc(), {
+      created_at: FieldValue.serverTimestamp(),
+      type: 'invitation',
+      read: false,
+      data: {
+        invitation_id: invitationRef.id,
+        organization_id,
+        workspace_id
+      } as NotificationInvitationData
+    });
+    await batch.commit();
+
+    throw redirect(303, url.pathname);
+  },
+
+  uninvite: async ({ request }) => {
+    const formData = await request.formData();
+    const organization_id = formData.get('organization_id') as string;
+    const invitation_id = formData.get('invitation_id') as string;
     await adminDB
       .collection('organizations')
       .doc(organization_id)
       .collection('invitations')
-      .add({
-        ...invitation,
-        created_at: FieldValue.serverTimestamp()
-      });
-
-    throw redirect(303, url.pathname);
+      .doc(invitation_id)
+      .delete();
+    return {};
   }
 } satisfies Actions;

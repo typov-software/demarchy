@@ -66,6 +66,7 @@ export const actions = {
     batch.set(orgRef.collection('workspaces').doc(orgRef.id).collection('members').doc(uid), {
       uid,
       workspace_id: orgRef.id,
+      organization_id: orgRef.id,
       role: 'mem',
       joined_at: FieldValue.serverTimestamp(),
       name: profile.data()!.name,
