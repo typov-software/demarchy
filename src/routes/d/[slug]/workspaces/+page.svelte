@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import BasicSection from '$lib/components/BasicSection.svelte';
   import PageView from '$lib/components/PageView.svelte';
   import { getRoleName } from '$lib/models/roles';
   import type { PageData } from './$types';
@@ -17,7 +18,7 @@
   }
 </script>
 
-<section class="flex flex-col items-center py-6 px-4 gap-8">
+<BasicSection>
   <div class="flex flex-row w-full items-center">
     <h2 class="flex text-lg">Workspaces for {data.organization?.name}</h2>
     <div class="flex flex-1" />
@@ -59,7 +60,7 @@
       {/each}
     {/if}
   </ul>
-</section>
+</BasicSection>
 
 <div class="flex-1" />
 

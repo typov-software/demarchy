@@ -11,6 +11,7 @@
   import { user } from '$lib/firebase';
   import type { AuthProvider } from '$lib/models/profiles';
   import { invalidateAll } from '$app/navigation';
+  import BasicSection from '$lib/components/BasicSection.svelte';
 
   export let data: PageData;
 
@@ -52,7 +53,7 @@
   }
 </script>
 
-<section class="flex flex-col items-center py-6 gap-8">
+<BasicSection>
   <h1 class="max-w-lg w-full text-xl font-semibold">Account Settings</h1>
   <div class="flex flex-col w-full max-w-lg">
     <h2 class="font-bold">Connected Providers</h2>
@@ -98,7 +99,7 @@
       </ul>
     </div>
   {/if}
-</section>
+</BasicSection>
 
 <div class="flex-1" />
 <PageView />

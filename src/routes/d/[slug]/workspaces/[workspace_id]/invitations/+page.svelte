@@ -9,6 +9,7 @@
   import { goto } from '$app/navigation';
   import type { Profile, ProfileProps } from '$lib/models/profiles';
   import { enhance } from '$app/forms';
+  import BasicSection from '$lib/components/BasicSection.svelte';
 
   export let data: PageData;
   $: uid = $user?.uid;
@@ -79,7 +80,7 @@
   </ul>
 </div>
 
-<section class="flex flex-col items-center px-4 gap-8">
+<BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
     <h2 class="flex text-lg">Invitations for {data.workspace?.name}</h2>
     <div class="flex flex-1" />
@@ -178,4 +179,4 @@
       <button>close</button>
     </form>
   </dialog>
-</section>
+</BasicSection>
