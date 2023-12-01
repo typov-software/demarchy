@@ -31,7 +31,7 @@
       </div>
     </div>
   </div>
-  <ul class="w-full">
+  <ul class="w-full gap-4 flex flex-col">
     {#if orgWorkspace}
       <li class="card bg-base-200">
         <div class="card-body">

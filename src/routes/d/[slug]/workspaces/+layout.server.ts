@@ -1,6 +1,7 @@
 import type { LayoutServerLoad } from './$types';
 import { adminDB, adminWorkspaceRef } from '$lib/server/admin';
 import type { Workspace, WorkspaceProps } from '$lib/models/workspaces';
+import type { Timestamp } from 'firebase-admin/firestore';
 
 export const load = (async ({ parent }) => {
   const { organization, organization_memberships } = await parent();
@@ -10,7 +11,8 @@ export const load = (async ({ parent }) => {
   const snapshot = await adminDB.getAll(...workspaceRefs);
   const workspaces: Workspace[] = snapshot.map((doc) => ({
     id: doc.id,
-    ...(doc.data() as WorkspaceProps)
+    ...(doc.data() as WorkspaceProps),
+    created_at: (doc.data()!.created_at as Timestamp).toDate()
   }));
   return {
     workspaces

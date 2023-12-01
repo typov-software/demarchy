@@ -68,7 +68,10 @@ export const actions = {
     batch.set(adminWorkspaceRef(orgRef.id).doc(orgRef.id), {
       name,
       description: 'Organization workspace',
-      library_id: null
+      library_id: null,
+      organization_id: orgRef.id,
+      created_at: FieldValue.serverTimestamp(),
+      created_by: uid
     });
     // Create the member document within the new workspace to record this user as member for all to see
     batch.set(adminMemberRef(orgRef.id, orgRef.id).doc(uid), {
