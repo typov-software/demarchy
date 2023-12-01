@@ -1,6 +1,6 @@
 import type { MembershipProps } from '$lib/models/memberships';
 import type { RoleAccess } from '$lib/models/roles';
-import { adminDB } from './admin';
+import { adminMembershipRef } from './admin';
 
 export interface MembershipInfo {
   standing: MembershipProps['standing'];
@@ -8,12 +8,7 @@ export interface MembershipInfo {
 }
 
 export async function getMembershipInfo(oid: string, uid: string): Promise<MembershipInfo> {
-  const doc = await adminDB
-    .collection('organizations')
-    .doc(oid)
-    .collection('memberships')
-    .doc(uid)
-    .get();
+  const doc = await adminMembershipRef(oid).doc(uid).get();
   return {
     standing: doc.data()?.standing ?? 'pause',
     roles: doc.data()?.roles ?? {}

@@ -2,15 +2,14 @@
   import AppBar from '$lib/components/AppBar.svelte';
   import AuthCheck from '$lib/components/AuthCheck.svelte';
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
-  import { useWorkingStore } from '$lib/stores/working';
+  import { working } from '$lib/stores/working';
   import { derived, type Readable } from 'svelte/store';
   import type { PageData } from './$types';
 
   export let data: PageData;
 
-  const working = useWorkingStore();
   const loading: Readable<boolean> = derived(working, ($working, set) => {
-    if ($working.jobs.length) {
+    if ($working.length) {
       set(true);
     } else {
       set(false);

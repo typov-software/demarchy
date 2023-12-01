@@ -10,6 +10,8 @@
   import type { Profile, ProfileProps } from '$lib/models/profiles';
   import { enhance } from '$app/forms';
   import BasicSection from '$lib/components/BasicSection.svelte';
+  import { INVITATIONS, ORGANIZATIONS } from '$lib/models/firestore';
+  import { working } from '$lib/stores/working';
 
   export let data: PageData;
   $: uid = $user?.uid;
@@ -18,7 +20,7 @@
 
   onMount(() => {
     const ref = query(
-      collection(db, 'organizations', data.organization!.id, 'invitations'),
+      collection(db, ORGANIZATIONS, data.organization!.id, INVITATIONS),
       where('workspace_id', '==', $page.params.workspace_id)
     );
     const unsubscribe = onSnapshot(ref, (snapshot) => {
@@ -113,7 +115,17 @@
           <td>
             <div class="flex">
               <div class="flex-1" />
-              <form method="POST" action="?/uninvite" use:enhance>
+              <form
+                method="POST"
+                action="?/uninvite"
+                use:enhance={() => {
+                  const jobId = working.add();
+                  return async ({ update }) => {
+                    working.remove(jobId);
+                    update();
+                  };
+                }}
+              >
                 <input type="hidden" name="organization_id" value={invitation.organization_id} />
                 <input type="hidden" name="invitation_id" value={invitation.id} />
                 <button
@@ -138,7 +150,17 @@
   >
     <div class="modal-box">
       <h3 class="text-lg mb-4">Invite someone to this workspace</h3>
-      <form method="POST" action="?/invite" use:enhance>
+      <form
+        method="POST"
+        action="?/invite"
+        use:enhance={() => {
+          const jobId = working.add();
+          return async ({ update }) => {
+            working.remove(jobId);
+            update();
+          };
+        }}
+      >
         <input type="hidden" name="organization_id" value={data.organization?.id} />
         <input type="hidden" name="workspace_id" value={data.workspace?.id} />
         <input type="hidden" name="user_id" bind:value={handleUserId} />

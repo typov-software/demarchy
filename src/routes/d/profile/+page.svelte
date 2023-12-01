@@ -6,7 +6,7 @@
   import { doc, getDoc } from 'firebase/firestore';
   import type { PageData } from './$types';
   import { db } from '$lib/firebase';
-  import { useWorkingStore } from '$lib/stores/working';
+  import { working } from '$lib/stores/working';
 
   export let data: PageData;
   let name = data.profile.name;
@@ -20,10 +20,6 @@
   $: isTouched = handle.length > 0;
   $: isTaken = isValid && !isAvailable && !loading;
 
-  function getId() {
-    return crypto.randomUUID();
-  }
-
   async function checkHandleAvailability() {
     isAvailable = false;
     clearTimeout(debounceTimer);
@@ -35,8 +31,6 @@
       loading = false;
     }, 500);
   }
-
-  const working = useWorkingStore();
 </script>
 
 <BasicSection otherClass="w-full max-w-md self-center">
@@ -51,10 +45,9 @@
     method="POST"
     action="?/updateName"
     use:enhance={() => {
-      const jobId = getId();
-      working.set({ jobs: [...$working.jobs, jobId] });
+      const jobId = working.add();
       return async ({ update }) => {
-        working.set({ jobs: $working.jobs.filter((id) => id !== jobId) });
+        working.remove(jobId);
         update({ reset: false });
       };
     }}
@@ -79,10 +72,9 @@
     method="POST"
     action="?/updateHandle"
     use:enhance={() => {
-      const jobId = getId();
-      working.set({ jobs: [...$working.jobs, jobId] });
+      const jobId = working.add();
       return async ({ update }) => {
-        working.set({ jobs: $working.jobs.filter((id) => id !== jobId) });
+        working.remove(jobId);
         update({ reset: false });
       };
     }}

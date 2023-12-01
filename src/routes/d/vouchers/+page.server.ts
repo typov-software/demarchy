@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { adminDB } from '$lib/server/admin';
+import { adminVoucherRef } from '$lib/server/admin';
 import type { Voucher, VoucherProps } from '$lib/models/vouchers';
 
 /**
@@ -13,7 +13,7 @@ export const load = (async ({ locals, setHeaders }) => {
     throw redirect(301, '/login');
   }
 
-  const snapshot = await adminDB.collection('vouchers').where('uid', '==', uid).get();
+  const snapshot = await adminVoucherRef().where('uid', '==', uid).get();
   const vouchers: Voucher[] = snapshot.docs.map((doc) => ({
     id: doc.id,
     ...(doc.data() as VoucherProps)
