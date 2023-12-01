@@ -4,6 +4,7 @@
   import type { OrderByDirection } from 'firebase/firestore';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import BasicSection from '$lib/components/BasicSection.svelte';
 
   export let data: PageData;
 
@@ -31,7 +32,7 @@
   </ul>
 </div>
 
-<section class="flex flex-col items-center px-4 gap-8">
+<BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
     <h2 class="flex text-lg">Access to {data.workspace?.name}</h2>
 
@@ -79,4 +80,4 @@
       {/each}
     </tbody>
   </table>
-</section>
+</BasicSection>

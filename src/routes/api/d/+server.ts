@@ -1,9 +1,10 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { adminDB } from '$lib/server/admin';
+import { adminDB, adminOrganizationRef, adminProfileRef } from '$lib/server/admin';
 import type { Profile, ProfileProps } from '$lib/models/profiles';
 import type { Membership, MembershipProps } from '$lib/models/memberships';
 import type { Organization, OrganizationProps } from '$lib/models/organizations';
+import { MEMBERSHIPS } from '$lib/models/firestore';
 
 /**
  *
@@ -16,19 +17,20 @@ export const GET: RequestHandler = async ({ locals, setHeaders }) => {
     throw error(401, 'unauthorized');
   }
 
-  const profileDoc = await adminDB.collection('profiles').doc(uid).get();
+  const profileDoc = await adminProfileRef().doc(uid).get();
   const profile: Profile = {
     id: profileDoc.id,
     ...(profileDoc.data() as ProfileProps)
   };
 
-  const snapshot = await adminDB.collectionGroup('memberships').where('uid', '==', uid).get();
+  const snapshot = await adminDB.collectionGroup(MEMBERSHIPS).where('uid', '==', uid).get();
   const memberships: Membership[] = snapshot.docs.map((doc) => ({
     id: doc.id,
     ...(doc.data() as MembershipProps)
   }));
   const organizationIds = memberships.map((membership) => membership.organization_id);
-  const refs = organizationIds.map((oid) => adminDB.collection('organizations').doc(oid));
+
+  const refs = organizationIds.map((oid) => adminOrganizationRef().doc(oid));
   const orgDocs = refs.length ? await adminDB.getAll(...refs) : [];
   const organizations: Organization[] = orgDocs.map((doc) => ({
     id: doc.id,

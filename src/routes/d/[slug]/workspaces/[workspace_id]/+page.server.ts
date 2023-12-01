@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { adminDB } from '$lib/server/admin';
+import { adminMemberRef } from '$lib/server/admin';
 import type { Member, MemberProps } from '$lib/models/members';
 import type { OrderByDirection, Timestamp } from 'firebase/firestore';
 
@@ -15,15 +15,9 @@ export const load = (async ({ locals, params, url, parent }) => {
 
   const wid = params.workspace_id;
   const data = await parent();
-  const snapshot = await adminDB
-    .collection('organizations')
-    .doc(data.organization!.id)
-    .collection('workspaces')
-    .doc(wid)
-    .collection('members')
+  const snapshot = await adminMemberRef(data.organization!.id, wid)
     .orderBy(sortField, direction)
     .get();
-
   const members: Member[] = snapshot.docs.map((doc) => ({
     ...(doc.data() as MemberProps),
     id: doc.id,

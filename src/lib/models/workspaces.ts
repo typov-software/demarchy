@@ -10,6 +10,9 @@ export interface WorkspaceProps {
   description: string;
   // latest published library id
   library_id: string | null;
+  organization_id: string;
+  created_at: Date;
+  created_by: string;
 }
 
 export type Workspace = WorkspaceProps & WithId;

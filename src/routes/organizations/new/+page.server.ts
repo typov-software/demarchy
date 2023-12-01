@@ -1,6 +1,15 @@
 import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { adminDB } from '$lib/server/admin';
+import {
+  adminDB,
+  adminMemberRef,
+  adminMembershipRef,
+  adminOrganizationRef,
+  adminProfileRef,
+  adminSlugRef,
+  adminVoucherRef,
+  adminWorkspaceRef
+} from '$lib/server/admin';
 import type { Voucher, VoucherProps } from '$lib/models/vouchers';
 import type { MembershipProps } from '$lib/models/memberships';
 import { FieldValue } from 'firebase-admin/firestore';
@@ -11,8 +20,7 @@ export const load = (async ({ locals }) => {
     throw redirect(301, '/login');
   }
 
-  const snapshot = await adminDB
-    .collection('vouchers')
+  const snapshot = await adminVoucherRef()
     .where('uid', '==', uid)
     .where('type', '==', '/organizations/new')
     .where('redeemed', '==', false)
@@ -38,17 +46,17 @@ export const actions = {
     const name = formData.get('name') as string;
     const slug = formData.get('slug') as string;
 
-    const profile = await adminDB.collection('profiles').doc(uid).get();
-    const orgRef = adminDB.collection('organizations').doc();
+    const profile = await adminProfileRef().doc(uid).get();
+    const orgRef = adminOrganizationRef().doc();
     const batch = adminDB.batch();
     // Update the vouchers document so it can't be used again
     batch.update(adminDB.doc(`vouchers/${voucher_id}`), { redeemed: true });
     // Create the slug document
-    batch.set(adminDB.collection('slugs').doc(slug), { organization_id: orgRef.id });
+    batch.set(adminSlugRef().doc(slug), { organization_id: orgRef.id });
     // Create the organization document
     batch.set(orgRef, { name, slug });
     // Create the membership document for this user with member access to this organization
-    batch.set(orgRef.collection('memberships').doc(uid), {
+    batch.set(adminMembershipRef(orgRef.id).doc(uid), {
       uid,
       organization_id: orgRef.id,
       roles: {
@@ -57,13 +65,16 @@ export const actions = {
       standing: 'ok'
     } as MembershipProps);
     // Create the workspace associated with this organization
-    batch.set(orgRef.collection('workspaces').doc(orgRef.id), {
+    batch.set(adminWorkspaceRef(orgRef.id).doc(orgRef.id), {
       name,
       description: 'Organization workspace',
-      library_id: null
+      library_id: null,
+      organization_id: orgRef.id,
+      created_at: FieldValue.serverTimestamp(),
+      created_by: uid
     });
     // Create the member document within the new workspace to record this user as member for all to see
-    batch.set(orgRef.collection('workspaces').doc(orgRef.id).collection('members').doc(uid), {
+    batch.set(adminMemberRef(orgRef.id, orgRef.id).doc(uid), {
       uid,
       workspace_id: orgRef.id,
       organization_id: orgRef.id,

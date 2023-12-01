@@ -1,11 +1,12 @@
 <script lang="ts">
+  import BasicSection from '$lib/components/BasicSection.svelte';
   import PageView from '$lib/components/PageView.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
 </script>
 
-<section class="flex flex-col items-center my-4">
+<BasicSection>
   <ul class="w-full max-w-lg">
     {#each data.vouchers as voucher}
       <li class="card bg-base-200">
@@ -25,7 +26,7 @@
       </li>
     {/each}
   </ul>
-</section>
+</BasicSection>
 
 <div class="flex-1" />
 <PageView />

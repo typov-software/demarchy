@@ -9,23 +9,27 @@
   import { goto } from '$app/navigation';
   import type { Profile, ProfileProps } from '$lib/models/profiles';
   import { enhance } from '$app/forms';
+  import BasicSection from '$lib/components/BasicSection.svelte';
+  import { INVITATIONS, ORGANIZATIONS } from '$lib/models/firestore';
+  import { working } from '$lib/stores/working';
 
   export let data: PageData;
   $: uid = $user?.uid;
 
   let invitations: Invitation[] = [];
 
-  onMount(async () => {
+  onMount(() => {
     const ref = query(
-      collection(db, 'organizations', data.organization!.id, 'invitations'),
+      collection(db, ORGANIZATIONS, data.organization!.id, INVITATIONS),
       where('workspace_id', '==', $page.params.workspace_id)
     );
-    onSnapshot(ref, (snapshot) => {
+    const unsubscribe = onSnapshot(ref, (snapshot) => {
       invitations = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as InvitationProps)
       }));
     });
+    return () => unsubscribe();
   });
 
   async function onCloseModal() {
@@ -79,7 +83,7 @@
   </ul>
 </div>
 
-<section class="flex flex-col items-center px-4 gap-8">
+<BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
     <h2 class="flex text-lg">Invitations for {data.workspace?.name}</h2>
     <div class="flex flex-1" />
@@ -111,7 +115,17 @@
           <td>
             <div class="flex">
               <div class="flex-1" />
-              <form method="POST" action="?/uninvite" use:enhance>
+              <form
+                method="POST"
+                action="?/uninvite"
+                use:enhance={() => {
+                  const jobId = working.add();
+                  return async ({ update }) => {
+                    working.remove(jobId);
+                    update();
+                  };
+                }}
+              >
                 <input type="hidden" name="organization_id" value={invitation.organization_id} />
                 <input type="hidden" name="invitation_id" value={invitation.id} />
                 <button
@@ -136,7 +150,17 @@
   >
     <div class="modal-box">
       <h3 class="text-lg mb-4">Invite someone to this workspace</h3>
-      <form method="POST" action="?/invite" use:enhance>
+      <form
+        method="POST"
+        action="?/invite"
+        use:enhance={() => {
+          const jobId = working.add();
+          return async ({ update }) => {
+            working.remove(jobId);
+            update();
+          };
+        }}
+      >
         <input type="hidden" name="organization_id" value={data.organization?.id} />
         <input type="hidden" name="workspace_id" value={data.workspace?.id} />
         <input type="hidden" name="user_id" bind:value={handleUserId} />
@@ -178,4 +202,4 @@
       <button>close</button>
     </form>
   </dialog>
-</section>
+</BasicSection>

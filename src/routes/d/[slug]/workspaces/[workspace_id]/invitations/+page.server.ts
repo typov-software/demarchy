@@ -1,7 +1,12 @@
 import type { RoleAccess } from '$lib/models/roles';
 import { error, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
-import { adminDB } from '$lib/server/admin';
+import {
+  adminDB,
+  adminInboxRef,
+  adminInvitationRef,
+  adminNotificationRef
+} from '$lib/server/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import type { InvitationProps } from '$lib/models/invitations';
 import type { NotificationInvitationData } from '$lib/models/notifications';
@@ -28,19 +33,14 @@ export const actions = {
       role,
       rejected: false
     };
-    const invitationRef = adminDB
-      .collection('organizations')
-      .doc(organization_id)
-      .collection('invitations')
-      .doc();
-
+    const invitationRef = adminInvitationRef(organization_id).doc();
     const batch = adminDB.batch();
     batch.create(invitationRef, {
       ...invitation,
       created_at: FieldValue.serverTimestamp()
     });
     batch.set(
-      adminDB.collection('inboxes').doc(user_id),
+      adminInboxRef().doc(user_id),
       {
         unread: FieldValue.increment(1)
       },
@@ -48,7 +48,7 @@ export const actions = {
         merge: true
       }
     );
-    batch.create(adminDB.collection('inboxes').doc(user_id).collection('notifications').doc(), {
+    batch.create(adminNotificationRef(user_id).doc(), {
       created_at: FieldValue.serverTimestamp(),
       type: 'invitation',
       read: false,
@@ -67,12 +67,7 @@ export const actions = {
     const formData = await request.formData();
     const organization_id = formData.get('organization_id') as string;
     const invitation_id = formData.get('invitation_id') as string;
-    await adminDB
-      .collection('organizations')
-      .doc(organization_id)
-      .collection('invitations')
-      .doc(invitation_id)
-      .delete();
+    await adminInvitationRef(organization_id).doc(invitation_id).delete();
     return {};
   }
 } satisfies Actions;
