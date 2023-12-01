@@ -42,6 +42,7 @@
     "firebase": "^10.6.0",
     "firebase-admin": "^11.11.0",
     "sass": "^1.69.5",
+    "svelte-easy-crop": "^2.0.1",
     "url-slug": "^4.0.1"
   }
 }
