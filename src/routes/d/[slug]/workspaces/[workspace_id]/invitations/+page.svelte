@@ -16,17 +16,18 @@
 
   let invitations: Invitation[] = [];
 
-  onMount(async () => {
+  onMount(() => {
     const ref = query(
       collection(db, 'organizations', data.organization!.id, 'invitations'),
       where('workspace_id', '==', $page.params.workspace_id)
     );
-    onSnapshot(ref, (snapshot) => {
+    const unsubscribe = onSnapshot(ref, (snapshot) => {
       invitations = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as InvitationProps)
       }));
     });
+    return () => unsubscribe();
   });
 
   async function onCloseModal() {

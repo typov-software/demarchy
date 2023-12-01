@@ -1,8 +1,9 @@
 <script lang="ts">
   import { navigating } from '$app/stores';
+  export let loading: boolean;
 </script>
 
-<div class="loader" class:animate={$navigating}>
+<div class="loader" class:animate={$navigating || loading}>
   <svg
     width="36"
     height="36"

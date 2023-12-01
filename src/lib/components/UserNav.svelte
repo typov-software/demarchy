@@ -63,9 +63,9 @@
           </div>
         {/if}
 
-        <span class="flex flex-1 p-3 mt-2">
+        <p class="p-3 mt-2 truncate">
           {name}
-        </span>
+        </p>
 
         <button class="btn btn-square btn-ghost" on:click={closeDrawer}>
           <svg

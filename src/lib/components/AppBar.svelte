@@ -11,6 +11,7 @@
 
   export let organizations: Organization[];
   export let profile: Profile;
+  export let loading: boolean;
 
   let inbox: Inbox | undefined;
 
@@ -30,7 +31,7 @@
   <AppNav {organizations} />
 
   <a href="/d">
-    <DemarchyDLoader />
+    <DemarchyDLoader {loading} />
   </a>
 
   <div class="flex flex-1" />

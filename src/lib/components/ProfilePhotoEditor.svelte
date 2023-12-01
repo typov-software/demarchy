@@ -44,7 +44,7 @@
   };
 </script>
 
-<form class="flex flex-col items-center max-w-xs w-full gap-4">
+<form class="flex flex-col items-center max-w-md w-full gap-4">
   <input
     disabled={uploading}
     bind:value={fileinput}
@@ -52,7 +52,7 @@
     id="photo_url"
     name="photo_url"
     type="file"
-    class="file-input file-input-bordered w-full max-w-xs"
+    class="file-input file-input-bordered w-full max-w-md"
     accept="image/png, image/jpeg, image/gif, image/webp"
   />
   {#if uploading}
