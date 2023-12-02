@@ -2,18 +2,22 @@
   import AuthCheck from '$lib/components/AuthCheck.svelte';
   import PageView from '$lib/components/PageView.svelte';
   import ProfilePhotoEditor from '$lib/components/ProfilePhotoEditor.svelte';
-  import { db, profile, user } from '$lib/firebase';
+  import { db, user } from '$lib/firebase';
   import { emptyString } from '$lib/utils/string';
   import { doc, setDoc } from 'firebase/firestore';
+  import type { PageData } from './$types';
+  import { invalidateAll } from '$app/navigation';
 
-  $: profileName = $profile?.name;
+  export let data: PageData;
+
+  $: profileName = data.profile?.name ?? '';
   $: name = profileName ?? '';
-  $: disabled = !$profile || (!emptyString(profileName) && profileName === name);
-
-  $: uid = $user!.uid;
+  $: disabled = !data.profile || (!emptyString(profileName) && profileName === name);
+  $: uid = $user?.uid;
 
   async function confirmName() {
-    await setDoc(doc(db, 'profiles', $user!.uid), { name }, { merge: true });
+    await setDoc(doc(db, 'profiles', uid!), { name }, { merge: true });
+    await invalidateAll();
   }
 </script>
 
@@ -34,8 +38,14 @@
 
   <div class="max-w-screen-md w-full">
     <div class="form-control w-full max-w-xs my-4 mx-auto text-center">
-      <img src={$profile?.photo_url ?? '/user.png'} alt="photo_url" class="mx-auto w-full mb-4" />
-      <ProfilePhotoEditor {uid} />
+      <img
+        src={data.profile?.photo_url ?? '/user.png'}
+        alt="photo_url"
+        class="mx-auto w-full mb-4"
+      />
+      {#if uid}
+        <ProfilePhotoEditor {uid} />
+      {/if}
     </div>
   </div>
 

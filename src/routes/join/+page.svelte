@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { goto, invalidateAll } from '$app/navigation';
   import PageView from '$lib/components/PageView.svelte';
   import { auth, user } from '$lib/firebase';
   import { SUPPORTED_PROVIDER_IDS, type AuthProvider } from '$lib/models/profiles';
@@ -33,6 +33,7 @@
       });
       const body = await res.json();
       if (body.status === 'started') {
+        await invalidateAll();
         await goto('/join/handle');
       }
     };
@@ -41,6 +42,7 @@
   async function endSession() {
     const res = await fetch('/api/session', { method: 'DELETE' });
     await signOut(auth);
+    await invalidateAll();
   }
 </script>
 
