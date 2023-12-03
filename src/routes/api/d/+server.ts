@@ -5,6 +5,7 @@ import type { Profile, ProfileProps } from '$lib/models/profiles';
 import type { Membership, MembershipProps } from '$lib/models/memberships';
 import type { Organization, OrganizationProps } from '$lib/models/organizations';
 import { MEMBERSHIPS } from '$lib/models/firestore';
+import { getComparator, stableSort } from '$lib/utils/sorting';
 
 /**
  *
@@ -32,10 +33,13 @@ export const GET: RequestHandler = async ({ locals, setHeaders }) => {
 
   const refs = organizationIds.map((oid) => adminOrganizationRef().doc(oid));
   const orgDocs = refs.length ? await adminDB.getAll(...refs) : [];
-  const organizations: Organization[] = orgDocs.map((doc) => ({
-    id: doc.id,
-    ...(doc.data() as OrganizationProps)
-  }));
+  const organizations: Organization[] = stableSort(
+    orgDocs.map((doc) => ({
+      id: doc.id,
+      ...(doc.data() as OrganizationProps)
+    })),
+    getComparator('asc', 'name')
+  );
 
   setHeaders({
     'cache-control': 'max-age=60'

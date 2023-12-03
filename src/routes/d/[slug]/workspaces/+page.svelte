@@ -2,8 +2,8 @@
   import { page } from '$app/stores';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import PageView from '$lib/components/PageView.svelte';
-  import { getRoleName } from '$lib/models/roles';
   import type { PageData } from './$types';
+  import WorkspaceRow from './WorkspaceRow.svelte';
 
   export let data: PageData;
 
@@ -14,7 +14,7 @@
     const membership = data.memberships.find(
       (mem) => mem.organization_id === data.organization?.id
     );
-    return getRoleName(membership!.roles[wid]);
+    return membership!.roles[wid];
   }
 </script>
 
@@ -31,35 +31,31 @@
       </div>
     </div>
   </div>
-  <ul class="w-full gap-4 flex flex-col">
-    {#if orgWorkspace}
-      <li class="card bg-base-200">
-        <div class="card-body">
-          <h3 class="card-title">{orgWorkspace.name}</h3>
-          <p>{orgWorkspace.description}</p>
-        </div>
-        <div class="card-actions justify-end items-center">
-          <p class="flex-1 px-8">
-            {getMembershipRole(orgWorkspace.id)}
-          </p>
-          <a href="/d/{data.slug}/workspaces/{orgWorkspace.id}" class="btn btn-primary">View</a>
-        </div>
-      </li>
-    {/if}
-    {#if groupSpaces.length}
-      {#each groupSpaces as workspace}
-        <li class="card bg-base-200">
-          <div class="card-body">
-            <h3 class="card-title">{workspace.name}</h3>
-            <p>{workspace.description}</p>
-          </div>
-          <div class="card-actions justify-end">
-            <a href="/d/{data.slug}/workspaces/{workspace.id}" class="btn btn-primary">View</a>
-          </div>
-        </li>
-      {/each}
-    {/if}
-  </ul>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th class="w-full">Description</th>
+        <th>Access</th>
+        <th />
+      </tr>
+    </thead>
+    <tbody>
+      {#if orgWorkspace}
+        <WorkspaceRow
+          slug={data.slug}
+          workspace={orgWorkspace}
+          role={getMembershipRole(orgWorkspace.id)}
+        />
+      {/if}
+      {#if groupSpaces.length}
+        {#each groupSpaces as workspace}
+          <WorkspaceRow slug={data.slug} {workspace} role={getMembershipRole(workspace.id)} />
+        {/each}
+      {/if}
+    </tbody>
+  </table>
 </BasicSection>
 
 <div class="flex-1" />

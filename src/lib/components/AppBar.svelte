@@ -9,6 +9,7 @@
   import type { Inbox, InboxProps } from '$lib/models/inboxes';
   import DemarchyDLoader from './DemarchyDLoader.svelte';
 
+  export let organization: Organization | undefined;
   export let organizations: Organization[];
   export let profile: Profile;
   export let loading: boolean;
@@ -34,7 +35,11 @@
     <DemarchyDLoader {loading} />
   </a>
 
-  <div class="flex flex-1" />
+  <div class="flex flex-1">
+    {#if organization}
+      <h2>{organization.name}</h2>
+    {/if}
+  </div>
 
   <a href="/d/discussions" class="btn btn-square btn-ghost">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
