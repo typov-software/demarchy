@@ -18,7 +18,7 @@
     const searchParams = $page.url.searchParams;
     searchParams.set('sortBy', field);
     searchParams.set('direction', direction);
-    await goto(`${$page.url.pathname}?${searchParams.toString()}`);
+    await goto(`${$page.url.pathname}?${searchParams.toString()}`, { invalidateAll: true });
   }
 
   let workspacesPath = `/d/${$page.params.slug}/workspaces`;

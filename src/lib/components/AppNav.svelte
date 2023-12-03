@@ -1,11 +1,25 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import type { Organization } from '$lib/models/organizations';
+  import { useOrganization } from '$lib/stores/organization';
 
   export let organizations: Organization[] = [];
+  let organization = useOrganization();
 
   function closeDrawer() {
     const node = document.querySelector('[for="app-nav"].drawer-overlay');
     node?.dispatchEvent(new MouseEvent('click'));
+  }
+
+  async function loadOrganization(slug: string) {
+    closeDrawer();
+    organization.set(organizations.find((o) => o.slug === slug));
+    await goto(`/d/${slug}`, { invalidateAll: true });
+  }
+
+  function handleClickOrganization(slug: string) {
+    return () => loadOrganization(slug);
   }
 </script>
 
@@ -147,7 +161,14 @@
       <ul class="menu">
         {#each organizations as organization}
           <li>
-            <a href="/d/{organization.slug}" on:click={closeDrawer}>{organization.name}</a>
+            <a
+              href="/d/{organization.slug}"
+              on:click={handleClickOrganization(organization.slug)}
+              class:text-accent={$page.params.slug === organization.slug}
+              class:font-semibold={$page.params.slug === organization.slug}
+            >
+              {organization.name}
+            </a>
           </li>
         {/each}
       </ul>

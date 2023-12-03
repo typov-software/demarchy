@@ -37,6 +37,7 @@
         id="handle"
         name="handle"
         value={handle}
+        autocomplete="off"
         class="input input-bordered w-full"
         on:input={checkHandleAvailability}
         class:input-error={!isValid && isTouched}

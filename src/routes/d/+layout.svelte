@@ -5,6 +5,7 @@
   import { working } from '$lib/stores/working';
   import { derived, type Readable } from 'svelte/store';
   import type { PageData } from './$types';
+  import { useOrganization } from '$lib/stores/organization';
 
   export let data: PageData;
 
@@ -15,11 +16,18 @@
       set(false);
     }
   });
+
+  let organization = useOrganization();
 </script>
 
 <AuthCheck>
   <main class="flex flex-col h-full">
-    <AppBar organizations={data.organizations} profile={data.profile} loading={$loading} />
+    <AppBar
+      organization={$organization}
+      organizations={data.organizations}
+      profile={data.profile}
+      loading={$loading}
+    />
 
     <slot />
 
