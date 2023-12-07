@@ -4,15 +4,24 @@ import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import { derived, writable, type Readable } from 'svelte/store';
 import type { Profile } from './models/profiles';
+import {
+  PUBLIC_FB_API_KEY,
+  PUBLIC_FB_APP_ID,
+  PUBLIC_FB_AUTH_DOMAIN,
+  PUBLIC_FB_MEASUREMENT_ID,
+  PUBLIC_FB_MESSAGING_SENDER_ID,
+  PUBLIC_FB_PROJECT_ID,
+  PUBLIC_FB_STORAGE_BUCKET
+} from '$env/static/public';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCKo_Q3VhZDpYlHWd9__-yFpYdqTi6ZW9s',
-  authDomain: 'demarchy.app',
-  projectId: 'typov-demarchy',
-  storageBucket: 'typov-demarchy.appspot.com',
-  messagingSenderId: '298582394066',
-  appId: '1:298582394066:web:396a237c4f41c8553c190b',
-  measurementId: 'G-YCREJWHNRD'
+  apiKey: PUBLIC_FB_API_KEY,
+  authDomain: PUBLIC_FB_AUTH_DOMAIN,
+  projectId: PUBLIC_FB_PROJECT_ID,
+  storageBucket: PUBLIC_FB_STORAGE_BUCKET,
+  messagingSenderId: PUBLIC_FB_MESSAGING_SENDER_ID,
+  appId: PUBLIC_FB_APP_ID,
+  measurementId: PUBLIC_FB_MEASUREMENT_ID
 };
 
 // Initialize Firebase
