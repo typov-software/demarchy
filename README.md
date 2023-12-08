@@ -6,6 +6,18 @@ Demarchy is a democratic document editor for organizations and communities.
 
 At launch, you'll be able to join the official instance at [demarchy.app](https://demarchy.app/).
 
+## Values
+
+- Consensus over super and simple majorities
+- Transparency, accountability, and participation in group decisions
+- Prioritize protection of individual rights
+- Empower democratic process and representation
+
+### North Stars
+
+- hypothesis: high democratic participation depends on good ux
+- hypothesis: decisions reached through consensus prevents and heals group division
+
 ## Development
 
 Demarchy is built with [Firebase](https://firebase.google.com/) to provide a stable experience for as many as possible.
