@@ -14,6 +14,7 @@
   $: isTaken = isValid && !isAvailable && !loading;
   $: isChanged = initialValue !== handle;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function checkHandleAvailability(e: any) {
     handle = e.target.value.toLowerCase();
     isAvailable = false;

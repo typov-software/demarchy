@@ -15,6 +15,7 @@
 
   export let data: PageData;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const providers: Record<AuthProvider, any> = {
     'google.com': new GoogleAuthProvider(),
     'github.com': new GithubAuthProvider(),

@@ -17,15 +17,18 @@
   let pixelCrop: Crop;
   let uploading = false;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onFileSelected: ChangeEventHandler<HTMLInputElement> = (e: any) => {
     const imageFile = e.target.files[0];
     const reader = new FileReader();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     reader.onload = (onloadEvent: any) => {
       image = onloadEvent.target.result;
     };
     reader.readAsDataURL(imageFile);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const previewCrop = (e: any) => {
     pixelCrop = e.detail.pixels;
   };
