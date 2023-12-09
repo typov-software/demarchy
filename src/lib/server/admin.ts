@@ -13,7 +13,7 @@ import {
   PROFILES,
   SLUGS,
   VOUCHERS,
-  WORKSPACES
+  GROUPS
 } from '$lib/models/firestore';
 
 try {
@@ -62,12 +62,12 @@ export function adminOrganizationRef() {
   return adminDB.collection(ORGANIZATIONS);
 }
 
-export function adminWorkspaceRef(organization_id: string) {
-  return adminOrganizationRef().doc(organization_id).collection(WORKSPACES);
+export function adminGroupRef(organization_id: string) {
+  return adminOrganizationRef().doc(organization_id).collection(GROUPS);
 }
 
-export function adminMemberRef(organization_id: string, workspace_id: string) {
-  return adminWorkspaceRef(organization_id).doc(workspace_id).collection(MEMBERS);
+export function adminMemberRef(organization_id: string, group_id: string) {
+  return adminGroupRef(organization_id).doc(group_id).collection(MEMBERS);
 }
 
 export function adminInvitationRef(organization_id: string) {

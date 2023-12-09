@@ -2,7 +2,7 @@ import type { Block } from './blocks';
 import type { WithId } from './utils';
 
 export interface DocProps {
-  workspace_id: string;
+  group_id: string;
   library_id: string;
 
   draft: boolean;

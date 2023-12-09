@@ -12,7 +12,7 @@
 </script>
 
 <BasicSection>
-  <h2 class="text-xl">New workspace</h2>
+  <h2 class="text-xl">New group</h2>
   <form method="post" class="max-w-md w-full">
     <input type="hidden" name="organization_id" value={data.organization.id} />
     <input type="hidden" name="profileName" value={data.profile.name} />

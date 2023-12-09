@@ -29,7 +29,7 @@ export async function isOrgMemberOrHigher(oid: string, uid: string, info?: Membe
   return verifyRoles(oid, ['mem', 'mod', 'adm'], info);
 }
 
-export async function isWorkspaceObserverOrHigher(
+export async function isGroupObserverOrHigher(
   oid: string,
   wid: string,
   uid: string,
@@ -41,7 +41,7 @@ export async function isWorkspaceObserverOrHigher(
   return org && ws;
 }
 
-export async function isWorkspaceMemberOrHigher(
+export async function isGroupMemberOrHigher(
   oid: string,
   wid: string,
   uid: string,
@@ -53,12 +53,7 @@ export async function isWorkspaceMemberOrHigher(
   return org && ws;
 }
 
-export async function isWorkspaceAdmin(
-  oid: string,
-  wid: string,
-  uid: string,
-  info?: MembershipInfo
-) {
+export async function isGroupAdmin(oid: string, wid: string, uid: string, info?: MembershipInfo) {
   info = info ? info : await getMembershipInfo(oid, uid);
   const org = verifyRoles(oid, ['mem', 'mod', 'adm'], info);
   const ws = verifyRoles(wid, ['adm'], info);

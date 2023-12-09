@@ -1,4 +1,4 @@
-import { adminDB, adminMemberRef, adminMembershipRef, adminWorkspaceRef } from '$lib/server/admin';
+import { adminDB, adminMemberRef, adminMembershipRef, adminGroupRef } from '$lib/server/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import type { Actions } from './$types';
 import { redirect } from '@sveltejs/kit';
@@ -13,11 +13,11 @@ export const actions = {
     const profileName = formData.get('profileName') as string;
     const profileHandle = formData.get('profileHandle') as string;
 
-    const workspaceRef = adminWorkspaceRef(organization_id).doc();
+    const groupRef = adminGroupRef(organization_id).doc();
     const membershipRef = adminMembershipRef(organization_id).doc(uid);
-    const memberRef = adminMemberRef(organization_id, workspaceRef.id).doc(uid);
+    const memberRef = adminMemberRef(organization_id, groupRef.id).doc(uid);
     const batch = adminDB.batch();
-    batch.create(workspaceRef, {
+    batch.create(groupRef, {
       name,
       description,
       library_id: null,
@@ -31,7 +31,7 @@ export const actions = {
         uid,
         organization_id,
         roles: {
-          [workspaceRef.id]: 'mem'
+          [groupRef.id]: 'mem'
         },
         standing: 'ok'
       },
@@ -43,7 +43,7 @@ export const actions = {
       memberRef,
       {
         uid,
-        workspace_id: workspaceRef.id,
+        group_id: groupRef.id,
         organization_id,
         role: 'mem',
         joined_at: FieldValue.serverTimestamp(),
@@ -56,6 +56,6 @@ export const actions = {
     );
     await batch.commit();
 
-    throw redirect(301, `/d/${params.slug}/workspaces/${workspaceRef.id}`);
+    throw redirect(301, `/d/${params.slug}/groups/${groupRef.id}`);
   }
 } satisfies Actions;
