@@ -6,15 +6,15 @@
 
   export let data: PageData;
 
-  let workspacesPath = `/d/${$page.params.slug}/workspaces`;
-  let workspacePath = `${workspacesPath}/${data.workspace!.id}`;
-  let settingsPath = `${workspacePath}/settings`;
+  let groupsPath = `/d/${$page.params.slug}/groups`;
+  let groupPath = `${groupsPath}/${data.group!.id}`;
+  let settingsPath = `${groupPath}/settings`;
 </script>
 
 <div class="text-sm breadcrumbs self-start py-4 px-4">
   <ul>
-    <li><a href={workspacesPath}>Workspaces</a></li>
-    <li><a href={workspacePath}>{data.workspace?.name}</a></li>
+    <li><a href={groupsPath}>Groups</a></li>
+    <li><a href={groupPath}>{data.group?.name}</a></li>
     <li><a href={settingsPath}>Settings</a></li>
   </ul>
 </div>

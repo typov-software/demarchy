@@ -8,7 +8,7 @@ import {
   adminProfileRef,
   adminSlugRef,
   adminVoucherRef,
-  adminWorkspaceRef
+  adminGroupRef
 } from '$lib/server/admin';
 import type { Voucher, VoucherProps } from '$lib/models/vouchers';
 import type { MembershipProps } from '$lib/models/memberships';
@@ -64,19 +64,19 @@ export const actions = {
       },
       standing: 'ok'
     } as MembershipProps);
-    // Create the workspace associated with this organization
-    batch.set(adminWorkspaceRef(orgRef.id).doc(orgRef.id), {
+    // Create the group associated with this organization
+    batch.set(adminGroupRef(orgRef.id).doc(orgRef.id), {
       name,
-      description: 'Organization workspace',
+      description: 'Organization',
       library_id: null,
       organization_id: orgRef.id,
       created_at: FieldValue.serverTimestamp(),
       created_by: uid
     });
-    // Create the member document within the new workspace to record this user as member for all to see
+    // Create the member document within the new group to record this user as member for all to see
     batch.set(adminMemberRef(orgRef.id, orgRef.id).doc(uid), {
       uid,
-      workspace_id: orgRef.id,
+      group_id: orgRef.id,
       organization_id: orgRef.id,
       role: 'mem',
       joined_at: FieldValue.serverTimestamp(),

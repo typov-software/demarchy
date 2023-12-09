@@ -18,4 +18,4 @@ export const SETTINGS = 'settings';
 export const SLUGS = 'slugs';
 export const VOTES = 'votes';
 export const VOUCHERS = 'vouchers';
-export const WORKSPACES = 'workspaces';
+export const GROUPS = 'groups';

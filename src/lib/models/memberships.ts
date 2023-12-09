@@ -3,7 +3,7 @@ import type { WithId } from './utils';
 
 /**
  * The `id` for this document is a Firebase User id. This document is only
- * managed from an admin sdk context, as it reflects data controlled by workspace
+ * managed from an admin sdk context, as it reflects data controlled by group
  * members.
  */
 export interface MembershipProps {

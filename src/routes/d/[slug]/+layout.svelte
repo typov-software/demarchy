@@ -66,7 +66,7 @@
     <span>Activity</span>
   </a>
 
-  <a href="/d/{data.slug}/workspaces" class:active={$page.route.id?.match(/workspaces/g)}>
+  <a href="/d/{data.slug}/groups" class:active={$page.route.id?.match(/groups/g)}>
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clip-path="url(#clip0_176_189)">
         <path
@@ -80,7 +80,7 @@
         </clipPath>
       </defs>
     </svg>
-    <span>Workspaces</span>
+    <span>Groups</span>
   </a>
 </nav>
 

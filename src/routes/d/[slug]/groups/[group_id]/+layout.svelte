@@ -4,10 +4,10 @@
 
   export let data: LayoutData;
 
-  let workspacesPath = `/d/${$page.params.slug}/workspaces`;
-  let workspacePath = `${workspacesPath}/${data.workspace!.id}`;
-  let invitationsPath = `${workspacePath}/invitations`;
-  let settingsPath = `${workspacePath}/settings`;
+  let groupsPath = `/d/${$page.params.slug}/groups`;
+  let groupPath = `${groupsPath}/${data.group!.id}`;
+  let invitationsPath = `${groupPath}/invitations`;
+  let settingsPath = `${groupPath}/settings`;
 </script>
 
 <div class="flex flex-col sm:flex-row flex-1 h-full min-h-full w-full">

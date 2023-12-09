@@ -3,7 +3,7 @@ import type { WithId } from './utils';
 
 export interface InvitationProps {
   organization_id: string;
-  workspace_id: string;
+  group_id: string;
   user_id: string;
   handle: string;
   role: RoleAccess;

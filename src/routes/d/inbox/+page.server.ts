@@ -81,7 +81,7 @@ export const actions = {
       uid: profile.id,
       standing: 'ok',
       roles: {
-        [invitation.workspace_id]: invitation.role
+        [invitation.group_id]: invitation.role
       }
     };
     const memberProps: MemberProps = {
@@ -89,7 +89,7 @@ export const actions = {
       name: profile.name,
       handle: profile.handle,
       role: invitation.role,
-      workspace_id: invitation.workspace_id,
+      group_id: invitation.group_id,
       organization_id: invitation.organization_id,
       joined_at: new Date()
     };
@@ -99,7 +99,7 @@ export const actions = {
       merge: true
     });
     batch.set(
-      adminMemberRef(organization_id, invitation.workspace_id).doc(invitation.user_id),
+      adminMemberRef(organization_id, invitation.group_id).doc(invitation.user_id),
       {
         ...memberProps,
         joined_at: FieldValue.serverTimestamp()

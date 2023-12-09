@@ -1,13 +1,13 @@
-import { isWorkspaceObserverOrHigher } from '$lib/server/access';
+import { isGroupObserverOrHigher } from '$lib/server/access';
 import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
 export const load = (async ({ parent, params, locals }) => {
-  const { workspaces, organization, organization_memberships } = await parent();
+  const { groups, organization, organization_memberships } = await parent();
 
-  const allowed = await isWorkspaceObserverOrHigher(
+  const allowed = await isGroupObserverOrHigher(
     organization.id,
-    params.workspace_id,
+    params.group_id,
     locals.user_id!,
     organization_memberships
   );
@@ -17,6 +17,6 @@ export const load = (async ({ parent, params, locals }) => {
   }
 
   return {
-    workspace: workspaces.find((ws) => ws.id === params.workspace_id)
+    group: groups.find((ws) => ws.id === params.group_id)
   };
 }) satisfies LayoutServerLoad;

@@ -13,7 +13,7 @@ export const load = (async ({ locals, params, url, parent }) => {
     'asc') as OrderByDirection;
   const sortField = url.searchParams.get('sortBy') ?? 'name';
 
-  const wid = params.workspace_id;
+  const wid = params.group_id;
   const data = await parent();
   const snapshot = await adminMemberRef(data.organization!.id, wid)
     .orderBy(sortField, direction)

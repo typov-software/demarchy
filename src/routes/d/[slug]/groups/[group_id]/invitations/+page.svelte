@@ -21,7 +21,7 @@
   onMount(() => {
     const ref = query(
       collection(db, ORGANIZATIONS, data.organization!.id, INVITATIONS),
-      where('workspace_id', '==', $page.params.workspace_id)
+      where('group_id', '==', $page.params.group_id)
     );
     const unsubscribe = onSnapshot(ref, (snapshot) => {
       invitations = snapshot.docs.map((doc) => ({
@@ -70,22 +70,22 @@
     }, 500);
   }
 
-  let workspacesPath = `/d/${$page.params.slug}/workspaces`;
-  let workspacePath = `${workspacesPath}/${data.workspace!.id}`;
-  let invitationsPath = `${workspacePath}/invitations`;
+  let groupsPath = `/d/${$page.params.slug}/groups`;
+  let groupPath = `${groupsPath}/${data.group!.id}`;
+  let invitationsPath = `${groupPath}/invitations`;
 </script>
 
 <div class="text-sm breadcrumbs self-start py-4 px-4">
   <ul>
-    <li><a href={workspacesPath}>Workspaces</a></li>
-    <li><a href={workspacePath}>{data.workspace?.name}</a></li>
+    <li><a href={groupsPath}>Groups</a></li>
+    <li><a href={groupPath}>{data.group?.name}</a></li>
     <li><a href={invitationsPath}>Invitations</a></li>
   </ul>
 </div>
 
 <BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
-    <h2 class="flex text-lg">Invitations for {data.workspace?.name}</h2>
+    <h2 class="flex text-lg">Invitations for {data.group?.name}</h2>
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-ghost">Actions</div>
@@ -149,7 +149,7 @@
     class:modal-open={$page.url.searchParams.get('modal') === 'invite'}
   >
     <div class="modal-box">
-      <h3 class="text-lg mb-4">Invite someone to this workspace</h3>
+      <h3 class="text-lg mb-4">Invite someone to this group</h3>
       <form
         method="POST"
         action="?/invite"
@@ -162,7 +162,7 @@
         }}
       >
         <input type="hidden" name="organization_id" value={data.organization?.id} />
-        <input type="hidden" name="workspace_id" value={data.workspace?.id} />
+        <input type="hidden" name="group_id" value={data.group?.id} />
         <input type="hidden" name="user_id" bind:value={handleUserId} />
         <input type="hidden" name="role" value="mem" />
         <input type="hidden" name="created_by" value={$user?.uid} />
