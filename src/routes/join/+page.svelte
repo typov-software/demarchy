@@ -12,6 +12,7 @@
     signOut
   } from 'firebase/auth';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const providers: Record<AuthProvider, any> = {
     'google.com': new GoogleAuthProvider(),
     'github.com': new GithubAuthProvider(),
@@ -40,7 +41,7 @@
   }
 
   async function endSession() {
-    const res = await fetch('/api/session', { method: 'DELETE' });
+    await fetch('/api/session', { method: 'DELETE' });
     await signOut(auth);
     await invalidateAll();
   }

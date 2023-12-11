@@ -14,6 +14,7 @@
   } from 'firebase/auth';
   import { doc, getDoc } from 'firebase/firestore';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const providers: Record<AuthProvider, any> = {
     'google.com': new GoogleAuthProvider(),
     'github.com': new GithubAuthProvider(),
@@ -26,7 +27,7 @@
       const provider = providers[pid];
       const credential = await signInWithPopup(auth, provider);
       const idToken = await credential.user.getIdToken();
-      const res = await fetch('/api/session', {
+      await fetch('/api/session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -43,7 +44,7 @@
   }
 
   async function endSession() {
-    const res = await fetch('/api/session', { method: 'DELETE' });
+    await fetch('/api/session', { method: 'DELETE' });
     await signOut(auth);
   }
 </script>

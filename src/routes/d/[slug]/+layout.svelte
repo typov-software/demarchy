@@ -93,14 +93,25 @@
 
   nav a {
     @apply flex;
+    @apply items-center;
     @apply gap-x-1;
-    padding: 0.5rem 0.5rem;
-    margin-right: 0.2rem;
-    box-sizing: border-box;
+    @apply p-2;
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: transparent;
+    transition: border-bottom-color 150ms;
+
+    span {
+      @apply text-sm;
+    }
 
     &.active {
-      border-bottom: 2px solid oklch(var(--s));
-      font-weight: 600;
+      @apply font-bold;
+      border-bottom-color: oklch(var(--a));
+    }
+
+    &:hover {
+      border-bottom-color: oklch(var(--p));
     }
   }
 </style>
