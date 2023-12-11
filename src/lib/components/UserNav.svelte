@@ -18,7 +18,7 @@
   }
 
   async function endSession() {
-    const res = await fetch('/api/session', { method: 'DELETE' });
+    await fetch('/api/session', { method: 'DELETE' });
     await signOut(auth);
     await goto('/login');
   }

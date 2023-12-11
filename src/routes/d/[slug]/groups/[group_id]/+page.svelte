@@ -21,20 +21,20 @@
     await goto(`${$page.url.pathname}?${searchParams.toString()}`, { invalidateAll: true });
   }
 
-  let workspacesPath = `/d/${$page.params.slug}/workspaces`;
-  let workspacePath = `${workspacesPath}/${data.workspace!.id}`;
+  let groupsPath = `/d/${$page.params.slug}/groups`;
+  let groupPath = `${groupsPath}/${data.group!.id}`;
 </script>
 
 <div class="text-sm breadcrumbs self-start py-4 px-4">
   <ul>
-    <li><a href={workspacesPath}>Workspaces</a></li>
-    <li><a href={workspacePath}>{data.workspace?.name}</a></li>
+    <li><a href={groupsPath}>Groups</a></li>
+    <li><a href={groupPath}>{data.group?.name}</a></li>
   </ul>
 </div>
 
 <BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
-    <h2 class="flex text-lg">Access to {data.workspace?.name}</h2>
+    <h2 class="flex text-lg">Access to {data.group?.name}</h2>
 
     <div class="flex flex-1" />
 

@@ -2,7 +2,7 @@
   import { doc, getDoc } from 'firebase/firestore';
   import type { PageData } from './$types';
   import { db } from '$lib/firebase';
-  import { slugify, titleCase } from '$lib/utils/string';
+  import { slugify } from '$lib/utils/string';
   import AuthCheck from '$lib/components/AuthCheck.svelte';
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
   import PageView from '$lib/components/PageView.svelte';

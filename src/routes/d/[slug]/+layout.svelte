@@ -66,7 +66,7 @@
     <span>Activity</span>
   </a>
 
-  <a href="/d/{data.slug}/workspaces" class:active={$page.route.id?.match(/workspaces/g)}>
+  <a href="/d/{data.slug}/groups" class:active={$page.route.id?.match(/groups/g)}>
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clip-path="url(#clip0_176_189)">
         <path
@@ -80,7 +80,7 @@
         </clipPath>
       </defs>
     </svg>
-    <span>Workspaces</span>
+    <span>Groups</span>
   </a>
 </nav>
 
@@ -93,14 +93,25 @@
 
   nav a {
     @apply flex;
+    @apply items-center;
     @apply gap-x-1;
-    padding: 0.5rem 0.5rem;
-    margin-right: 0.2rem;
-    box-sizing: border-box;
+    @apply p-2;
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: transparent;
+    transition: border-bottom-color 150ms;
+
+    span {
+      @apply text-sm;
+    }
 
     &.active {
-      border-bottom: 2px solid oklch(var(--s));
-      font-weight: 600;
+      @apply font-bold;
+      border-bottom-color: oklch(var(--a));
+    }
+
+    &:hover {
+      border-bottom-color: oklch(var(--p));
     }
   }
 </style>

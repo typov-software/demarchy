@@ -100,14 +100,14 @@ service cloud.firestore {
         return verifyRoles(organizationId, ['mem', 'mod', 'adm'], getMembershipInfo());
       }
 
-      function isWorkspaceMemberOrHigher(id) {
+      function isGroupMemberOrHigher(id) {
         let info = getMembershipInfo();
         let org = verifyRoles(organizationId, ['mem', 'mod', 'adm'], info);
         let ws = verifyRoles(id, ['mem', 'mod', 'adm'], info);
         return org && (ws || ownsResource(id));
       }
 
-      function isWorkspaceAdmin(id) {
+      function isGroupAdmin(id) {
         let info = getMembershipInfo();
         let org = verifyRoles(organizationId, ['mem', 'mod', 'adm'], info);
         let ws = verifyRoles(id, ['adm'], info);
@@ -115,24 +115,24 @@ service cloud.firestore {
       }
 
       match /invitations/{invitationId} {
-        allow read: if ownsResource(resource.data.user_id) || isWorkspaceMemberOrHigher(resource.data.workspace_id);
-        allow create: if isWorkspaceMemberOrHigher(resource.data.workspace_id);
-        allow delete: if ownsResource(resource.data.created_by) || isWorkspaceAdmin(resource.data.workspace_id);
+        allow read: if ownsResource(resource.data.user_id) || isGroupMemberOrHigher(resource.data.group_id);
+        allow create: if isGroupMemberOrHigher(resource.data.group_id);
+        allow delete: if ownsResource(resource.data.created_by) || isGroupAdmin(resource.data.group_id);
       }
 
       match /memberships/{membershipId} {
         allow read: if ownsResource(membershipId) && canReadOrg();
       }
 
-      match /workspaces/{wid} {
+      match /groups/{wid} {
         allow read: if canReadOrg();
         allow create: if isOrgMemberOrHigher();
-        allow update: if isWorkspaceMemberOrHigher(wid); 
+        allow update: if isGroupMemberOrHigher(wid); 
 
         match /members/{memberId} {
           allow read: if canReadOrg();
           // admin only
-          allow write: if isWorkspaceAdmin(wid);
+          allow write: if isGroupAdmin(wid);
         }
 
         match /libraries/{libraryId} {
@@ -141,14 +141,14 @@ service cloud.firestore {
 
         match /docs/{docId} {
           allow read: if canReadOrg();
-          allow create: if isWorkspaceMemberOrHigher(wid);
-          allow update: if isWorkspaceMemberOrHigher(wid) && resource.data.draft;
+          allow create: if isGroupMemberOrHigher(wid);
+          allow update: if isGroupMemberOrHigher(wid) && resource.data.draft;
         }
 
         match /proposals/{proposalId} {
           allow read: if canReadOrg();
-          allow create: if isWorkspaceMemberOrHigher(wid);
-          allow update: if isWorkspaceMemberOrHigher(wid) && !resource.data.archived;
+          allow create: if isGroupMemberOrHigher(wid);
+          allow update: if isGroupMemberOrHigher(wid) && !resource.data.archived;
         }
 
         match /ballots/{ballotId} {
@@ -156,7 +156,7 @@ service cloud.firestore {
 
           match /votes/{voteId} {
             allow read: if ownsResource(voteId);
-            allow create: if isWorkspaceMemberOrHigher(wid) && ownsResource(voteId);
+            allow create: if isGroupMemberOrHigher(wid) && ownsResource(voteId);
           }
         }
 
@@ -165,12 +165,12 @@ service cloud.firestore {
 
           match /votes/{voteId} {
             allow read: if ownsResource(voteId);
-            allow create: if isWorkspaceMemberOrHigher(wid) && ownsResource(voteId);
+            allow create: if isGroupMemberOrHigher(wid) && ownsResource(voteId);
           }
         }
 
         match /activities/{activity_id} {
-          allow read: if isWorkspaceMemberOrHigher(wid);
+          allow read: if isGroupMemberOrHigher(wid);
         }
       }
     }

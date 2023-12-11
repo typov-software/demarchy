@@ -14,5 +14,5 @@ export type Notification<T = unknown> = NotificationProps<T> & WithId;
 export interface NotificationInvitationData {
   invitation_id: string;
   organization_id: string;
-  workspace_id: string;
+  group_id: string;
 }
