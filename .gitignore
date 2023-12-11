@@ -11,3 +11,4 @@ vite.config.ts.timestamp-*
 
 service-account.json
 .firebase
+storage-cors.json
