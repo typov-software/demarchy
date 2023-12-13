@@ -2,7 +2,7 @@
   import { doc, getDoc } from 'firebase/firestore';
   import type { PageData } from './$types';
   import { db } from '$lib/firebase';
-  import { slugify } from '$lib/utils/string';
+  import { checkValidSlug, slugify } from '$lib/utils/string';
   import AuthCheck from '$lib/components/AuthCheck.svelte';
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
   import PageView from '$lib/components/PageView.svelte';
@@ -17,9 +17,8 @@
   let isAvailable = false;
   let debounceTimer: NodeJS.Timeout;
 
-  const re = /^[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]$/;
   $: isValidName = name.length > 2 && name.length <= 32;
-  $: isValid = slug.length > 2 && slug.length <= 32 && re.test(slug);
+  $: isValid = checkValidSlug(slug);
   $: isTouched = slug.length > 0;
   $: isTaken = isValid && !isAvailable && !loading;
   $: selectedVoucher = voucher_id.length > 0;
