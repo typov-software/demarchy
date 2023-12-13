@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-test('index page has expected h1', async ({ page }) => {
+test('index page has expected auth buttons', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Demarchy' })).toBeVisible();
+  await expect(page.getByText('Join now')).toBeVisible();
+  await expect(page.getByText('Login')).toBeVisible();
 });
