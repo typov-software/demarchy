@@ -32,6 +32,7 @@ jobs:
           PUBLIC_FB_APP_ID: '${{ secrets.PUBLIC_FB_APP_ID }}'
           PUBLIC_FB_MEASUREMENT_ID: '${{ secrets.PUBLIC_FB_MEASUREMENT_ID }}'
   build_and_deploy:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
