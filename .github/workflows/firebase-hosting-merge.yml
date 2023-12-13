@@ -7,6 +7,30 @@ name: Deploy to Firebase Hosting on merge
     branches:
       - main
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install deps
+        run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: 'Run tests'
+        run: npm run test:ci
+        env:
+          FB_PROJECT_ID: '${{ secrets.FB_PROJECT_ID }}'
+          FB_CLIENT_EMAIL: '${{ secrets.FB_CLIENT_EMAIL }}'
+          FB_PRIVATE_KEY: '${{ secrets.FB_PRIVATE_KEY }}'
+          PUBLIC_FB_PROJECT_ID: '${{ secrets.PUBLIC_FB_PROJECT_ID }}'
+          PUBLIC_FB_API_KEY: '${{ secrets.PUBLIC_FB_API_KEY }}'
+          PUBLIC_FB_AUTH_DOMAIN: '${{ secrets.PUBLIC_FB_AUTH_DOMAIN }}'
+          PUBLIC_FB_STORAGE_BUCKET: '${{ secrets.PUBLIC_FB_STORAGE_BUCKET }}'
+          PUBLIC_FB_MESSAGING_SENDER_ID: '${{ secrets.PUBLIC_FB_MESSAGING_SENDER_ID }}'
+          PUBLIC_FB_APP_ID: '${{ secrets.PUBLIC_FB_APP_ID }}'
+          PUBLIC_FB_MEASUREMENT_ID: '${{ secrets.PUBLIC_FB_MEASUREMENT_ID }}'
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
