@@ -11,3 +11,14 @@ export function titleCase(str: string) {
 export function slugify(str: string) {
   return convert(str);
 }
+
+const SLUG_REGEXP = /^[a-z0-9][a-z0-9-]+[a-z0-9]$/;
+
+/**
+ * Tests whether a given string is a valid slug
+ * @param slug The string to test for validity
+ * @returns whether the string is valid or not
+ */
+export function checkValidSlug(slug: string): boolean {
+  return slug.length > 2 && slug.length <= 32 && SLUG_REGEXP.test(slug);
+}
