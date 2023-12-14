@@ -1,27 +1,16 @@
 <script lang="ts">
   import PageView from '$lib/components/PageView.svelte';
-  import {
-    GithubAuthProvider,
-    GoogleAuthProvider,
-    OAuthProvider,
-    linkWithPopup,
-    unlink
-  } from 'firebase/auth';
+  import { OAuthProvider, linkWithPopup, unlink } from 'firebase/auth';
   import type { PageData } from './$types';
   import { user } from '$lib/firebase';
   import type { AuthProvider } from '$lib/models/profiles';
   import { invalidateAll } from '$app/navigation';
   import BasicSection from '$lib/components/BasicSection.svelte';
+  import { getProviders } from '$lib/utils/client-auth';
 
   export let data: PageData;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const providers: Record<AuthProvider, any> = {
-    'google.com': new GoogleAuthProvider(),
-    'github.com': new GithubAuthProvider(),
-    'microsoft.com': new OAuthProvider('microsoft.com'),
-    'apple.com': new OAuthProvider('apple.com')
-  };
+  const providers = getProviders();
 
   function handleLink(pid: AuthProvider) {
     const provider = providers[pid];

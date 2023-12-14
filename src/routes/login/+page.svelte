@@ -4,23 +4,12 @@
   import PageView from '$lib/components/PageView.svelte';
   import { auth, db, profile, user } from '$lib/firebase';
   import { SUPPORTED_PROVIDER_IDS, type AuthProvider } from '$lib/models/profiles';
+  import { getProviders } from '$lib/utils/client-auth';
   import { titleCase } from '$lib/utils/string';
-  import {
-    GithubAuthProvider,
-    GoogleAuthProvider,
-    OAuthProvider,
-    signInWithPopup,
-    signOut
-  } from 'firebase/auth';
+  import { signInWithPopup, signOut } from 'firebase/auth';
   import { doc, getDoc } from 'firebase/firestore';
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const providers: Record<AuthProvider, any> = {
-    'google.com': new GoogleAuthProvider(),
-    'github.com': new GithubAuthProvider(),
-    'microsoft.com': new OAuthProvider('microsoft.com'),
-    'apple.com': new OAuthProvider('apple.com')
-  };
+  const providers = getProviders();
 
   function handleSignIn(pid: AuthProvider) {
     return async () => {
