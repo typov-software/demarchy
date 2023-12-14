@@ -1,5 +1,5 @@
 import { expect, describe, test } from 'vitest';
-import { verifyRoles, type MembershipInfo, canReadOrg } from './access';
+import { verifyRoles, type MembershipInfo, canReadOrg, isOrgMemberOrHigher } from './access';
 
 describe('access.ts', () => {
   const okMembership: MembershipInfo = {
@@ -19,7 +19,7 @@ describe('access.ts', () => {
   const improperAccessMembership: MembershipInfo = {
     standing: 'ok',
     roles: {
-      organization_id: 'mem',
+      organization_id: 'obs',
       group_id: 'obs'
     }
   };
@@ -46,9 +46,19 @@ describe('access.ts', () => {
     expect(verifyRoles('group_id', ['mem', 'mod', 'adm'], improperAccessMembership)).toBe(false);
   });
 
-  test('canReadOrg() returns where the user can read an org', async () => {
+  test('canReadOrg() returns whether the user can read an org', async () => {
     expect(await canReadOrg('organization_id', 'user_id', okMembership)).toBe(true);
+    expect(await canReadOrg('organization_id', 'user_id', improperAccessMembership)).toBe(true);
     expect(await canReadOrg('not_this_org', 'user_id', okMembership)).toBe(false);
     expect(await canReadOrg('organization_id', 'user_id', notOkMembership)).toBe(false);
+  });
+
+  test('isOrgMemberOrHigher() returns whether the user is a member or higher of an org', async () => {
+    expect(await isOrgMemberOrHigher('organization_id', 'user_id', okMembership)).toBe(true);
+    expect(await isOrgMemberOrHigher('organization_id', 'user_id', improperAccessMembership)).toBe(
+      false
+    );
+    expect(await isOrgMemberOrHigher('not_this_org', 'user_id', okMembership)).toBe(false);
+    expect(await isOrgMemberOrHigher('organization_id', 'user_id', notOkMembership)).toBe(false);
   });
 });

@@ -38,6 +38,13 @@ export async function canReadOrg(oid: string, uid: string, info?: MembershipInfo
   return verifyRoles(oid, ['obs', 'mem', 'mod', 'adm'], info);
 }
 
+/**
+ *
+ * @param oid Organization ID
+ * @param uid User ID
+ * @param info Membership access information derived from Membership document
+ * @returns Whether the user is a member or higher of an org
+ */
 export async function isOrgMemberOrHigher(oid: string, uid: string, info?: MembershipInfo) {
   info = info ? info : await getMembershipInfo(oid, uid);
   return verifyRoles(oid, ['mem', 'mod', 'adm'], info);
