@@ -39,7 +39,7 @@ export async function canReadOrg(oid: string, uid: string, info?: MembershipInfo
 }
 
 /**
- *
+ * Checks whether a user has access to an organization
  * @param oid Organization ID
  * @param uid User ID
  * @param info Membership access information derived from Membership document
@@ -50,16 +50,24 @@ export async function isOrgMemberOrHigher(oid: string, uid: string, info?: Membe
   return verifyRoles(oid, ['mem', 'mod', 'adm'], info);
 }
 
+/**
+ * Checks whether a user has access to a group
+ * @param oid Organization ID
+ * @param gid Group ID
+ * @param uid User ID
+ * @param info Membership access information derived from Membership document
+ * @returns Whether the user is a member or higher of a group
+ */
 export async function isGroupObserverOrHigher(
   oid: string,
-  wid: string,
+  gid: string,
   uid: string,
   info?: MembershipInfo
 ) {
   info = info ? info : await getMembershipInfo(oid, uid);
   const org = verifyRoles(oid, ['obs', 'mem', 'mod', 'adm'], info);
-  const ws = verifyRoles(wid, ['obs', 'mem', 'mod', 'adm'], info);
-  return org && ws;
+  const group = verifyRoles(gid, ['obs', 'mem', 'mod', 'adm'], info);
+  return org && group;
 }
 
 export async function isGroupMemberOrHigher(

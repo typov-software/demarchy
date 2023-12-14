@@ -1,5 +1,11 @@
 import { expect, describe, test } from 'vitest';
-import { verifyRoles, type MembershipInfo, canReadOrg, isOrgMemberOrHigher } from './access';
+import {
+  verifyRoles,
+  type MembershipInfo,
+  canReadOrg,
+  isOrgMemberOrHigher,
+  isGroupObserverOrHigher
+} from './access';
 
 describe('access.ts', () => {
   const okMembership: MembershipInfo = {
@@ -60,5 +66,32 @@ describe('access.ts', () => {
     );
     expect(await isOrgMemberOrHigher('not_this_org', 'user_id', okMembership)).toBe(false);
     expect(await isOrgMemberOrHigher('organization_id', 'user_id', notOkMembership)).toBe(false);
+  });
+
+  test('isGroupObserverOrHigher() returns whether the user is an observer or higher of a group', async () => {
+    expect(
+      await isGroupObserverOrHigher('organization_id', 'group_id', 'user_id', okMembership)
+    ).toBe(true);
+    expect(
+      await isGroupObserverOrHigher('organization_id', 'group_id_2', 'user_id', okMembership)
+    ).toBe(false);
+    expect(
+      await isGroupObserverOrHigher('organization_id', 'group_id', 'user_id', {
+        standing: 'ok',
+        roles: {
+          organization_id: 'mem',
+          group_id: 'obs'
+        }
+      })
+    ).toBe(true);
+    expect(
+      await isGroupObserverOrHigher('organization_id', 'group_id', 'user_id', {
+        standing: 'ok',
+        roles: {
+          organization_id_2: 'mem',
+          group_id: 'obs'
+        }
+      })
+    ).toBe(false);
   });
 });
