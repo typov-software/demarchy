@@ -1,6 +1,7 @@
 <script lang="ts">
   import { db } from '$lib/firebase';
   import { HANDLES } from '$lib/models/firestore';
+  import { checkValidHandle } from '$lib/utils/string';
   import { doc, getDoc } from 'firebase/firestore';
 
   export let initialValue: string;
@@ -8,8 +9,7 @@
   let loading = false;
   let isAvailable = false;
   let debounceTimer: NodeJS.Timeout;
-  const re = /^(?=[a-z0-9._]{3,33}$)(?!.*[_.]{2})[^_.].*[^_.]$/;
-  $: isValid = handle.length > 2 && handle.length <= 32 && re.test(handle);
+  $: isValid = checkValidHandle(handle);
   $: isTouched = handle.length > 0;
   $: isTaken = isValid && !isAvailable && !loading;
   $: isChanged = initialValue !== handle;

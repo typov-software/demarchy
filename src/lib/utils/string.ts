@@ -22,3 +22,14 @@ const SLUG_REGEXP = /^[a-z0-9][a-z0-9-]+[a-z0-9]$/;
 export function checkValidSlug(slug: string): boolean {
   return slug.length > 2 && slug.length <= 32 && SLUG_REGEXP.test(slug);
 }
+
+const HANDLE_REGEXP = /^(?=[a-z0-9._]{3,33}$)(?!.*[_.]{2})[^_.].*[^_.]$/;
+
+/**
+ * Tests whether a given string is a valid user handle
+ * @param handle The string to test for validity
+ * @returns Whether the string is valid or not
+ */
+export function checkValidHandle(handle: string): boolean {
+  return handle.length > 2 && handle.length <= 32 && HANDLE_REGEXP.test(handle);
+}
