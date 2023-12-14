@@ -15,8 +15,15 @@ export async function getMembershipInfo(oid: string, uid: string): Promise<Membe
   };
 }
 
-export function verifyRoles(wid: string, levels: RoleAccess[], info: MembershipInfo) {
-  return info.standing === 'ok' && levels.includes(info.roles[wid]);
+/**
+ * Checks the access level for a given user and group id
+ * @param gid Group ID
+ * @param levels Array of access levels needed for resource
+ * @param info Membership access information derived from Membership document
+ * @returns Whether the user has proper access
+ */
+export function verifyRoles(gid: string, levels: RoleAccess[], info: MembershipInfo) {
+  return info.standing === 'ok' && levels.includes(info.roles[gid]);
 }
 
 export async function canReadOrg(oid: string, uid: string, info?: MembershipInfo) {
