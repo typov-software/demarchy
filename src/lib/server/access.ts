@@ -90,6 +90,14 @@ export async function isGroupMemberOrHigher(
   return org && group;
 }
 
+/**
+ * Checks whether a user is an admin of a group
+ * @param oid Organization ID
+ * @param gid Group ID
+ * @param uid User ID
+ * @param info Membership access information derived from Membership document
+ * @returns Whether the user is an admin of a group
+ */
 export async function isGroupAdmin(oid: string, gid: string, uid: string, info?: MembershipInfo) {
   info = info ? info : await getMembershipInfo(oid, uid);
   const org = verifyRoles(oid, ['mem', 'mod', 'adm'], info);

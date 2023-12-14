@@ -5,7 +5,8 @@ import {
   canReadOrg,
   isOrgMemberOrHigher,
   isGroupObserverOrHigher,
-  isGroupMemberOrHigher
+  isGroupMemberOrHigher,
+  isGroupAdmin
 } from './access';
 
 describe('access.ts', () => {
@@ -128,6 +129,45 @@ describe('access.ts', () => {
           // This represents a state error where a user was an observer of an organization
           // and somehow became a member of a group.
           organization_id: 'obs',
+          group_id: 'mem'
+        }
+      })
+    ).toBe(false);
+  });
+
+  test('isGroupAdmin() returns whether the user is an admin of a group', async () => {
+    expect(
+      await isGroupAdmin('organization_id', 'group_id', 'user_id', {
+        standing: 'ok',
+        roles: {
+          organization_id: 'mem',
+          group_id: 'adm'
+        }
+      })
+    ).toBe(true);
+    expect(
+      await isGroupAdmin('organization_id', 'group_id', 'user_id', {
+        standing: 'ok',
+        roles: {
+          organization_id: 'mem',
+          group_id: 'mem'
+        }
+      })
+    ).toBe(false);
+    expect(
+      await isGroupAdmin('organization_id', 'group_id', 'user_id', {
+        standing: 'ok',
+        roles: {
+          organization_id: 'obs',
+          group_id: 'adm'
+        }
+      })
+    ).toBe(false);
+    expect(
+      await isGroupAdmin('organization_id', 'group_id', 'user_id', {
+        standing: 'ok',
+        roles: {
+          organization_id: 'adm',
           group_id: 'mem'
         }
       })
