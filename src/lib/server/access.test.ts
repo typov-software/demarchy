@@ -1,5 +1,5 @@
 import { expect, describe, test } from 'vitest';
-import { verifyRoles, type MembershipInfo } from './access';
+import { verifyRoles, type MembershipInfo, canReadOrg } from './access';
 
 describe('access.ts', () => {
   const okMembership: MembershipInfo = {
@@ -44,5 +44,11 @@ describe('access.ts', () => {
   test('verifyRoles() returns false for members with improper access', () => {
     expect(verifyRoles('group_id', ['mem'], improperAccessMembership)).toBe(false);
     expect(verifyRoles('group_id', ['mem', 'mod', 'adm'], improperAccessMembership)).toBe(false);
+  });
+
+  test('canReadOrg() returns where the user can read an org', async () => {
+    expect(await canReadOrg('organization_id', 'user_id', okMembership)).toBe(true);
+    expect(await canReadOrg('not_this_org', 'user_id', okMembership)).toBe(false);
+    expect(await canReadOrg('organization_id', 'user_id', notOkMembership)).toBe(false);
   });
 });

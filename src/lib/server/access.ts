@@ -26,6 +26,13 @@ export function verifyRoles(gid: string, levels: RoleAccess[], info: MembershipI
   return info.standing === 'ok' && levels.includes(info.roles[gid]);
 }
 
+/**
+ * Checks if a user can read and organization
+ * @param oid Organization ID
+ * @param uid User ID
+ * @param info Membership access information derived from Membership document
+ * @returns Whether the user can read an org
+ */
 export async function canReadOrg(oid: string, uid: string, info?: MembershipInfo) {
   info = info ? info : await getMembershipInfo(oid, uid);
   return verifyRoles(oid, ['obs', 'mem', 'mod', 'adm'], info);
