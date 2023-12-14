@@ -4,7 +4,8 @@ import {
   type MembershipInfo,
   canReadOrg,
   isOrgMemberOrHigher,
-  isGroupObserverOrHigher
+  isGroupObserverOrHigher,
+  isGroupMemberOrHigher
 } from './access';
 
 describe('access.ts', () => {
@@ -90,6 +91,44 @@ describe('access.ts', () => {
         roles: {
           organization_id_2: 'mem',
           group_id: 'obs'
+        }
+      })
+    ).toBe(false);
+  });
+
+  test('isGroupMemberOrHigher() returns whether the user is an observer or higher of a group', async () => {
+    expect(
+      await isGroupMemberOrHigher('organization_id', 'group_id', 'user_id', okMembership)
+    ).toBe(true);
+    expect(
+      await isGroupMemberOrHigher('organization_id', 'group_id_2', 'user_id', okMembership)
+    ).toBe(false);
+    expect(
+      await isGroupMemberOrHigher('organization_id', 'group_id', 'user_id', {
+        standing: 'ok',
+        roles: {
+          organization_id: 'mem',
+          group_id: 'obs'
+        }
+      })
+    ).toBe(false);
+    expect(
+      await isGroupMemberOrHigher('organization_id', 'group_id', 'user_id', {
+        standing: 'ok',
+        roles: {
+          organization_id: 'obs',
+          group_id: 'obs'
+        }
+      })
+    ).toBe(false);
+    expect(
+      await isGroupMemberOrHigher('organization_id', 'group_id', 'user_id', {
+        standing: 'ok',
+        roles: {
+          // This represents a state error where a user was an observer of an organization
+          // and somehow became a member of a group.
+          organization_id: 'obs',
+          group_id: 'mem'
         }
       })
     ).toBe(false);
