@@ -8,6 +8,7 @@
   import { enhance } from '$app/forms';
   import { working } from '$lib/stores/working';
   import { user } from '$lib/firebase';
+  import { titleCase } from '$lib/utils/string';
 
   export let data: PageData;
 
@@ -27,6 +28,7 @@
   let groupsPath = `/d/${$page.params.slug}/groups`;
   let groupPath = `${groupsPath}/${data.group!.id}`;
 
+  let context = data.group?.id === data.organization.id ? 'organization' : 'group';
   let numMembers = data.members.length ?? 0;
   let isOnlyMember = numMembers === 1 && data.members.at(0)?.id === $user?.uid;
 </script>
@@ -76,18 +78,14 @@
                 };
               }}
             >
-              <input
-                type="hidden"
-                name="context"
-                value={data.group?.id === data.organization.id ? 'organization' : 'group'}
-              />
+              <input type="hidden" name="context" value={context} />
               <input type="hidden" name="organization_id" value={data.organization.id} />
               <input type="hidden" name="group_id" value={data.group?.id} />
               <button
                 disabled={isOnlyMember}
                 class:cursor-not-allowed={isOnlyMember}
                 class:text-slate-500={isOnlyMember}
-                class="text-rose-500 w-full text-left">Leave Group</button
+                class="text-rose-500 w-full text-left">Leave {titleCase(context)}</button
               >
             </form>
           </li>
