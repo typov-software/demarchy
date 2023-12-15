@@ -5,6 +5,9 @@
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import BasicSection from '$lib/components/BasicSection.svelte';
+  import { enhance } from '$app/forms';
+  import { working } from '$lib/stores/working';
+  import { user } from '$lib/firebase';
 
   export let data: PageData;
 
@@ -23,6 +26,9 @@
 
   let groupsPath = `/d/${$page.params.slug}/groups`;
   let groupPath = `${groupsPath}/${data.group!.id}`;
+
+  let numMembers = data.members.length ?? 0;
+  let isOnlyMember = numMembers === 1 && data.members.at(0)?.id === $user?.uid;
 </script>
 
 <div class="text-sm breadcrumbs self-start py-4 px-4">
@@ -57,6 +63,34 @@
       <div class="dropdown-content z-[1] shadow bg-base-300">
         <ul class="menu p-0 w-60">
           <li><a href="{$page.url.pathname}/invitations?modal=invite">Invite someone</a></li>
+          <li>
+            <form
+              class="flex justify-start text-left"
+              method="post"
+              action="?/leaveGroup"
+              use:enhance={() => {
+                const jobId = working.add();
+                return async ({ update }) => {
+                  working.remove(jobId);
+                  update();
+                };
+              }}
+            >
+              <input
+                type="hidden"
+                name="context"
+                value={data.group?.id === data.organization.id ? 'organization' : 'group'}
+              />
+              <input type="hidden" name="organization_id" value={data.organization.id} />
+              <input type="hidden" name="group_id" value={data.group?.id} />
+              <button
+                disabled={isOnlyMember}
+                class:cursor-not-allowed={isOnlyMember}
+                class:text-slate-500={isOnlyMember}
+                class="text-rose-500 w-full text-left">Leave Group</button
+              >
+            </form>
+          </li>
         </ul>
       </div>
     </div>
