@@ -3,6 +3,7 @@ export const ACTIVITIES = 'activities';
 export const BALLOTS = 'ballots';
 export const CONFIGS = 'configs';
 export const DOCS = 'docs';
+export const FEEDBACK = 'feedback';
 export const HANDLES = 'handles';
 export const INBOXES = 'inboxes';
 export const INVITATIONS = 'invitations';
