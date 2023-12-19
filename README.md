@@ -54,6 +54,12 @@ npm install
 npm install -g firebase-tools # if deploying
 ```
 
+Install emulators (hit Enter):
+
+```
+firebase init emulators
+```
+
 Start local application with emulators:
 
 ```
