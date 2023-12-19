@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { doc, getFirestore, onSnapshot } from 'firebase/firestore';
-import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
-import { getStorage } from 'firebase/storage';
+import { doc, getFirestore, onSnapshot, connectFirestoreEmulator } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged, connectAuthEmulator, type User } from 'firebase/auth';
+import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import { derived, writable, type Readable } from 'svelte/store';
 import type { Profile } from './models/profiles';
 import {
@@ -29,6 +29,12 @@ export const app = initializeApp(firebaseConfig);
 export const db = getFirestore();
 export const auth = getAuth();
 export const storage = getStorage();
+
+if (import.meta.env.DEV) {
+  connectAuthEmulator(auth, 'http://localhost:9099');
+  connectFirestoreEmulator(db, 'localhost', 8080);
+  connectStorageEmulator(storage, 'localhost', 9199);
+}
 
 /**
  * @returns a store with the current firebase user
