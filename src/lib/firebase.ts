@@ -11,7 +11,8 @@ import {
   PUBLIC_FB_MEASUREMENT_ID,
   PUBLIC_FB_MESSAGING_SENDER_ID,
   PUBLIC_FB_PROJECT_ID,
-  PUBLIC_FB_STORAGE_BUCKET
+  PUBLIC_FB_STORAGE_BUCKET,
+  PUBLIC_USE_EMULATORS
 } from '$env/static/public';
 
 const firebaseConfig = {
@@ -30,7 +31,7 @@ export const db = getFirestore();
 export const auth = getAuth();
 export const storage = getStorage();
 
-if (import.meta.env.DEV) {
+if (import.meta.env.DEV && PUBLIC_USE_EMULATORS === 'YES') {
   console.warn('Dev environment detected');
   const { connectAuthEmulator } = await import('firebase/auth');
   const { connectFirestoreEmulator } = await import('firebase/firestore');
