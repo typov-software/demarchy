@@ -48,7 +48,7 @@ export default {
           secondary: '#0000FF',
           accent: '#FF00FF',
           neutral: '#FFFFFF',
-          'base-100': '#000000',
+          'base-100': '#090909',
           'base-200': '#141414',
           'base-300': '#262626',
           'base-content': '#d6d6d6'
