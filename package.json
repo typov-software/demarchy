@@ -1,7 +1,7 @@
 {
   "name": "demarchy",
   "version": "0.0.1",
-  "private": true,
+  "license": "MIT",
   "scripts": {
     "start": "firebase emulators:start --import=./emulator-data",
     "dev": "vite dev",
