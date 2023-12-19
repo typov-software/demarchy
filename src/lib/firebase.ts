@@ -31,6 +31,7 @@ export const auth = getAuth();
 export const storage = getStorage();
 
 if (import.meta.env.DEV) {
+  console.warn('Dev environment detected');
   const { connectAuthEmulator } = await import('firebase/auth');
   const { connectFirestoreEmulator } = await import('firebase/firestore');
   const { connectStorageEmulator } = await import('firebase/storage');
