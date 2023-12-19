@@ -31,6 +31,7 @@ jobs:
           PUBLIC_FB_MESSAGING_SENDER_ID: '${{ secrets.PUBLIC_FB_MESSAGING_SENDER_ID }}'
           PUBLIC_FB_APP_ID: '${{ secrets.PUBLIC_FB_APP_ID }}'
           PUBLIC_FB_MEASUREMENT_ID: '${{ secrets.PUBLIC_FB_MEASUREMENT_ID }}'
+          PUBLIC_USE_EMULATORS: 'NO'
   build_and_deploy:
     needs: test
     runs-on: ubuntu-latest
