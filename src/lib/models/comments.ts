@@ -14,6 +14,7 @@ export interface CommentProps {
   depth: number;
   user_id: string | null; // allow anonymous comments
   created_at: Date;
+  body: string;
 }
 
 export type Comment = CommentProps & WithId;
