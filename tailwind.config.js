@@ -1,6 +1,6 @@
 const sharedThemeOptions = {
-  '--rounded-box': '0', // border radius rounded-box utility class, used in card and other large boxes
-  '--rounded-btn': '0', // border radius rounded-btn utility class, used in buttons and similar element
+  '--rounded-box': '0rem', // border radius rounded-box utility class, used in card and other large boxes
+  '--rounded-btn': '0rem', // border radius rounded-btn utility class, used in buttons and similar element
   '--rounded-badge': '1.9rem', // border radius rounded-badge utility class, used in badges and similar
   '--animation-btn': '0.25s', // duration of animation when you click on button
   '--animation-input': '0.2s', // duration of animation for inputs like checkbox, toggle, radio, etc
@@ -8,10 +8,13 @@ const sharedThemeOptions = {
   '--border-btn': '1px', // border width of buttons
   '--tab-border': '1px', // border width of tabs
   '--tab-radius': '0.5rem', // border radius of tabs
-  info: '#0000ff',
-  success: '#00FF00',
-  warning: '#ffff00',
-  error: '#ff0000'
+  info: '#4f46e5',
+  success: '#22c55e',
+  warning: '#fbbf24',
+  error: '#ef4444',
+  primary: '#1d4ed8',
+  secondary: '#e11d48',
+  accent: '#f472b6'
 };
 
 /** @type {import('tailwindcss').Config} */
@@ -30,28 +33,22 @@ export default {
         light: {
           ...sharedThemeOptions,
           'color-scheme': 'light',
-          primary: '#0000FF',
-          secondary: '#FF0000',
-          accent: '#FF00FF',
-          neutral: '#000000',
-          'base-100': 'oklch(100% 0 0)',
-          'base-200': '#F2F2F2',
-          'base-300': '#E6E5E5',
-          'base-content': '#000000'
+          neutral: '#09090b',
+          'base-100': '#f4f4f5',
+          'base-200': '#e4e4e7',
+          'base-300': '#d4d4d8',
+          'base-content': '#09090b'
         }
       },
       {
         dark: {
           ...sharedThemeOptions,
           'color-scheme': 'dark',
-          primary: '#FF0000',
-          secondary: '#0000FF',
-          accent: '#FF00FF',
-          neutral: '#FFFFFF',
-          'base-100': '#090909',
-          'base-200': '#141414',
-          'base-300': '#262626',
-          'base-content': '#d6d6d6'
+          neutral: '#f4f4f5',
+          'base-100': '#09090b',
+          'base-200': '#18181b',
+          'base-300': '#27272a',
+          'base-content': '#f4f4f5'
         }
       }
     ]

@@ -2,7 +2,7 @@
   import PageView from '$lib/components/PageView.svelte';
 </script>
 
-<div class="hero min-h-screen bg-base-200">
+<div class="hero min-h-screen bg-base-100">
   <div class="hero-content text-center">
     <div class="max-w-md">
       <h1 title="Demarchy">

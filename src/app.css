@@ -24,11 +24,11 @@ body {
 }
 
 [data-theme='light'] .fill-icon {
-  fill: #000000;
+  fill: oklch(var(--bc));
 }
 
 [data-theme='dark'] .fill-icon {
-  fill: #ffffff;
+  fill: oklch(var(--bc));
 }
 
 .fill-primary {
