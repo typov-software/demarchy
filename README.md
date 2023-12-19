@@ -66,6 +66,14 @@ Start local application with emulators:
 npm start
 ```
 
+### Emulators
+
+Capture a new seed snapshot for emulators:
+
+```
+firebase emulators:export ./emulator-data
+```
+
 ## Building
 
 To create a production version of your app:
