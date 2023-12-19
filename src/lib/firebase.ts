@@ -11,7 +11,8 @@ import {
   PUBLIC_FB_MEASUREMENT_ID,
   PUBLIC_FB_MESSAGING_SENDER_ID,
   PUBLIC_FB_PROJECT_ID,
-  PUBLIC_FB_STORAGE_BUCKET
+  PUBLIC_FB_STORAGE_BUCKET,
+  PUBLIC_USE_EMULATORS
 } from '$env/static/public';
 
 const firebaseConfig = {
@@ -30,14 +31,27 @@ export const db = getFirestore();
 export const auth = getAuth();
 export const storage = getStorage();
 
+if (import.meta.env.DEV && PUBLIC_USE_EMULATORS === 'YES') {
+  console.warn('Dev environment detected');
+  const { connectAuthEmulator } = await import('firebase/auth');
+  const { connectFirestoreEmulator } = await import('firebase/firestore');
+  const { connectStorageEmulator } = await import('firebase/storage');
+  connectAuthEmulator(auth, 'http://localhost:9099');
+  connectFirestoreEmulator(db, 'localhost', 8080);
+  connectStorageEmulator(storage, 'localhost', 9199);
+}
+
 /**
  * @returns a store with the current firebase user
  */
 function userStore() {
   let unsubscribe: () => void;
 
+  if (!auth) {
+    console.warn('Auth is not initialized');
+  }
+
   if (!auth || !globalThis.window) {
-    console.warn('Auth is not initialized or not in browser');
     const { subscribe } = writable<User | null>(null);
     return {
       subscribe
