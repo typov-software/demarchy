@@ -3,6 +3,7 @@ import { adminGroupFeedbackRef } from '$lib/server/admin';
 import { FieldValue, type Timestamp } from 'firebase-admin/firestore';
 import type { PageServerLoad, Actions } from './$types';
 import { redirect } from '@sveltejs/kit';
+import { createEmptyReactions, createEmptyReenforcements } from '$lib/models/reactions';
 
 export const load = (async ({ parent }) => {
   const data = await parent();
@@ -11,6 +12,7 @@ export const load = (async ({ parent }) => {
   const snapshot = await feedbackRef.orderBy('created_at', 'desc').limit(20).get();
   const comments = snapshot.docs.map((doc) => ({
     id: doc.id,
+    path: doc.ref.path,
     ...(doc.data() as CommentProps),
     created_at: (doc.data().created_at as Timestamp).toDate()
   }));
@@ -30,12 +32,17 @@ export const actions = {
 
     const feedbackRef = adminGroupFeedbackRef(organizationId, groupId).doc();
     const commentProps: Omit<CommentProps, 'created_at'> = {
+      organization_id: organizationId,
+      group_id: groupId,
       context: 'feedback',
       context_id: feedbackRef.id,
       body,
       depth: 0,
       parent: null,
-      user_id: uid
+      user_id: uid,
+      seen: 0,
+      reaction_counts: createEmptyReactions(),
+      reenforcement_counts: createEmptyReenforcements()
     };
     await feedbackRef.set({
       ...commentProps,

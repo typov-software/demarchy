@@ -184,6 +184,10 @@ service cloud.firestore {
           allow read: if isGroupObsOrHigher(groupId);
           allow create: if isGroupMemberOrHigher(groupId);
           allow update: if isGroupMemberOrHigher(groupId) && ownsResource(resource.data.user_id);
+
+          match /reactions/{reactionId} {
+            allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+          }
         }
       }
     }

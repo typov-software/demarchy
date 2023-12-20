@@ -3,6 +3,8 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import BasicSection from '$lib/components/BasicSection.svelte';
+  import CommentCard from '$lib/components/CommentCard.svelte';
+  import { user } from '$lib/firebase';
   import { working } from '$lib/stores/working';
   import type { PageData } from './$types';
 
@@ -15,6 +17,8 @@
   let commentBody = '';
 
   $: isModalRoute = $page.url.searchParams.get('modal') === 'feedback';
+  let userId = $user!.uid;
+
   async function onCloseModal() {
     await goto($page.url.pathname);
   }
@@ -44,15 +48,8 @@
 
   <ul>
     {#each data.comments as comment}
-      <li class="card">
-        <div class="card-body">
-          <p>{comment.body}</p>
-          <div>
-            <small>
-              {comment.created_at}
-            </small>
-          </div>
-        </div>
+      <li>
+        <CommentCard {comment} {userId} context="feedback" contextId={comment.id} />
       </li>
     {/each}
   </ul>
