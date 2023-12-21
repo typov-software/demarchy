@@ -4,16 +4,16 @@
   import { page } from '$app/stores';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import CommentCard from '$lib/components/CommentCard.svelte';
+  import PageView from '$lib/components/PageView.svelte';
   import { user } from '$lib/firebase';
   import { working } from '$lib/stores/working';
+  import GroupBreadcrumbs from '../GroupBreadcrumbs.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
 
-  let groupsPath = `/d/${$page.params.slug}/groups`;
-  let groupPath = `${groupsPath}/${data.group!.id}`;
-  let feedbackPath = `${groupPath}/feedback`;
-
+  let group = data.group!;
+  let groups = data.groups.slice();
   let commentBody = '';
 
   $: isModalRoute = $page.url.searchParams.get('modal') === 'feedback';
@@ -24,13 +24,7 @@
   }
 </script>
 
-<div class="text-sm breadcrumbs self-start py-4 px-4">
-  <ul>
-    <li><a href={groupsPath}>Groups</a></li>
-    <li><a href={groupPath}>{data.group?.name}</a></li>
-    <li><a href={feedbackPath}>Feedback</a></li>
-  </ul>
-</div>
+<GroupBreadcrumbs {group} {groups} />
 
 <BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
@@ -53,7 +47,7 @@
     </div>
   </div>
 
-  <ul class="w-full">
+  <ul class="w-full flex flex-col gap-4">
     {#each data.comments as comment}
       <li class="w-full">
         <CommentCard {comment} {userId} context="feedback" contextId={comment.id} />
@@ -91,3 +85,6 @@
     </form>
   </dialog>
 </BasicSection>
+
+<div class="flex-1" />
+<PageView />

@@ -23,6 +23,7 @@
   let now = new Date();
   let working = false;
   let existingReaction: Reaction | null = null;
+  let isAnonymous = comment.user_id === null;
 
   const commentRef = doc(db, comment.path);
   const reactionRef = doc(
@@ -52,22 +53,24 @@
     batch.update(commentRef, {
       seen: increment(1)
     });
+    working = true;
     await batch.commit();
     existingReaction = {
       id: userId,
       ...reactionProps,
       created_at: new Date()
     };
+    working = false;
   }
 
   async function unmarkAsSeen() {
     const batch = writeBatch(db);
     batch.delete(reactionRef);
-    batch.update(commentRef, {
-      seen: increment(-1)
-    });
+    batch.update(commentRef, { seen: increment(-1) });
+    working = true;
     await batch.commit();
     existingReaction = null;
+    working = false;
   }
 
   async function onClickSeen() {
@@ -118,21 +121,34 @@
   }
 </script>
 
-<div class="card card-bordered w-full">
+<div class="card card-bordered w-full bg-base-200">
   <div class="card-body">
     <p>{comment.body}</p>
-    <small>
-      {formatRelative(comment.created_at, now)}
-    </small>
     <div class="card-actions flex flex-col pt-2">
-      <span class="flex items-center gap-2">
-        <button class="btn btn-sm btn-ghost btn-circle" on:click={onClickSeen}>
-          <span class="material-symbols-outlined text-xl">
-            {existingReaction ? 'visibility_off' : 'visibility'}
-          </span>
-        </button>
-        {comment.seen}
-      </span>
+      <div class="flex flex-row items-center w-full">
+        <span class="flex items-center gap-2 mr-2">
+          <button class="btn btn-sm btn-ghost btn-circle" on:click={onClickSeen}>
+            <span class="material-symbols-outlined text-xl">
+              {existingReaction ? 'visibility_off' : 'visibility'}
+            </span>
+          </button>
+          {comment.seen}
+        </span>
+        <div class="flex flex-1" />
+
+        <small>
+          by
+          {#if isAnonymous}
+            anonymous
+          {:else}
+            <a href={`/d/profiles/${comment.user_handle}`} class="link text-info">
+              @{comment.user_handle}
+            </a>
+          {/if}
+          {formatRelative(comment.created_at, now)}
+        </small>
+      </div>
+
       {#if existingReaction}
         <div class="flex flex-wrap gap-1">
           {#each reactionTypes as reactionType}

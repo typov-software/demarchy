@@ -12,8 +12,12 @@
   import BasicSection from '$lib/components/BasicSection.svelte';
   import { INVITATIONS, ORGANIZATIONS } from '$lib/models/firestore';
   import { working } from '$lib/stores/working';
+  import GroupBreadcrumbs from '../GroupBreadcrumbs.svelte';
+  import PageView from '$lib/components/PageView.svelte';
 
   export let data: PageData;
+  let group = data.group!;
+  let groups = data.groups.slice();
   $: uid = $user?.uid;
 
   let invitations: Invitation[] = [];
@@ -69,19 +73,9 @@
       loadingHandle = false;
     }, 500);
   }
-
-  let groupsPath = `/d/${$page.params.slug}/groups`;
-  let groupPath = `${groupsPath}/${data.group!.id}`;
-  let invitationsPath = `${groupPath}/invitations`;
 </script>
 
-<div class="text-sm breadcrumbs self-start py-4 px-4">
-  <ul>
-    <li><a href={groupsPath}>Groups</a></li>
-    <li><a href={groupPath}>{data.group?.name}</a></li>
-    <li><a href={invitationsPath}>Invitations</a></li>
-  </ul>
-</div>
+<GroupBreadcrumbs {group} {groups} />
 
 <BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
@@ -218,3 +212,6 @@
     </form>
   </dialog>
 </BasicSection>
+
+<div class="flex-1" />
+<PageView />

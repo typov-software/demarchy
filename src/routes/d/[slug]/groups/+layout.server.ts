@@ -2,6 +2,7 @@ import type { LayoutServerLoad } from './$types';
 import { adminGroupRef } from '$lib/server/admin';
 import type { Group, GroupProps } from '$lib/models/groups';
 import type { Timestamp } from 'firebase-admin/firestore';
+import { getComparator, stableSort } from '$lib/utils/sorting';
 
 export const load = (async ({ parent }) => {
   const { organization } = await parent();
@@ -13,7 +14,8 @@ export const load = (async ({ parent }) => {
     ...(doc.data() as GroupProps),
     created_at: (doc.data()!.created_at as Timestamp).toDate()
   }));
+
   return {
-    groups
+    groups: stableSort(groups, getComparator('asc', 'name'))
   };
 }) satisfies LayoutServerLoad;

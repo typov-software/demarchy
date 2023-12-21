@@ -8,8 +8,17 @@
   import { enhance } from '$app/forms';
   import { working } from '$lib/stores/working';
   import { user } from '$lib/firebase';
+  import GroupBreadcrumbs from './GroupBreadcrumbs.svelte';
+  import PageView from '$lib/components/PageView.svelte';
 
   export let data: PageData;
+
+  $: group = data.group!;
+  $: groups = data.groups.slice();
+  $: context = group.id === data.organization.id ? 'organization' : 'group';
+
+  let numMembers = data.members.length ?? 0;
+  let isOnlyMember = numMembers === 1 && data.members.at(0)?.id === $user?.uid;
 
   function onSort(field: string, direction: OrderByDirection) {
     return async () => {
@@ -23,21 +32,9 @@
     searchParams.set('direction', direction);
     await goto(`${$page.url.pathname}?${searchParams.toString()}`, { invalidateAll: true });
   }
-
-  let groupsPath = `/d/${$page.params.slug}/groups`;
-  let groupPath = `${groupsPath}/${data.group!.id}`;
-
-  let context = data.group?.id === data.organization.id ? 'organization' : 'group';
-  let numMembers = data.members.length ?? 0;
-  let isOnlyMember = numMembers === 1 && data.members.at(0)?.id === $user?.uid;
 </script>
 
-<div class="text-sm breadcrumbs self-start py-4 px-4">
-  <ul>
-    <li><a href={groupsPath}>Groups</a></li>
-    <li><a href={groupPath}>{data.group?.name}</a></li>
-  </ul>
-</div>
+<GroupBreadcrumbs {group} {groups} />
 
 <BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
@@ -127,3 +124,6 @@
     </tbody>
   </table>
 </BasicSection>
+
+<div class="flex-1" />
+<PageView />
