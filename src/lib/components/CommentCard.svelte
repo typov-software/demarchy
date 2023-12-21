@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { inview } from 'svelte-inview';
   import { formatRelative } from 'date-fns';
   import type { Comment, CommentContext } from '$lib/models/comments';
   import {
@@ -10,7 +11,15 @@
     type ReactionType
   } from '$lib/models/reactions';
   import { titleCase } from '$lib/utils/string';
-  import { doc, getDoc, increment, serverTimestamp, writeBatch } from 'firebase/firestore';
+  import {
+    Timestamp,
+    doc,
+    getDoc,
+    increment,
+    onSnapshot,
+    serverTimestamp,
+    writeBatch
+  } from 'firebase/firestore';
   import { db } from '$lib/firebase';
   import { onMount } from 'svelte';
 
@@ -18,12 +27,16 @@
   export let context: CommentContext;
   export let contextId: string;
   export let userId: string;
+  $: liveComment = {
+    ...comment
+  };
+  $: existingReaction = null as Reaction | null;
 
   const reactionTypes = Object.keys(REACTIONS) as ReactionType[];
   let now = new Date();
   let working = false;
-  let existingReaction: Reaction | null = null;
   let isAnonymous = comment.user_id === null;
+  let disposer: () => void;
 
   const commentRef = doc(db, comment.path);
   const reactionRef = doc(
@@ -37,6 +50,35 @@
     'reactions',
     userId
   );
+
+  onMount(() => {
+    return () => unsubscribe();
+  });
+
+  async function subscribe() {
+    console.log('subscribe');
+    disposer = onSnapshot(commentRef, (snapshot) => {
+      liveComment = {
+        ...liveComment,
+        ...snapshot.data(),
+        created_at: (snapshot.data()?.created_at as Timestamp).toDate()
+      };
+    });
+    const reactionDoc = await getDoc(reactionRef);
+    if (reactionDoc.exists()) {
+      existingReaction = {
+        id: reactionDoc.id,
+        ...(reactionDoc.data() as ReactionProps)
+      };
+    }
+  }
+
+  function unsubscribe() {
+    console.log('unsubscribe');
+    if (disposer) {
+      disposer();
+    }
+  }
 
   async function markAsSeen() {
     const reactionProps: Omit<ReactionProps, 'created_at'> = {
@@ -84,16 +126,6 @@
     working = false;
   }
 
-  onMount(async () => {
-    const reactionDoc = await getDoc(reactionRef);
-    if (reactionDoc.exists()) {
-      existingReaction = {
-        id: reactionDoc.id,
-        ...(reactionDoc.data() as ReactionProps)
-      };
-    }
-  });
-
   function handleClickReaction(reactionType: ReactionType) {
     return async () => {
       const batch = writeBatch(db);
@@ -121,9 +153,14 @@
   }
 </script>
 
-<div class="card card-bordered w-full bg-base-200">
+<div
+  class="card card-bordered w-full bg-base-200"
+  use:inview={{}}
+  on:inview_enter={() => subscribe()}
+  on:inview_leave={() => unsubscribe()}
+>
   <div class="card-body">
-    <p>{comment.body}</p>
+    <p>{liveComment.body}</p>
     <div class="card-actions flex flex-col pt-2">
       <div class="flex flex-row items-center w-full">
         <span class="flex items-center gap-2 mr-2">
@@ -132,7 +169,7 @@
               {existingReaction ? 'visibility_off' : 'visibility'}
             </span>
           </button>
-          {comment.seen}
+          {liveComment.seen}
         </span>
         <div class="flex flex-1" />
 
@@ -141,11 +178,11 @@
           {#if isAnonymous}
             anonymous
           {:else}
-            <a href={`/d/profiles/${comment.user_handle}`} class="link text-info">
-              @{comment.user_handle}
+            <a href={`/d/profiles/${liveComment.user_handle}`} class="link text-info">
+              @{liveComment.user_handle}
             </a>
           {/if}
-          {formatRelative(comment.created_at, now)}
+          {formatRelative(liveComment.created_at, now)}
         </small>
       </div>
 

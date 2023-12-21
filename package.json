@@ -49,6 +49,7 @@
     "firebase-admin": "^11.11.0",
     "lodash": "^4.17.21",
     "svelte-easy-crop": "^2.0.1",
+    "svelte-inview": "^4.0.2",
     "url-slug": "^4.0.1"
   }
 }
