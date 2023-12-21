@@ -107,7 +107,7 @@
   <table class="table">
     <thead>
       <tr>
-        <th>Handle</th>
+        <th class="w-full">Handle</th>
         <th>Role</th>
         <th>Status</th>
         <th />
@@ -120,29 +120,37 @@
           <td>{getRoleName(invitation.role)}</td>
           <td>{invitation.rejected ? 'Rejected' : 'Pending'}</td>
           <td>
-            <div class="flex">
-              <div class="flex-1" />
-              <form
-                method="POST"
-                action="?/uninvite"
-                use:enhance={() => {
-                  const jobId = working.add();
-                  return async ({ update }) => {
-                    working.remove(jobId);
-                    update();
-                  };
-                }}
-              >
-                <input type="hidden" name="organization_id" value={invitation.organization_id} />
-                <input type="hidden" name="invitation_id" value={invitation.id} />
-                <button
-                  type="submit"
-                  class="btn btn-sm btn-secondary"
-                  disabled={invitation.created_by !== uid}
-                >
-                  {invitation.rejected ? 'Remove' : 'Uninvite'}
-                </button>
-              </form>
+            <div class="dropdown dropdown-end">
+              <button tabindex="0" class="btn btn-sm btn-square btn-ghost rounded-xl">
+                <span class="material-symbols-outlined">more_vert</span>
+              </button>
+              <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+                <ul class="menu w-60">
+                  <li>
+                    <form
+                      method="POST"
+                      action="?/uninvite"
+                      use:enhance={() => {
+                        const jobId = working.add();
+                        return async ({ update }) => {
+                          working.remove(jobId);
+                          update();
+                        };
+                      }}
+                    >
+                      <input
+                        type="hidden"
+                        name="organization_id"
+                        value={invitation.organization_id}
+                      />
+                      <input type="hidden" name="invitation_id" value={invitation.id} />
+                      <button type="submit" disabled={invitation.created_by !== uid}>
+                        {invitation.rejected ? 'Remove' : 'Uninvite'}
+                      </button>
+                    </form>
+                  </li>
+                </ul>
+              </div>
             </div>
           </td>
         </tr>
