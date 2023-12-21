@@ -7,7 +7,7 @@
 </script>
 
 <BasicSection>
-  <ul class="w-full max-w-lg">
+  <ul class="w-full max-w-lg gap-4 flex flex-col">
     {#each data.vouchers as voucher}
       <li class="card bg-base-200">
         <div class="card-body">

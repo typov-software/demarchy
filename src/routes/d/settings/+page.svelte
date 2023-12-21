@@ -48,7 +48,7 @@
   <div class="flex flex-col w-full max-w-lg">
     <h2 class="font-bold">Connected Providers</h2>
     <p class="text-xs">Manage your linked providers</p>
-    <ul class="w-full mt-4">
+    <ul class="w-full mt-4 flex flex-col gap-4">
       {#each data.connected as provider}
         <li class="card bg-base-200">
           <div class="card-body">
@@ -73,7 +73,7 @@
     <div class="flex flex-col max-w-lg w-full">
       <h2 class="font-bold">Available Providers</h2>
       <p class="text-xs">Link third party providers to increase your login options</p>
-      <ul class="w-full mt-4">
+      <ul class="w-full mt-4 flex flex-col gap-4">
         {#each data.disconnected as provider}
           <li class="card bg-base-200">
             <div class="card-body">

@@ -27,8 +27,7 @@
 <div class="drawer drawer-end w-auto">
   <input id="user-nav" type="checkbox" class="drawer-toggle" />
   <div class="drawer-content">
-    <!-- Page content here -->
-    <label for="user-nav" class="drawer-button">
+    <label for="user-nav" class="drawer-button cursor-pointer" title="User Menu">
       {#if photo_url}
         <div class="avatar">
           <div class="rounded-full">
@@ -48,7 +47,7 @@
     <label for="user-nav" aria-label="close sidebar" class="drawer-overlay" />
 
     <div class="min-h-full bg-base-100 text-base-content flex flex-col">
-      <div class="flex flex-row items-center justify-between h-16 ml-3 mr-3">
+      <div class="flex flex-row items-center justify-between p-3">
         {#if photo_url}
           <div class="avatar">
             <div class="rounded-full">
@@ -67,113 +66,48 @@
           {name}
         </p>
 
-        <button class="btn btn-square btn-ghost" on:click={closeDrawer}>
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g clip-path="url(#clip0_66_373)">
-              <path
-                d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"
-                class="fill-icon"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_66_373">
-                <rect width="24" height="24" fill="white" />
-              </clipPath>
-            </defs>
-          </svg>
+        <button class="btn btn-square" on:click={closeDrawer}>
+          <span class="material-symbols-outlined">close</span>
         </button>
       </div>
 
       <ul class="menu">
         <li>
-          <a href="/d/profile" on:click={closeDrawer}>
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <g clip-path="url(#clip0_154_116)">
-                <path
-                  d="M12 12C14.21 12 16 10.21 16 8.00003C16 5.79003 14.21 4.00003 12 4.00003C9.79 4.00003 8 5.79003 8 8.00003C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
-                  class="fill-icon"
-                />
-              </g>
-              <defs>
-                <clipPath id="clip0_154_116">
-                  <rect width="24" height="24" fill="white" />
-                </clipPath>
-              </defs>
-            </svg>
+          <a href="/d/profile" on:click={closeDrawer} class="rounded-none" title="Your profile">
+            <span class="material-symbols-outlined">person</span>
             Your profile
           </a>
         </li>
         <li>
-          <a href="/d/vouchers" on:click={closeDrawer}>
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M15 20C12.7667 20 10.875 19.225 9.325 17.675C7.775 16.125 7 14.2333 7 12C7 9.76667 7.775 7.875 9.325 6.325C10.875 4.775 12.7667 4 15 4C17.2333 4 19.125 4.775 20.675 6.325C22.225 7.875 23 9.76667 23 12C23 14.2333 22.225 16.125 20.675 17.675C19.125 19.225 17.2333 20 15 20ZM7 19.75C5.23333 19.2833 3.79167 18.3333 2.675 16.9C1.55833 15.4667 1 13.8333 1 12C1 10.1667 1.55833 8.53333 2.675 7.1C3.79167 5.66667 5.23333 4.71667 7 4.25V6.35C5.8 6.76667 4.83333 7.49167 4.1 8.525C3.36667 9.55833 3 10.7167 3 12C3 13.2833 3.36667 14.4417 4.1 15.475C4.83333 16.5083 5.8 17.2333 7 17.65V19.75ZM15 18C16.6667 18 18.0833 17.4167 19.25 16.25C20.4167 15.0833 21 13.6667 21 12C21 10.3333 20.4167 8.91667 19.25 7.75C18.0833 6.58333 16.6667 6 15 6C13.3333 6 11.9167 6.58333 10.75 7.75C9.58333 8.91667 9 10.3333 9 12C9 13.6667 9.58333 15.0833 10.75 16.25C11.9167 17.4167 13.3333 18 15 18Z"
-                class="fill-icon"
-              />
-            </svg>
+          <a href="/d/vouchers" on:click={closeDrawer} class="rounded-none" title="Your vouchers">
+            <span class="material-symbols-outlined">toll</span>
             Your vouchers
           </a>
         </li>
         <li>
-          <a href="/d/settings" on:click={closeDrawer}>
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <g clip-path="url(#clip0_154_121)">
-                <path
-                  d="M3 17V19H9V17H3ZM3 5.00003V7.00003H13V5.00003H3ZM13 21V19H21V17H13V15H11V21H13ZM7 9.00003V11H3V13H7V15H9V9.00003H7ZM21 13V11H11V13H21ZM15 9.00003H17V7.00003H21V5.00003H17V3.00003H15V9.00003Z"
-                  class="fill-icon"
-                />
-              </g>
-              <defs>
-                <clipPath id="clip0_154_121">
-                  <rect width="24" height="24" fill="white" />
-                </clipPath>
-              </defs>
-            </svg>
-
+          <a href="/d/settings" on:click={closeDrawer} class="rounded-none" title="You settings">
+            <span class="material-symbols-outlined">tune</span>
             Your settings
           </a>
         </li>
-        <li>
-          <div class="theme-toggle flex flex-row">
+        <li class="rounded-none">
+          <label for="theme-toggle" class="theme-toggle flex flex-row rounded-none">
             <span role="img" class="sun">☀️</span>
             <input
+              id="theme-toggle"
               type="checkbox"
               class="toggle"
               checked={$theme === 'dark'}
               on:change={toggleTheme}
             />
             <span role="img" class="moon">🌘</span>
-          </div>
+          </label>
         </li>
       </ul>
       <div class="divider" />
       <ul class="menu">
         <li>
-          <button on:click={endSession}> Sign out </button>
+          <button on:click={endSession} class="rounded-none" title="Sign out">Sign out</button>
         </li>
       </ul>
     </div>

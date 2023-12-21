@@ -8,7 +8,6 @@
   import { enhance } from '$app/forms';
   import { working } from '$lib/stores/working';
   import { user } from '$lib/firebase';
-  import { titleCase } from '$lib/utils/string';
 
   export let data: PageData;
 
@@ -47,9 +46,11 @@
     <div class="flex flex-1" />
 
     <div class="dropdown dropdown-end mr-2">
-      <div tabindex="0" role="button" class="btn btn-ghost">Sort</div>
-      <div class="dropdown-content z-[1] shadow bg-base-300">
-        <ul class="menu p-0 w-60">
+      <div tabindex="0" role="button" class="btn btn-square btn-sm rounded-xl">
+        <span class="material-symbols-outlined">sort</span>
+      </div>
+      <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+        <ul class="menu w-40">
           <li><button on:click={onSort('name', 'asc')}>Name ASC</button></li>
           <li><button on:click={onSort('name', 'desc')}>Name DESC</button></li>
           <li><button on:click={onSort('handle', 'asc')}>Handle ASC</button></li>
@@ -61,10 +62,17 @@
     </div>
 
     <div class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="btn btn-ghost">Actions</div>
-      <div class="dropdown-content z-[1] shadow bg-base-300">
-        <ul class="menu p-0 w-60">
-          <li><a href="{$page.url.pathname}/invitations?modal=invite">Invite someone</a></li>
+      <div tabindex="0" role="button" class="btn btn-sm btn-square btn-primary rounded-xl">
+        <span class="material-symbols-outlined">more_vert</span>
+      </div>
+      <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+        <ul class="menu w-60">
+          <li>
+            <a href="{$page.url.pathname}/invitations?modal=invite" title="Invite someone">
+              <span class="material-symbols-outlined">person_add</span>
+              Invite someone
+            </a>
+          </li>
           <li>
             <form
               class="flex justify-start text-left"
@@ -81,11 +89,17 @@
               <input type="hidden" name="context" value={context} />
               <input type="hidden" name="organization_id" value={data.organization.id} />
               <input type="hidden" name="group_id" value={data.group?.id} />
+              <span class="material-symbols-outlined text-error" class:text-neutral={isOnlyMember}
+                >logout</span
+              >
               <button
                 disabled={isOnlyMember}
                 class:cursor-not-allowed={isOnlyMember}
-                class:text-slate-500={isOnlyMember}
-                class="text-rose-500 w-full text-left">Leave {titleCase(context)}</button
+                class:text-neutral={isOnlyMember}
+                class="text-error w-full text-left"
+                title={`Leave ${context}`}
+              >
+                Leave {context}</button
               >
             </form>
           </li>

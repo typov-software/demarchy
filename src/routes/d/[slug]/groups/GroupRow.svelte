@@ -8,10 +8,10 @@
   let allowed = ['obs', 'mem', 'mod', 'adm'].includes(role);
 </script>
 
-<tr>
+<tr class="hover">
   <td>
     {#if allowed}
-      <a href="/d/{slug}/groups/{group.id}" class="link link-hover text-primary">
+      <a href="/d/{slug}/groups/{group.id}" class="link link-hover">
         {group.name}
       </a>
     {:else}
@@ -26,9 +26,11 @@
   </td>
   <td>
     <div class="dropdown dropdown-end">
-      <button tabindex="0" class="btn btn-square btn-ghost" disabled={!allowed}>|</button>
-      <div class="dropdown-content z-[1] shadow bg-base-300">
-        <ul class="menu p-0 w-60">
+      <button tabindex="0" class="btn btn-sm btn-square btn-ghost rounded-xl" disabled={!allowed}>
+        <span class="material-symbols-outlined">more_vert</span>
+      </button>
+      <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+        <ul class="menu w-60">
           <li>
             <a href="/d/{slug}/groups/{group.id}">Members</a>
           </li>

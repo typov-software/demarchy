@@ -28,6 +28,7 @@ export const actions = {
     const formData = await request.formData();
     const organizationId = formData.get('organization_id') as string;
     const groupId = formData.get('group_id') as string;
+    const userHandle = formData.get('user_handle') as string;
     const body = formData.get('body') as string;
 
     const feedbackRef = adminGroupFeedbackRef(organizationId, groupId).doc();
@@ -40,9 +41,10 @@ export const actions = {
       depth: 0,
       parent: null,
       user_id: uid,
+      user_handle: userHandle,
       seen: 0,
-      reaction_counts: createEmptyReactions(),
-      reenforcement_counts: createEmptyReenforcements()
+      ...createEmptyReactions(),
+      ...createEmptyReenforcements()
     };
     await feedbackRef.set({
       ...commentProps,

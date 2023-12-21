@@ -3,6 +3,7 @@
   import type { Comment, CommentContext } from '$lib/models/comments';
   import {
     REACTIONS,
+    REENFORCEMENTS,
     REENFORCEMENT_TYPES,
     type Reaction,
     type ReactionProps,
@@ -20,7 +21,8 @@
 
   const reactionTypes = Object.keys(REACTIONS) as ReactionType[];
   let now = new Date();
-  let looking = false;
+  let working = false;
+  let existingReaction: Reaction | null = null;
 
   const commentRef = doc(db, comment.path);
   const reactionRef = doc(
@@ -51,6 +53,11 @@
       seen: increment(1)
     });
     await batch.commit();
+    existingReaction = {
+      id: userId,
+      ...reactionProps,
+      created_at: new Date()
+    };
   }
 
   async function unmarkAsSeen() {
@@ -60,22 +67,20 @@
       seen: increment(-1)
     });
     await batch.commit();
+    existingReaction = null;
   }
 
-  let working = false;
   async function onClickSeen() {
     if (working) return;
     working = true;
-    if (looking) {
+    if (existingReaction) {
       await unmarkAsSeen();
     } else {
       await markAsSeen();
     }
-    looking = !looking;
     working = false;
   }
 
-  let existingReaction: Reaction | null = null;
   onMount(async () => {
     const reactionDoc = await getDoc(reactionRef);
     if (reactionDoc.exists()) {
@@ -85,29 +90,77 @@
       };
     }
   });
+
+  function handleClickReaction(reactionType: ReactionType) {
+    return async () => {
+      const batch = writeBatch(db);
+      if (existingReaction?.reaction && existingReaction?.reaction === reactionType) {
+        // Removing reaction
+        console.log('unreacting');
+        batch.update(commentRef, { [existingReaction.reaction]: increment(-1) });
+        batch.update(reactionRef, { reaction: null });
+      } else if (existingReaction?.reaction) {
+        // Changing reaction
+        console.log('changing reaction');
+        batch.update(commentRef, {
+          [reactionType]: increment(1),
+          [existingReaction.reaction]: increment(-1)
+        });
+        batch.update(reactionRef, { reaction: reactionType });
+      } else {
+        // Adding reaction
+        console.log('adding reaction');
+        batch.update(commentRef, { [reactionType]: increment(1) });
+        batch.update(reactionRef, { reaction: reactionType });
+      }
+      await batch.commit();
+    };
+  }
 </script>
 
-<div class="card">
+<div class="card card-bordered w-full">
   <div class="card-body">
     <p>{comment.body}</p>
-    <div>
-      <small>
-        {formatRelative(comment.created_at, now)}
-      </small>
-    </div>
-    <div class="card-actions">
-      {#if looking || existingReaction}
-        <button on:click={onClickSeen}>Unsee</button>
-      {:else}
-        <button on:click={onClickSeen}>See</button>
-      {/if}
-      {#if looking || existingReaction}
-        {#each reactionTypes as reactionType}
-          <button>{REACTIONS[reactionType]}</button>
-        {/each}
-        {#each REENFORCEMENT_TYPES as reenforcementType}
-          <button>{titleCase(reenforcementType)}</button>
-        {/each}
+    <small>
+      {formatRelative(comment.created_at, now)}
+    </small>
+    <div class="card-actions flex flex-col pt-2">
+      <span class="flex items-center gap-2">
+        <button class="btn btn-sm btn-ghost btn-circle" on:click={onClickSeen}>
+          <span class="material-symbols-outlined text-xl">
+            {existingReaction ? 'visibility_off' : 'visibility'}
+          </span>
+        </button>
+        {comment.seen}
+      </span>
+      {#if existingReaction}
+        <div class="flex flex-wrap gap-1">
+          {#each reactionTypes as reactionType}
+            <button
+              title={titleCase(reactionType)}
+              class="btn btn-sm text-xl btn-ghost btn-circle"
+              on:click={handleClickReaction(reactionType)}
+            >
+              {REACTIONS[reactionType]}
+            </button>
+          {/each}
+        </div>
+        <div class="flex gap-1">
+          {#each REENFORCEMENT_TYPES as reenforcementType}
+            <button
+              title={titleCase(reenforcementType)}
+              class="btn btn-sm btn-circle btn-ghost"
+              class:text-error={reenforcementType === 'shun'}
+              class:text-warning={reenforcementType === 'demote'}
+              class:text-info={reenforcementType === 'promote'}
+              class:text-success={reenforcementType === 'endorse'}
+            >
+              <span class="material-symbols-outlined">
+                {REENFORCEMENTS[reenforcementType]}
+              </span>
+            </button>
+          {/each}
+        </div>
       {/if}
     </div>
   </div>

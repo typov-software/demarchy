@@ -17,20 +17,26 @@ export type ReactionType =
 
 export type ReenforcementType = 'endorse' | 'promote' | 'demote' | 'shun';
 export const REENFORCEMENT_TYPES: ReenforcementType[] = ['endorse', 'promote', 'demote', 'shun'];
+export const REENFORCEMENTS: Record<ReenforcementType, string> = Object.freeze({
+  endorse: 'stars',
+  promote: 'thumb_up',
+  demote: 'thumb_down',
+  shun: 'crisis_alert'
+});
 
 export const REACTIONS: Record<ReactionType, string> = Object.freeze({
-  joy: '😄',
-  sadness: '😢',
-  disappointment: '😞',
-  anger: '😡',
-  frustration: '😖',
-  confusion: '😕',
-  fear: '😨',
-  disgust: '🤢',
   love: '😍',
+  joy: '😄',
   laughter: '😂',
   gratitude: '🤗',
-  sarcasm: '😉'
+  sarcasm: '😉',
+  confusion: '😕',
+  disappointment: '😞',
+  sadness: '😢',
+  fear: '😨',
+  frustration: '😖',
+  anger: '😡',
+  disgust: '🤢'
 });
 
 export function createEmptyReactions() {

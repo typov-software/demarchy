@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let width = 300;
+  export let width: string | number = 300;
 </script>
 
 <a href="/" title="Demarchy">

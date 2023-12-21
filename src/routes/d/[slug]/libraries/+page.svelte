@@ -6,7 +6,7 @@
 
 <BasicSection otherClass="!items-start">
   <div class="flex flex-row w-full items-center">
-    <h2>Proposals</h2>
+    <h2>Libraries</h2>
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-sm btn-square btn-primary rounded-xl">
@@ -15,9 +15,9 @@
       <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
         <ul class="menu w-60">
           <li>
-            <a href="{$page.url.pathname}/new">
+            <a href="{$page.url.pathname}/documents/new">
               <span class="material-symbols-outlined">add</span>
-              Create a proposal
+              Create a document
             </a>
           </li>
         </ul>

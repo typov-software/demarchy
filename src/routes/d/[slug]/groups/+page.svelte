@@ -20,13 +20,20 @@
 
 <BasicSection>
   <div class="flex flex-row w-full items-center">
-    <h2 class="flex text-lg">Groups for {data.organization?.name}</h2>
+    <h2>{data.organization?.name} groups</h2>
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="btn btn-ghost">Actions</div>
-      <div class="dropdown-content z-[1] shadow bg-base-300">
-        <ul class="menu p-0 w-60">
-          <li><a href="{$page.url.pathname}/new">Create a new Group</a></li>
+      <div tabindex="0" role="button" class="btn btn-sm btn-square btn-primary rounded-xl">
+        <span class="material-symbols-outlined">more_vert</span>
+      </div>
+      <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+        <ul class="menu w-60">
+          <li>
+            <a href="{$page.url.pathname}/new">
+              <span class="material-symbols-outlined">add</span>
+              Create a new Group
+            </a>
+          </li>
         </ul>
       </div>
     </div>

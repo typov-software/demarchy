@@ -37,18 +37,25 @@
     <h2 class="flex text-lg">Feedback for {data.group?.name}</h2>
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="btn btn-ghost">Actions</div>
-      <div class="dropdown-content z-[1] shadow bg-base-300">
-        <ul class="menu p-0 w-60">
-          <li><a href="{$page.url.pathname}?modal=feedback">Add Feedback</a></li>
+      <div tabindex="0" role="button" class="btn btn-square btn-sm btn-primary rounded-xl">
+        <span class="material-symbols-outlined">more_vert</span>
+      </div>
+      <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+        <ul class="menu w-60">
+          <li>
+            <a href="{$page.url.pathname}?modal=feedback" title="Add feedback">
+              <span class="material-symbols-outlined">add_comment</span>
+              Add feedback
+            </a>
+          </li>
         </ul>
       </div>
     </div>
   </div>
 
-  <ul>
+  <ul class="w-full">
     {#each data.comments as comment}
-      <li>
+      <li class="w-full">
         <CommentCard {comment} {userId} context="feedback" contextId={comment.id} />
       </li>
     {/each}
@@ -70,6 +77,7 @@
       >
         <input type="hidden" name="organization_id" value={data.organization?.id} />
         <input type="hidden" name="group_id" value={data.group?.id} />
+        <input type="hidden" name="user_handle" value={data.profile.handle} />
 
         <div class="flex flex-col gap-4">
           <textarea name="body" id="body" bind:value={commentBody}></textarea>

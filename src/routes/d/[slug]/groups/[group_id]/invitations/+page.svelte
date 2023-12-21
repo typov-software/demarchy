@@ -88,10 +88,17 @@
     <h2 class="flex text-lg">Invitations for {data.group?.name}</h2>
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="btn btn-ghost">Actions</div>
-      <div class="dropdown-content z-[1] shadow bg-base-300">
-        <ul class="menu p-0 w-60">
-          <li><a href="{$page.url.pathname}?modal=invite">Invite someone</a></li>
+      <div tabindex="0" role="button" class="btn btn-square btn-sm btn-primary rounded-xl">
+        <span class="material-symbols-outlined">more_vert</span>
+      </div>
+      <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+        <ul class="menu w-60">
+          <li>
+            <a href="{$page.url.pathname}?modal=invite" title="Invite someone">
+              <span class="material-symbols-outlined">person_add</span>
+              Invite someone
+            </a>
+          </li>
         </ul>
       </div>
     </div>
