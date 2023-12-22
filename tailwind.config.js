@@ -44,7 +44,7 @@ export default {
         dark: {
           ...sharedThemeOptions,
           'color-scheme': 'dark',
-          neutral: '#3f3f46',
+          neutral: '#a1a1aa',
           'base-100': '#09090b',
           'base-200': '#18181b',
           'base-300': '#27272a',

@@ -30,13 +30,13 @@
     <label for="user-nav" class="drawer-button cursor-pointer" title="User Menu">
       {#if photo_url}
         <div class="avatar">
-          <div class="rounded-full">
+          <div class="rounded-xl">
             <img src={photo_url} alt={name} />
           </div>
         </div>
       {:else}
         <div class="avatar placeholder">
-          <div class="rounded-full bg-neutral text-neutral-content">
+          <div class="rounded-xl bg-neutral text-neutral-content">
             <span>{initials}</span>
           </div>
         </div>
@@ -50,13 +50,13 @@
       <div class="flex flex-row items-center justify-between p-3">
         {#if photo_url}
           <div class="avatar">
-            <div class="rounded-full">
+            <div>
               <img src={photo_url} alt={name} />
             </div>
           </div>
         {:else}
           <div class="avatar placeholder">
-            <div class="rounded-full bg-neutral text-neutral-content">
+            <div class="bg-neutral text-neutral-content">
               <span>{initials}</span>
             </div>
           </div>
@@ -85,7 +85,7 @@
           </a>
         </li>
         <li>
-          <a href="/d/settings" on:click={closeDrawer} class="rounded-none" title="You settings">
+          <a href="/d/settings" on:click={closeDrawer} class="rounded-none" title="Your settings">
             <span class="material-symbols-outlined">tune</span>
             Your settings
           </a>
@@ -101,13 +101,17 @@
               on:change={toggleTheme}
             />
             <span role="img" class="moon">🌘</span>
+            Theme
           </label>
         </li>
       </ul>
       <div class="divider" />
       <ul class="menu">
         <li>
-          <button on:click={endSession} class="rounded-none" title="Sign out">Sign out</button>
+          <button on:click={endSession} class="rounded-none" title="Sign out">
+            <span class="material-symbols-outlined">logout</span>
+            Sign out
+          </button>
         </li>
       </ul>
     </div>
@@ -116,11 +120,12 @@
 
 <style lang="scss">
   .avatar {
-    top: 0.2rem;
+    @apply top-1;
+    width: 48px;
+    height: 48px;
   }
-  .avatar .rounded-full {
-    width: 40px;
-    height: 40px;
+  .avatar > div {
+    @apply rounded-full;
   }
 
   .drawer-side > div {

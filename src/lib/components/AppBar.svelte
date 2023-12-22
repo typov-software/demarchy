@@ -2,7 +2,6 @@
   import type { Organization } from '$lib/models/organizations';
   import type { Profile } from '$lib/models/profiles';
   import { onMount } from 'svelte';
-  import AppNav from './AppNav.svelte';
   import UserNav from './UserNav.svelte';
   import { doc, onSnapshot } from 'firebase/firestore';
   import { db, user } from '$lib/firebase';
@@ -29,23 +28,39 @@
 </script>
 
 <header class="flex flex-row items-center z-50 p-3 gap-2">
-  <AppNav {organizations} />
-
   <a href="/d" title="Dashboard">
     <DemarchyDLoader {loading} />
   </a>
 
   <div class="flex flex-1">
-    {#if organization}
-      <h2>{organization.name}</h2>
+    {#if organizations.length}
+      <div class="dropdown dropdown-bottom dropdown-hover">
+        {#if organization}
+          <div role="button" class="btn btn-sm rounded-xl">{organization.name}</div>
+        {:else}
+          <div role="button" class="text-warning btn-sm btn rounded-xl">Select organization</div>
+        {/if}
+
+        <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box -left-4">
+          {#each organizations as org}
+            <li>
+              <a href={'/d/' + org.slug} title={org.name}>{org.name}</a>
+            </li>
+          {/each}
+        </ul>
+      </div>
+    {:else}
+      <a href="/d/organizations/new" class="btn btn-primary btn-sm rounded-xl"
+        >Create organization</a
+      >
     {/if}
   </div>
 
-  <a href="/d/discussions" class="btn btn-square" title="Discussions">
+  <a href="/d/discussions" class="btn btn-square" title="Your Discussions">
     <span class="material-symbols-outlined">forum</span>
   </a>
 
-  <a href="/d/proposals" class="btn btn-square" title="Proposals">
+  <a href="/d/proposals" class="btn btn-square" title="Your Proposals">
     <span class="material-symbols-outlined">history_edu</span>
   </a>
 

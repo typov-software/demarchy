@@ -31,8 +31,8 @@
 
     <slot />
 
-    <footer class="flex md:flex-row flex-col justify-around items-center py-8">
-      <div class="flex flex-row items-center">
+    <footer class="footer flex md:flex-row flex-col justify-around items-center py-8 text-neutral">
+      <aside class="flex flex-row items-center">
         <DemarchyLogo width={127} />
         <p class="text-sm ml-2 mt-1">
           &copy; 2023
@@ -45,28 +45,15 @@
             Typov LLC
           </a>
         </p>
-      </div>
-
-      <ul class="flex flex-row flex-wrap justify-center gap-x-2 text-sm text-primary">
-        <li>
-          <a href="/terms" class="link-hover">Terms</a>
-        </li>
-        <li>
-          <a href="/privacy" class="link-hover">Privacy</a>
-        </li>
-        <li>
-          <a href="/security" class="link-hover">Security</a>
-        </li>
-        <li>
-          <a href="/documentation" class="link-hover">Documentation</a>
-        </li>
-        <li>
-          <a href="/pricing" class="link-hover">Pricing</a>
-        </li>
-        <li>
-          <a href="/about" class="link-hover">About</a>
-        </li>
-      </ul>
+      </aside>
+      <nav class="flex flex-row flex-wrap items-center justify-center gap-x-2 text-sm mt-1">
+        <a href="/terms" title="Terms" class="link-hover">Terms</a>
+        <a href="/privacy" title="Privacy" class="link-hover">Privacy</a>
+        <a href="/security" title="Security" class="link-hover">Security</a>
+        <a href="/documentation" title="Documentation" class="link-hover">Documentation</a>
+        <a href="/pricing" title="Pricing" class="link-hover">Pricing</a>
+        <a href="/about" title="About" class="link-hover">About</a>
+      </nav>
     </footer>
   </main>
 </AuthCheck>
@@ -77,5 +64,10 @@
   }
   footer {
     border-top: 1px solid oklch(var(--b2));
+
+    a:hover {
+      @apply text-base-content;
+      @apply transition-all;
+    }
   }
 </style>

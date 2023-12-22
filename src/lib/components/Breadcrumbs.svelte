@@ -89,7 +89,7 @@
           <span class="material-symbols-outlined mr-2">{crumbConfig.symbol}</span>
           {titleCase(orgPart ?? '')}
         </a>
-        <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
+        <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box -left-4">
           {#each Object.keys(config) as key}
             <li>
               <a href={config[key].path} title={titleCase(key)}>
@@ -107,7 +107,7 @@
         <div tabindex="0" role="button" class="flex items-center">
           {groupName}
         </div>
-        <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
+        <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
           {#each groups as g}
             <li>
               <a href={groupsPath + '/' + g.id + (subPart ? `/${subPart}` : '')} title={g.name}>
@@ -126,7 +126,7 @@
             </span>
             {titleCase(subPart)}
           </div>
-          <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
+          <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
             {#each Object.keys(crumbConfig.subroutes) as route}
               <li>
                 <a href={crumbConfig.subroutes[route].path} title={titleCase(route)}>
