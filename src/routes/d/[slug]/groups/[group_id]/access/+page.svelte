@@ -8,8 +8,8 @@
   import { enhance } from '$app/forms';
   import { working } from '$lib/stores/working';
   import { user } from '$lib/firebase';
-  import GroupBreadcrumbs from './GroupBreadcrumbs.svelte';
   import PageView from '$lib/components/PageView.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 
   export let data: PageData;
 
@@ -34,11 +34,9 @@
   }
 </script>
 
-<GroupBreadcrumbs {group} {groups} />
-
 <BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
-    <h2 class="flex text-lg">Access to {data.group?.name}</h2>
+    <Breadcrumbs {group} {groups} />
 
     <div class="flex flex-1" />
 
@@ -65,7 +63,10 @@
       <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
         <ul class="menu w-60">
           <li>
-            <a href="{$page.url.pathname}/invitations?modal=invite" title="Invite someone">
+            <a
+              href="{$page.url.pathname.replace('access', 'invitations')}?modal=invite"
+              title="Invite someone"
+            >
               <span class="material-symbols-outlined">person_add</span>
               Invite someone
             </a>

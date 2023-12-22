@@ -36,7 +36,7 @@
   let now = new Date();
   let working = false;
   let isAnonymous = comment.user_id === null;
-  let disposer: () => void;
+  let unsubscribe: () => void;
 
   const commentRef = doc(db, comment.path);
   const reactionRef = doc(
@@ -52,12 +52,11 @@
   );
 
   onMount(() => {
-    return () => unsubscribe();
+    return () => teardown();
   });
 
-  async function subscribe() {
-    console.log('subscribe');
-    disposer = onSnapshot(commentRef, (snapshot) => {
+  async function setup() {
+    unsubscribe = onSnapshot(commentRef, function onNext(snapshot) {
       liveComment = {
         ...liveComment,
         ...snapshot.data(),
@@ -73,10 +72,9 @@
     }
   }
 
-  function unsubscribe() {
-    console.log('unsubscribe');
-    if (disposer) {
-      disposer();
+  function teardown() {
+    if (unsubscribe) {
+      unsubscribe();
     }
   }
 
@@ -156,8 +154,8 @@
 <div
   class="card card-bordered w-full bg-base-200"
   use:inview={{}}
-  on:inview_enter={() => subscribe()}
-  on:inview_leave={() => unsubscribe()}
+  on:inview_enter={() => setup()}
+  on:inview_leave={() => teardown()}
 >
   <div class="card-body">
     <p>{liveComment.body}</p>
