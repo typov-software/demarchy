@@ -22,24 +22,24 @@
   } from 'firebase/firestore';
   import { db } from '$lib/firebase';
   import { onMount } from 'svelte';
+  import { navigating } from '$app/stores';
+  import { beforeNavigate } from '$app/navigation';
 
   export let comment: Comment;
   export let context: CommentContext;
   export let contextId: string;
   export let userId: string;
-  $: liveComment = {
-    ...comment
-  };
-  $: existingReaction = null as Reaction | null;
 
   const reactionTypes = Object.keys(REACTIONS) as ReactionType[];
   let now = new Date();
-  let working = false;
-  let isAnonymous = comment.user_id === null;
   let unsubscribe: () => void;
 
-  const commentRef = doc(db, comment.path);
-  const reactionRef = doc(
+  $: working = false;
+  $: isAnonymous = comment.user_id === null;
+  $: liveComment = { ...comment };
+  $: existingReaction = null as Reaction | null;
+  $: commentRef = doc(db, comment.path);
+  $: reactionRef = doc(
     db,
     'organizations',
     comment.organization_id,
@@ -53,6 +53,10 @@
 
   onMount(() => {
     return () => teardown();
+  });
+
+  beforeNavigate(() => {
+    teardown();
   });
 
   async function setup() {
@@ -69,6 +73,8 @@
         id: reactionDoc.id,
         ...(reactionDoc.data() as ReactionProps)
       };
+    } else {
+      existingReaction = null;
     }
   }
 
@@ -76,6 +82,7 @@
     if (unsubscribe) {
       unsubscribe();
     }
+    existingReaction = null;
   }
 
   async function markAsSeen() {
@@ -151,68 +158,70 @@
   }
 </script>
 
-<div
-  class="card card-bordered w-full bg-base-200"
-  use:inview={{}}
-  on:inview_enter={() => setup()}
-  on:inview_leave={() => teardown()}
->
-  <div class="card-body">
-    <p>{liveComment.body}</p>
-    <div class="card-actions flex flex-col pt-2">
-      <div class="flex flex-row items-center w-full">
-        <span class="flex items-center gap-2 mr-2">
-          <button class="btn btn-sm btn-ghost btn-circle" on:click={onClickSeen}>
-            <span class="material-symbols-outlined text-xl">
-              {existingReaction ? 'visibility_off' : 'visibility'}
-            </span>
-          </button>
-          {liveComment.seen}
-        </span>
-        <div class="flex flex-1" />
-
-        <small>
-          by
-          {#if isAnonymous}
-            anonymous
-          {:else}
-            <a href={`/d/profiles/${liveComment.user_handle}`} class="link text-info">
-              @{liveComment.user_handle}
-            </a>
-          {/if}
-          {formatRelative(liveComment.created_at, now)}
-        </small>
-      </div>
-
-      {#if existingReaction}
-        <div class="flex flex-wrap gap-1">
-          {#each reactionTypes as reactionType}
-            <button
-              title={titleCase(reactionType)}
-              class="btn btn-sm text-xl btn-ghost btn-circle"
-              on:click={handleClickReaction(reactionType)}
-            >
-              {REACTIONS[reactionType]}
-            </button>
-          {/each}
-        </div>
-        <div class="flex gap-1">
-          {#each REENFORCEMENT_TYPES as reenforcementType}
-            <button
-              title={titleCase(reenforcementType)}
-              class="btn btn-sm btn-circle btn-ghost"
-              class:text-error={reenforcementType === 'shun'}
-              class:text-warning={reenforcementType === 'demote'}
-              class:text-info={reenforcementType === 'promote'}
-              class:text-success={reenforcementType === 'endorse'}
-            >
-              <span class="material-symbols-outlined">
-                {REENFORCEMENTS[reenforcementType]}
+{#if !$navigating}
+  <div
+    class="card card-bordered w-full bg-base-200"
+    use:inview={{}}
+    on:inview_enter={() => setup()}
+    on:inview_leave={() => teardown()}
+  >
+    <div class="card-body">
+      <p>{liveComment.body}</p>
+      <div class="card-actions flex flex-col pt-2">
+        <div class="flex flex-row items-center w-full">
+          <span class="flex items-center gap-2 mr-2">
+            <button class="btn btn-sm btn-ghost btn-circle" on:click={onClickSeen}>
+              <span class="material-symbols-outlined text-xl">
+                {existingReaction ? 'visibility_off' : 'visibility'}
               </span>
             </button>
-          {/each}
+            {liveComment.seen}
+          </span>
+          <div class="flex flex-1" />
+
+          <small>
+            by
+            {#if isAnonymous}
+              anonymous
+            {:else}
+              <a href={`/d/profiles/${liveComment.user_handle}`} class="link text-info">
+                @{liveComment.user_handle}
+              </a>
+            {/if}
+            {formatRelative(liveComment.created_at, now)}
+          </small>
         </div>
-      {/if}
+
+        {#if existingReaction}
+          <div class="flex flex-wrap gap-1">
+            {#each reactionTypes as reactionType}
+              <button
+                title={titleCase(reactionType)}
+                class="btn btn-sm text-xl btn-ghost btn-circle"
+                on:click={handleClickReaction(reactionType)}
+              >
+                {REACTIONS[reactionType]}
+              </button>
+            {/each}
+          </div>
+          <div class="flex gap-1">
+            {#each REENFORCEMENT_TYPES as reenforcementType}
+              <button
+                title={titleCase(reenforcementType)}
+                class="btn btn-sm btn-circle btn-ghost"
+                class:text-error={reenforcementType === 'shun'}
+                class:text-warning={reenforcementType === 'demote'}
+                class:text-info={reenforcementType === 'promote'}
+                class:text-success={reenforcementType === 'endorse'}
+              >
+                <span class="material-symbols-outlined">
+                  {REENFORCEMENTS[reenforcementType]}
+                </span>
+              </button>
+            {/each}
+          </div>
+        {/if}
+      </div>
     </div>
   </div>
-</div>
+{/if}
