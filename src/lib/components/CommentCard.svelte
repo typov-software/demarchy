@@ -38,6 +38,7 @@
   $: isAnonymous = comment.user_id === null;
   $: liveComment = { ...comment };
   $: existingReaction = null as Reaction | null;
+  $: thisReaction = existingReaction?.reaction;
   $: commentRef = doc(db, comment.path);
   $: reactionRef = doc(
     db,
@@ -82,7 +83,6 @@
     if (unsubscribe) {
       unsubscribe();
     }
-    existingReaction = null;
   }
 
   async function markAsSeen() {
@@ -114,6 +114,9 @@
     const batch = writeBatch(db);
     batch.delete(reactionRef);
     batch.update(commentRef, { seen: increment(-1) });
+    if (thisReaction) {
+      batch.update(commentRef, { [thisReaction]: increment(-1) });
+    }
     working = true;
     await batch.commit();
     existingReaction = null;
@@ -139,6 +142,7 @@
         console.log('unreacting');
         batch.update(commentRef, { [existingReaction.reaction]: increment(-1) });
         batch.update(reactionRef, { reaction: null });
+        existingReaction.reaction = null;
       } else if (existingReaction?.reaction) {
         // Changing reaction
         console.log('changing reaction');
@@ -147,11 +151,13 @@
           [existingReaction.reaction]: increment(-1)
         });
         batch.update(reactionRef, { reaction: reactionType });
-      } else {
+        existingReaction.reaction = reactionType;
+      } else if (existingReaction) {
         // Adding reaction
         console.log('adding reaction');
         batch.update(commentRef, { [reactionType]: increment(1) });
         batch.update(reactionRef, { reaction: reactionType });
+        existingReaction.reaction = reactionType;
       }
       await batch.commit();
     };
@@ -169,7 +175,11 @@
       <p>{liveComment.body}</p>
       <div class="card-actions flex flex-col pt-2">
         <div class="flex flex-row items-center w-full">
-          <span class="flex items-center gap-2 mr-2">
+          <span
+            class="flex items-center border-2 rounded-full pr-2"
+            class:border-primary={existingReaction}
+            class:border-neutral={!existingReaction}
+          >
             <button class="btn btn-sm btn-ghost btn-circle" on:click={onClickSeen}>
               <span class="material-symbols-outlined text-xl">
                 {existingReaction ? 'visibility_off' : 'visibility'}
@@ -195,13 +205,37 @@
         {#if existingReaction}
           <div class="flex flex-wrap gap-1">
             {#each reactionTypes as reactionType}
-              <button
-                title={titleCase(reactionType)}
-                class="btn btn-sm text-xl btn-ghost btn-circle"
-                on:click={handleClickReaction(reactionType)}
-              >
-                {REACTIONS[reactionType]}
-              </button>
+              {#if thisReaction && liveComment[reactionType] !== 0}
+                <span
+                  class="flex items-center border-2 rounded-full pr-2"
+                  class:border-base-300={thisReaction !== reactionType}
+                  class:border-secondary={thisReaction === reactionType}
+                >
+                  <button
+                    title={titleCase(reactionType)}
+                    class="btn btn-sm text-xl btn-circle btn-ghost"
+                    on:click={handleClickReaction(reactionType)}
+                  >
+                    {REACTIONS[reactionType]}
+                  </button>
+                  <span
+                    class:text-neutral={thisReaction !== reactionType}
+                    class:text-base-content={thisReaction === reactionType}
+                  >
+                    {liveComment[reactionType]}
+                  </span>
+                </span>
+              {:else}
+                <span class="flex items-center border-2 border-base-200 rounded-full">
+                  <button
+                    title={titleCase(reactionType)}
+                    class="btn btn-sm text-xl btn-circle btn-ghost"
+                    on:click={handleClickReaction(reactionType)}
+                  >
+                    {REACTIONS[reactionType]}
+                  </button>
+                </span>
+              {/if}
             {/each}
           </div>
           <div class="flex gap-1">
