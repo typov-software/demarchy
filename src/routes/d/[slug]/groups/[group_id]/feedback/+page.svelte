@@ -45,9 +45,9 @@
     </div>
   </div>
 
-  <ul class="w-full flex flex-col gap-4">
+  <ul class="w-full flex flex-col gap-4 items-center">
     {#each data.comments as comment}
-      <li class="w-full">
+      <li>
         <CommentCard {comment} {userId} context="feedback" contextId={comment.id} />
       </li>
     {/each}

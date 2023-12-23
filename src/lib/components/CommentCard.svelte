@@ -166,12 +166,12 @@
 
 {#if !$navigating}
   <div
-    class="card card-bordered w-full bg-base-200"
+    class="card card-bordered max-w-2xl bg-base-200 rounded-md"
     use:inview={{}}
     on:inview_enter={() => setup()}
     on:inview_leave={() => teardown()}
   >
-    <div class="card-body">
+    <div class="card-body p-6">
       <p>{liveComment.body}</p>
       <div class="card-actions flex flex-col pt-2">
         <div class="flex flex-row items-center w-full">
