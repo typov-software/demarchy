@@ -7,8 +7,8 @@
   export let photo_url: string | undefined;
   export let name: string | undefined;
 
-  let initials = name
-    ?.split(' ')
+  $: initials = (name ?? '')
+    .split(' ')
     .map((part) => part.at(0))
     .join('');
 
@@ -29,7 +29,7 @@
   <div class="drawer-content">
     <label for="user-nav" class="drawer-button cursor-pointer" title="User Menu">
       {#if photo_url}
-        <div class="avatar">
+        <div class="avatar top-1">
           <div class="rounded-xl">
             <img src={photo_url} alt={name} />
           </div>
@@ -120,7 +120,6 @@
 
 <style lang="scss">
   .avatar {
-    @apply top-1;
     width: 48px;
     height: 48px;
   }

@@ -9,6 +9,7 @@
   import DemarchyDLoader from './DemarchyDLoader.svelte';
   import { scale } from 'svelte/transition';
   import { elasticOut } from 'svelte/easing';
+  import { page } from '$app/stores';
 
   export let organization: Organization | undefined;
   export let organizations: Organization[];
@@ -16,6 +17,8 @@
   export let loading: boolean;
 
   let inbox: Inbox | undefined;
+
+  $: tailpath = $page.url.pathname.split('/').at(3);
 
   onMount(() => {
     const inboxRef = doc(db, 'inboxes', $user!.uid);
@@ -38,7 +41,7 @@
     {#if organizations.length}
       <div class="org-select dropdown dropdown-bottom">
         {#if organization}
-          <div tabindex="0" role="button" class="btn btn-sm rounded-xl">
+          <div tabindex="0" role="button" class="btn btn-sm btn-success rounded-xl">
             {organization.name}
           </div>
         {:else}
@@ -50,7 +53,9 @@
         <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box -left-4">
           {#each organizations as org}
             <li>
-              <a href={'/d/' + org.slug} title={org.name}>{org.name}</a>
+              <a href={'/d/' + org.slug + (tailpath ? `/${tailpath}` : '')} title={org.name}
+                >{org.name}</a
+              >
             </li>
           {/each}
         </ul>

@@ -8,8 +8,8 @@
 
   export let data: PageData;
 
-  let orgGroup = data.groups.find((ws) => ws.id === data.organization?.id);
-  let groupSpaces = data.groups.filter((ws) => ws.id !== data.organization?.id);
+  $: orgGroup = data.groups.find((ws) => ws.id === data.organization?.id);
+  $: groupSpaces = data.groups.filter((ws) => ws.id !== data.organization?.id);
 
   function getMembershipRole(wid: string) {
     const membership = data.memberships.find(
