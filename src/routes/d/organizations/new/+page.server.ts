@@ -22,7 +22,7 @@ export const load = (async ({ locals }) => {
 
   const snapshot = await adminVoucherRef()
     .where('uid', '==', uid)
-    .where('type', '==', '/organizations/new')
+    .where('type', '==', '/d/organizations/new')
     .where('redeemed', '==', false)
     .get();
   const vouchers: Voucher[] = snapshot.docs.map((doc) => ({

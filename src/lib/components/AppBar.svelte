@@ -36,11 +36,15 @@
 
   <div class="flex flex-1">
     {#if organizations.length}
-      <div class="dropdown dropdown-bottom dropdown-hover">
+      <div class="org-select dropdown dropdown-bottom">
         {#if organization}
-          <div role="button" class="btn btn-sm rounded-xl">{organization.name}</div>
+          <div tabindex="0" role="button" class="btn btn-sm rounded-xl">
+            {organization.name}
+          </div>
         {:else}
-          <div role="button" class="text-warning btn-sm btn rounded-xl">Select organization</div>
+          <div tabindex="0" role="button" class="text-warning btn-sm btn rounded-xl">
+            Select organization
+          </div>
         {/if}
 
         <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box -left-4">

@@ -17,10 +17,10 @@
 
   export let data: PageData;
   $: group = data.group!;
-  let groups = data.groups.slice();
+  $: groups = data.groups.slice();
   $: uid = $user?.uid;
 
-  let invitations: Invitation[] = [];
+  $: invitations = [] as Invitation[];
 
   onMount(() => {
     const ref = query(
