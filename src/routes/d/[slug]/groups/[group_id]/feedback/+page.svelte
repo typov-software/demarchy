@@ -108,7 +108,7 @@
   });
 </script>
 
-<BasicSection otherClass="py-0 pb-8">
+<BasicSection otherClass="py-0 pb-2">
   <div class="flex flex-row w-full items-center">
     <Breadcrumbs {group} {groups} />
     <div class="flex flex-1" />
@@ -237,6 +237,17 @@
     {/each}
   </ul>
 
+  {#if hasMore}
+    <div class="loading" />
+  {:else}
+    <div class="flex items-center gap-4">
+      <p class="text-xs">End of feedback</p>
+      <button class="btn btn-sm" on:click={() => window.scrollTo({ top: 0 })}>
+        <span class="material-symbols-outlined">arrow_upward</span>
+        Jump to top
+      </button>
+    </div>
+  {/if}
   <div use:inview={{}} on:inview_enter={() => getPage()} />
 </BasicSection>
 

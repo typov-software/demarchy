@@ -218,9 +218,13 @@
           class:pointer-events-none={existingReaction}
           on:click={onClickSeen}
         >
-          <span class="material-symbols-outlined text-base">
-            {existingReaction ? 'visibility' : 'visibility_off'}
-          </span>
+          {#if working}
+            <div class="loading loading-xs loading-spinner" />
+          {:else}
+            <span class="material-symbols-outlined text-base">
+              {existingReaction ? 'visibility' : 'visibility_off'}
+            </span>
+          {/if}
           {liveComment.seen}
         </button>
       </div>
