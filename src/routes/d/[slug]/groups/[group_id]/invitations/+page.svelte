@@ -169,7 +169,9 @@
         }}
       >
         <input type="hidden" name="organization_id" value={data.organization?.id} />
+        <input type="hidden" name="organization_name" value={data.organization?.name} />
         <input type="hidden" name="group_id" value={data.group?.id} />
+        <input type="hidden" name="group_name" value={data.group?.name} />
         <input type="hidden" name="user_id" bind:value={handleUserId} />
         <input type="hidden" name="role" value="mem" />
         <input type="hidden" name="created_by" value={$user?.uid} />

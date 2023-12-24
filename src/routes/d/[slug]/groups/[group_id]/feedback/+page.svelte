@@ -18,17 +18,23 @@
     limit,
     QueryDocumentSnapshot,
     type DocumentData,
-    onSnapshot
+    onSnapshot,
+    Query
   } from 'firebase/firestore';
   import type { CommentProps } from '$lib/models/comments';
   import { inview } from 'svelte-inview';
   import { fly } from 'svelte/transition';
   import SvelteMarkdown from 'svelte-markdown';
+  import { afterNavigate, beforeNavigate } from '$app/navigation';
 
   export let data: PageData;
 
   $: group = data.group!;
   $: groups = data.groups.slice();
+
+  $: {
+    console.log(group.name);
+  }
 
   $: showForm = false;
   $: commentBody = '';
@@ -75,36 +81,49 @@
   }
 
   let unsubscribe: () => void;
-  onMount(() => {
-    getPage().then(async () => {
-      const after = comments.slice().shift();
-      if (after) {
-        const q = query(
-          collection(
-            db,
-            'organizations',
-            data.organization.id,
-            'groups',
-            data.group!.id,
-            'feedback'
-          ),
-          orderBy('created_at', 'asc'),
-          startAfter(after)
-        );
 
-        unsubscribe = await onSnapshot(q, (snapshot) => {
-          const newComments = snapshot
-            .docChanges()
-            .filter((c) => c.type === 'added')
-            .map((c) => c.doc)
-            .slice() as QueryDocumentSnapshot<DocumentData, CommentProps>[];
-          if (newComments.length) {
-            realtimeComments = [...realtimeComments, ...newComments];
-          }
-        });
+  async function subscribe() {
+    await getPage();
+    const after = comments.slice().shift();
+    let q: Query;
+    if (after) {
+      q = query(
+        collection(db, 'organizations', data.organization.id, 'groups', data.group!.id, 'feedback'),
+        orderBy('created_at', 'asc'),
+        startAfter(after)
+      );
+    } else {
+      q = query(
+        collection(db, 'organizations', data.organization.id, 'groups', data.group!.id, 'feedback'),
+        orderBy('created_at', 'asc')
+      );
+    }
+    unsubscribe = await onSnapshot(q, (snapshot) => {
+      const newComments = snapshot
+        .docChanges()
+        .filter((c) => c.type === 'added')
+        .map((c) => c.doc)
+        .slice() as QueryDocumentSnapshot<DocumentData, CommentProps>[];
+      if (newComments.length) {
+        realtimeComments = [...realtimeComments, ...newComments];
       }
     });
-    return () => unsubscribe();
+  }
+
+  onMount(() => {
+    subscribe();
+    return () => {
+      unsubscribe();
+    };
+  });
+
+  beforeNavigate(() => {
+    console.log('before navigate');
+    unsubscribe();
+  });
+
+  afterNavigate(() => {
+    console.log('after navigate');
   });
 </script>
 
