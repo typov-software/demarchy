@@ -5,6 +5,11 @@
 @tailwind components;
 @tailwind utilities;
 
+.firebase-emulator-warning {
+  opacity: 0.2;
+  pointer-events: none;
+}
+
 html {
   min-height: 100%;
 }
@@ -18,24 +23,32 @@ body {
   height: 100%;
 }
 
-.fill-icon,
-.fill-primary,
-.fill-secondary {
-  transition: fill 200ms;
+[data-theme='light'] {
+  ::selection {
+    @apply bg-indigo-300;
+  }
 }
 
-[data-theme='light'] .fill-icon {
-  fill: oklch(var(--bc));
+[data-theme='dark'] {
+  ::selection {
+    @apply bg-indigo-700;
+  }
 }
 
-[data-theme='dark'] .fill-icon {
-  fill: oklch(var(--bc));
-}
-
-.fill-primary {
-  fill: oklch(var(--p));
-}
-
-.fill-secondary {
-  fill: oklch(var(--s));
+.comment-body {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold;
+  }
+  p {
+    @apply text-sm;
+  }
+  a {
+    @apply link-accent;
+    @apply link-hover;
+  }
 }

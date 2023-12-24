@@ -1,6 +1,6 @@
 <script lang="ts">
   import { applyStoredTheme } from '$lib/stores/themes';
-  import '../app.css';
+  import '../app.scss';
 
   if (typeof window !== 'undefined') {
     applyStoredTheme();

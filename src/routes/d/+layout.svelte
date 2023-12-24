@@ -31,7 +31,9 @@
 
     <slot />
 
-    <footer class="footer flex md:flex-row flex-col justify-around items-center py-8 text-neutral">
+    <footer
+      class="footer flex md:flex-row flex-col justify-around items-center py-8 text-neutral gap-0"
+    >
       <aside class="flex flex-row items-center">
         <DemarchyLogo width={127} />
         <p class="text-sm ml-2 mt-1">
