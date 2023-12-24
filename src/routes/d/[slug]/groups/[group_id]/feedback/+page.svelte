@@ -1,5 +1,5 @@
 <script lang="ts">
-  import autosize from '$lib/stores/use-autosize';
+  import { autosize } from '$lib/stores/use-autosize';
   import { enhance } from '$app/forms';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
@@ -170,6 +170,7 @@
         ></textarea>
       {:else}
         <div class="comment-body bg-base-200 p-4">
+          <input type="hidden" name="body" value={commentBody} />
           <SvelteMarkdown source={commentBody} />
         </div>
       {/if}

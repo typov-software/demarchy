@@ -227,7 +227,9 @@
     </div>
 
     <p class="comment-body text-base w-full">
-      <SvelteMarkdown source={liveComment.body} />
+      {#if liveComment.body}
+        <SvelteMarkdown source={liveComment.body} />
+      {/if}
     </p>
 
     {#if existingReaction}

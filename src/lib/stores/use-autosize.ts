@@ -1,15 +1,18 @@
-import autosize from 'autosize';
+import _autosize from 'autosize';
 
-const action = (node: Element) => {
-  autosize(node);
+/**
+ * Applies the textarea "autosize" plugin to a given node
+ * @param node The element using this action
+ * @returns Action methods
+ */
+export function autosize(node: HTMLTextAreaElement) {
+  _autosize(node);
   return {
+    update() {
+      _autosize.update(node);
+    },
     destroy() {
-      autosize.destroy(node);
+      _autosize.destroy(node);
     }
   };
-};
-
-action.update = autosize.update;
-action.destroy = autosize.destroy;
-
-export default action;
+}
