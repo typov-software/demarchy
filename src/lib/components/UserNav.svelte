@@ -92,7 +92,7 @@
         </li>
         <li class="rounded-none">
           <label for="theme-toggle" class="theme-toggle flex flex-row rounded-none">
-            <span role="img" class="sun">☀️</span>
+            <span class="material-symbols-outlined">light_mode</span>
             <input
               id="theme-toggle"
               type="checkbox"
@@ -100,8 +100,7 @@
               checked={$theme === 'dark'}
               on:change={toggleTheme}
             />
-            <span role="img" class="moon">🌘</span>
-            Theme
+            <span class="material-symbols-outlined">dark_mode</span>
           </label>
         </li>
       </ul>
@@ -139,26 +138,5 @@
     opacity: 0.25;
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
-  }
-
-  [data-theme='dark'] {
-    .theme-toggle {
-      .moon {
-        opacity: 1;
-      }
-      .sun {
-        opacity: 0.2;
-      }
-    }
-  }
-  [data-theme='light'] {
-    .theme-toggle {
-      .moon {
-        opacity: 0.2;
-      }
-      .sun {
-        opacity: 1;
-      }
-    }
   }
 </style>

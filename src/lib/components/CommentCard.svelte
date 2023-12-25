@@ -201,7 +201,7 @@
         {#if isAnonymous}
           anonymous
         {:else}
-          <a href={`/d/profiles/${liveComment.user_handle}`} class="link text-success">
+          <a href={`/d/profiles/${liveComment.user_handle}`} class="link text-primary">
             @{liveComment.user_handle}
           </a>
         {/if}
@@ -244,7 +244,7 @@
               <span
                 class="flex items-center border-2 rounded-full pr-2"
                 class:border-base-300={thisReaction !== reactionType}
-                class:border-secondary={thisReaction === reactionType}
+                class:border-accent={thisReaction === reactionType}
               >
                 <button
                   title={titleCase(reactionType)}
@@ -267,7 +267,7 @@
               >
                 <button
                   title={titleCase(reactionType)}
-                  class="btn btn-sm text-xl btn-circle btn-ghost opacity-50 hover:opacity-100"
+                  class="btn btn-sm text-xl btn-circle btn-ghost opacity-80 hover:opacity-100"
                   on:click={handleClickReaction(reactionType)}
                 >
                   {REACTIONS[reactionType]}
@@ -280,54 +280,38 @@
         <div class="flex flex-row-reverse gap-1" in:fade={{ duration: 300, delay: 150 }}>
           {#each REENFORCEMENT_TYPES as reenforcementType}
             {#if thisReenforcement && liveComment[reenforcementType] !== 0}
-              <span
-                class="flex items-center border-2 rounded-full pr-2"
-                class:border-base-300={thisReenforcement !== reenforcementType}
-                class:border-error={reenforcementType === 'shun' &&
-                  thisReenforcement === reenforcementType}
-                class:border-warning={reenforcementType === 'demote' &&
-                  thisReenforcement === reenforcementType}
-                class:border-info={reenforcementType === 'promote' &&
-                  thisReenforcement === reenforcementType}
-                class:border-success={reenforcementType === 'endorse' &&
-                  thisReenforcement === reenforcementType}
+              <button
+                title={titleCase(reenforcementType)}
+                class="btn btn-sm"
+                class:btn-outline={thisReenforcement !== reenforcementType}
+                class:btn-error={reenforcementType === 'shun'}
+                class:btn-warning={reenforcementType === 'demote'}
+                class:btn-info={reenforcementType === 'promote'}
+                class:btn-success={reenforcementType === 'endorse'}
+                on:click={handleClickReenforcement(reenforcementType)}
               >
-                <button
-                  title={titleCase(reenforcementType)}
-                  class="btn btn-sm btn-circle btn-ghost"
-                  class:text-error={reenforcementType === 'shun'}
-                  class:text-warning={reenforcementType === 'demote'}
-                  class:text-info={reenforcementType === 'promote'}
-                  class:text-success={reenforcementType === 'endorse'}
-                  on:click={handleClickReenforcement(reenforcementType)}
-                >
-                  <span class="material-symbols-outlined">
-                    {REENFORCEMENTS[reenforcementType]}
-                  </span>
-                </button>
-                <span
-                  class:text-neutral={thisReenforcement !== reenforcementType}
-                  class:text-base-content={thisReenforcement === reenforcementType}
-                >
+                <span class="material-symbols-outlined">
+                  {REENFORCEMENTS[reenforcementType]}
+                </span>
+                <span>
                   {liveComment[reenforcementType]}
                 </span>
-              </span>
+              </button>
             {:else}
-              <span class="flex items-center border-2 border-base-200 rounded-full">
-                <button
-                  title={titleCase(reenforcementType)}
-                  class="btn btn-sm btn-circle btn-ghost opacity-50 hover:opacity-100"
-                  class:text-error={reenforcementType === 'shun'}
-                  class:text-warning={reenforcementType === 'demote'}
-                  class:text-info={reenforcementType === 'promote'}
-                  class:text-success={reenforcementType === 'endorse'}
-                  on:click={handleClickReenforcement(reenforcementType)}
-                >
-                  <span class="material-symbols-outlined">
-                    {REENFORCEMENTS[reenforcementType]}
-                  </span>
-                </button>
-              </span>
+              <button
+                title={titleCase(reenforcementType)}
+                class="btn btn-sm btn-circle opacity-80 hover:opacity-100 text-base-content"
+                class:btn-outline={thisReenforcement !== reenforcementType}
+                class:btn-error={reenforcementType === 'shun'}
+                class:btn-warning={reenforcementType === 'demote'}
+                class:btn-info={reenforcementType === 'promote'}
+                class:btn-success={reenforcementType === 'endorse'}
+                on:click={handleClickReenforcement(reenforcementType)}
+              >
+                <span class="material-symbols-outlined">
+                  {REENFORCEMENTS[reenforcementType]}
+                </span>
+              </button>
             {/if}
           {/each}
         </div>

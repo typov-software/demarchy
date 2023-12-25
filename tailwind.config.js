@@ -8,13 +8,13 @@ const sharedThemeOptions = {
   '--border-btn': '1px', // border width of buttons
   '--tab-border': '1px', // border width of tabs
   '--tab-radius': '0.5rem', // border radius of tabs
-  info: '#818cf8',
+  info: '#0891b2',
   success: '#22c55e',
   warning: '#fbbf24',
   error: '#ef4444',
-  primary: '#1d4ed8',
+  primary: '#2563eb',
   secondary: '#e11d48',
-  accent: '#f472b6'
+  accent: '#d946ef'
 };
 
 /** @type {import('tailwindcss').Config} */

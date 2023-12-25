@@ -45,7 +45,7 @@
             {organization.name}
           </div>
         {:else}
-          <div tabindex="0" role="button" class="text-warning btn-sm btn rounded-xl">
+          <div tabindex="0" role="button" class="btn-warning btn-sm btn rounded-xl">
             Select organization
           </div>
         {/if}
