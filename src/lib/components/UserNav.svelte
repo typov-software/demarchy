@@ -1,11 +1,15 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { auth } from '$lib/firebase';
+  import type { Inbox } from '$lib/models/inboxes';
   import { theme, toggleTheme } from '$lib/stores/themes';
   import { signOut } from 'firebase/auth';
+  import { elasticOut } from 'svelte/easing';
+  import { scale } from 'svelte/transition';
 
   export let photo_url: string | undefined;
   export let name: string | undefined;
+  export let inbox: Inbox | undefined;
 
   $: initials = (name ?? '')
     .split(' ')
@@ -32,12 +36,24 @@
         <div class="avatar top-1">
           <div class="rounded-xl">
             <img src={photo_url} alt={name} />
+            {#if inbox?.unread}
+              <mark
+                class="mark w-3 h-3 top-0 right-0 bg-accent absolute"
+                in:scale={{ start: 0, easing: elasticOut, duration: 2000 }}
+              />
+            {/if}
           </div>
         </div>
       {:else}
         <div class="avatar placeholder">
           <div class="rounded-xl bg-neutral text-neutral-content">
             <span>{initials}</span>
+            {#if inbox?.unread}
+              <mark
+                class="mark w-3 h-3 top-0 right-0 bg-accent absolute"
+                in:scale={{ start: 0, easing: elasticOut, duration: 2000 }}
+              />
+            {/if}
           </div>
         </div>
       {/if}
@@ -73,23 +89,55 @@
 
       <ul class="menu">
         <li>
-          <a href="/d/profile" on:click={closeDrawer} class="rounded-none" title="Your profile">
+          <a href="/d/inbox" title="Your Inbox" on:click={closeDrawer}>
+            <span class="material-symbols-outlined relative">
+              inbox
+              {#if inbox?.unread}
+                <mark
+                  class="mark w-3 h-3 -top-0.5 -right-0.5 bg-accent absolute"
+                  in:scale={{ start: 0, easing: elasticOut, duration: 2000 }}
+                />
+              {/if}
+            </span>
+            Your Inbox
+          </a>
+        </li>
+
+        <li>
+          <a href="/d/profile" on:click={closeDrawer} class="rounded-none" title="Your Profile">
             <span class="material-symbols-outlined">person</span>
-            Your profile
+            Your Profile
           </a>
         </li>
+
         <li>
-          <a href="/d/vouchers" on:click={closeDrawer} class="rounded-none" title="Your vouchers">
+          <a href="/d/discussions" title="Your Discussions" on:click={closeDrawer}>
+            <span class="material-symbols-outlined">forum</span>
+            Your Discussions
+          </a>
+        </li>
+
+        <li>
+          <a href="/d/proposals" title="Your Proposals" on:click={closeDrawer}>
+            <span class="material-symbols-outlined">history_edu</span>
+            Your Proposals
+          </a>
+        </li>
+
+        <li>
+          <a href="/d/vouchers" on:click={closeDrawer} class="rounded-none" title="Your Vouchers">
             <span class="material-symbols-outlined">toll</span>
-            Your vouchers
+            Your Vouchers
           </a>
         </li>
+
         <li>
-          <a href="/d/settings" on:click={closeDrawer} class="rounded-none" title="Your settings">
+          <a href="/d/settings" on:click={closeDrawer} class="rounded-none" title="Your Settings">
             <span class="material-symbols-outlined">tune</span>
-            Your settings
+            Your Settings
           </a>
         </li>
+
         <li class="rounded-none">
           <label for="theme-toggle" class="theme-toggle flex flex-row rounded-none">
             <span class="material-symbols-outlined">light_mode</span>
@@ -104,7 +152,9 @@
           </label>
         </li>
       </ul>
+
       <div class="divider" />
+
       <ul class="menu">
         <li>
           <button on:click={endSession} class="rounded-none" title="Sign out">
@@ -122,6 +172,7 @@
     width: 48px;
     height: 48px;
   }
+
   .avatar > div {
     @apply rounded-full;
   }
@@ -138,5 +189,10 @@
     opacity: 0.25;
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
+  }
+
+  mark {
+    border-radius: 40%;
+    transform: rotate(45deg);
   }
 </style>
