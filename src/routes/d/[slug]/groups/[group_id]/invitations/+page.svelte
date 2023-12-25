@@ -6,30 +6,64 @@
   import { page } from '$app/stores';
   import type { Invitation, InvitationProps } from '$lib/models/invitations';
   import { getRoleName } from '$lib/models/roles';
-  import { goto } from '$app/navigation';
+  import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
   import type { Profile, ProfileProps } from '$lib/models/profiles';
   import { enhance } from '$app/forms';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import { INVITATIONS, ORGANIZATIONS } from '$lib/models/firestore';
   import { working } from '$lib/stores/working';
+  import PageView from '$lib/components/PageView.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 
   export let data: PageData;
+  $: group = data.group!;
+  $: groups = data.groups.slice();
   $: uid = $user?.uid;
 
-  let invitations: Invitation[] = [];
+  $: invitations = [] as Invitation[];
 
-  onMount(() => {
+  let unsubscribe: undefined | (() => void);
+  $: unsubscribe = undefined;
+  $: settingUp = false;
+
+  async function setup() {
+    if (settingUp) return;
+    settingUp = true;
     const ref = query(
       collection(db, ORGANIZATIONS, data.organization!.id, INVITATIONS),
       where('group_id', '==', $page.params.group_id)
     );
-    const unsubscribe = onSnapshot(ref, (snapshot) => {
+    unsubscribe = onSnapshot(ref, (snapshot) => {
       invitations = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as InvitationProps)
       }));
     });
-    return () => unsubscribe();
+    settingUp = false;
+  }
+
+  function teardown() {
+    if (unsubscribe) {
+      unsubscribe();
+    }
+    unsubscribe = undefined;
+  }
+
+  onMount(() => {
+    setup();
+    return () => teardown();
+  });
+
+  beforeNavigate(({ from, to }) => {
+    if (from?.url.pathname !== to?.url.pathname) {
+      teardown();
+    }
+  });
+
+  afterNavigate(() => {
+    if (!unsubscribe) {
+      setup();
+    }
   });
 
   async function onCloseModal() {
@@ -69,29 +103,24 @@
       loadingHandle = false;
     }, 500);
   }
-
-  let groupsPath = `/d/${$page.params.slug}/groups`;
-  let groupPath = `${groupsPath}/${data.group!.id}`;
-  let invitationsPath = `${groupPath}/invitations`;
 </script>
-
-<div class="text-sm breadcrumbs self-start py-4 px-4">
-  <ul>
-    <li><a href={groupsPath}>Groups</a></li>
-    <li><a href={groupPath}>{data.group?.name}</a></li>
-    <li><a href={invitationsPath}>Invitations</a></li>
-  </ul>
-</div>
 
 <BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
-    <h2 class="flex text-lg">Invitations for {data.group?.name}</h2>
+    <Breadcrumbs {group} {groups} />
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="btn btn-ghost">Actions</div>
-      <div class="dropdown-content z-[1] shadow bg-base-300">
-        <ul class="menu p-0 w-60">
-          <li><a href="{$page.url.pathname}?modal=invite">Invite someone</a></li>
+      <div tabindex="0" role="button" class="btn btn-square btn-sm btn-primary rounded-xl">
+        <span class="material-symbols-outlined">more_vert</span>
+      </div>
+      <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+        <ul class="menu w-60">
+          <li>
+            <a href="{$page.url.pathname}?modal=invite" title="Invite someone">
+              <span class="material-symbols-outlined">person_add</span>
+              Invite someone
+            </a>
+          </li>
         </ul>
       </div>
     </div>
@@ -100,7 +129,7 @@
   <table class="table">
     <thead>
       <tr>
-        <th>Handle</th>
+        <th class="w-full">Handle</th>
         <th>Role</th>
         <th>Status</th>
         <th />
@@ -113,29 +142,37 @@
           <td>{getRoleName(invitation.role)}</td>
           <td>{invitation.rejected ? 'Rejected' : 'Pending'}</td>
           <td>
-            <div class="flex">
-              <div class="flex-1" />
-              <form
-                method="POST"
-                action="?/uninvite"
-                use:enhance={() => {
-                  const jobId = working.add();
-                  return async ({ update }) => {
-                    working.remove(jobId);
-                    update();
-                  };
-                }}
-              >
-                <input type="hidden" name="organization_id" value={invitation.organization_id} />
-                <input type="hidden" name="invitation_id" value={invitation.id} />
-                <button
-                  type="submit"
-                  class="btn btn-sm btn-secondary"
-                  disabled={invitation.created_by !== uid}
-                >
-                  {invitation.rejected ? 'Remove' : 'Uninvite'}
-                </button>
-              </form>
+            <div class="dropdown dropdown-end">
+              <button tabindex="0" class="btn btn-sm btn-square btn-ghost rounded-xl">
+                <span class="material-symbols-outlined">more_vert</span>
+              </button>
+              <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+                <ul class="menu w-60">
+                  <li>
+                    <form
+                      method="POST"
+                      action="?/uninvite"
+                      use:enhance={() => {
+                        const jobId = working.add();
+                        return async ({ update }) => {
+                          working.remove(jobId);
+                          update();
+                        };
+                      }}
+                    >
+                      <input
+                        type="hidden"
+                        name="organization_id"
+                        value={invitation.organization_id}
+                      />
+                      <input type="hidden" name="invitation_id" value={invitation.id} />
+                      <button type="submit" disabled={invitation.created_by !== uid}>
+                        {invitation.rejected ? 'Remove' : 'Uninvite'}
+                      </button>
+                    </form>
+                  </li>
+                </ul>
+              </div>
             </div>
           </td>
         </tr>
@@ -162,7 +199,9 @@
         }}
       >
         <input type="hidden" name="organization_id" value={data.organization?.id} />
+        <input type="hidden" name="organization_name" value={data.organization?.name} />
         <input type="hidden" name="group_id" value={data.group?.id} />
+        <input type="hidden" name="group_name" value={data.group?.name} />
         <input type="hidden" name="user_id" bind:value={handleUserId} />
         <input type="hidden" name="role" value="mem" />
         <input type="hidden" name="created_by" value={$user?.uid} />
@@ -203,3 +242,6 @@
     </form>
   </dialog>
 </BasicSection>
+
+<div class="flex-1" />
+<PageView />

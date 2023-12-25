@@ -16,9 +16,9 @@
       <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
         <ul class="menu w-60">
           <li>
-            <a href="{$page.url.pathname}/new">
+            <a href="{$page.url.pathname}/documents/new">
               <span class="material-symbols-outlined">add</span>
-              Create a proposal
+              Create a document
             </a>
           </li>
         </ul>

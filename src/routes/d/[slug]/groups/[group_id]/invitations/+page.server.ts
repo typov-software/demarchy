@@ -16,6 +16,7 @@ export const actions = {
     const formData = await request.formData();
     const organization_id = formData.get('organization_id') as string;
     const group_id = formData.get('group_id') as string;
+    const group_name = formData.get('group_name') as string;
     const user_id = formData.get('user_id') as string;
     const role = (formData.get('role') ?? 'mem') as RoleAccess;
     const created_by = formData.get('created_by') as string;
@@ -55,7 +56,8 @@ export const actions = {
       data: {
         invitation_id: invitationRef.id,
         organization_id,
-        group_id
+        group_id,
+        group_name
       } as NotificationInvitationData
     });
     await batch.commit();

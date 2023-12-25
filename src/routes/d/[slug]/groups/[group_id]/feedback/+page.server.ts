@@ -1,24 +1,9 @@
 import type { CommentProps } from '$lib/models/comments';
 import { adminGroupFeedbackRef } from '$lib/server/admin';
-import { FieldValue, type Timestamp } from 'firebase-admin/firestore';
-import type { PageServerLoad, Actions } from './$types';
-import { redirect } from '@sveltejs/kit';
-
-export const load = (async ({ parent }) => {
-  const data = await parent();
-
-  const feedbackRef = adminGroupFeedbackRef(data.organization.id, data.group!.id);
-  const snapshot = await feedbackRef.orderBy('created_at', 'desc').limit(20).get();
-  const comments = snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...(doc.data() as CommentProps),
-    created_at: (doc.data().created_at as Timestamp).toDate()
-  }));
-
-  return {
-    comments
-  };
-}) satisfies PageServerLoad;
+import { FieldValue } from 'firebase-admin/firestore';
+import type { Actions } from './$types';
+import { error, redirect } from '@sveltejs/kit';
+import { createEmptyReactions, createEmptyReenforcements } from '$lib/models/reactions';
 
 export const actions = {
   createFeedback: async ({ request, locals, url }) => {
@@ -26,16 +11,29 @@ export const actions = {
     const formData = await request.formData();
     const organizationId = formData.get('organization_id') as string;
     const groupId = formData.get('group_id') as string;
+    const userHandle = formData.get('user_handle') as string;
     const body = formData.get('body') as string;
+    const anonymous = formData.get('anonymous') as string;
+    const isAnonymous = anonymous === 'on';
+
+    if (!body) {
+      throw error(403, 'Malformed comment props');
+    }
 
     const feedbackRef = adminGroupFeedbackRef(organizationId, groupId).doc();
     const commentProps: Omit<CommentProps, 'created_at'> = {
+      organization_id: organizationId,
+      group_id: groupId,
       context: 'feedback',
       context_id: feedbackRef.id,
       body,
       depth: 0,
       parent: null,
-      user_id: uid
+      user_id: isAnonymous ? null : uid,
+      user_handle: isAnonymous ? null : userHandle,
+      seen: 0,
+      ...createEmptyReactions(),
+      ...createEmptyReenforcements()
     };
     await feedbackRef.set({
       ...commentProps,

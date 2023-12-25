@@ -183,7 +183,13 @@ service cloud.firestore {
         match /feedback/{commentId} {
           allow read: if isGroupObsOrHigher(groupId);
           allow create: if isGroupMemberOrHigher(groupId);
-          allow update: if isGroupMemberOrHigher(groupId) && ownsResource(resource.data.user_id);
+          // allow update: if isGroupMemberOrHigher(groupId) && ownsResource(resource.data.user_id);
+          // we let members update comment reaction counts directly
+          allow update: if isGroupMemberOrHigher(groupId);
+
+          match /reactions/{reactionId} {
+            allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+          }
         }
       }
     }

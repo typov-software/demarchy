@@ -1,6 +1,6 @@
 import type { WithId } from './utils';
 
-export type VoucherType = '/organizations/new';
+export type VoucherType = '/d/organizations/new';
 
 export interface VoucherProps {
   /**
