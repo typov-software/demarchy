@@ -7,8 +7,6 @@
   import { db, user } from '$lib/firebase';
   import type { Inbox, InboxProps } from '$lib/models/inboxes';
   import DemarchyDLoader from './DemarchyDLoader.svelte';
-  import { scale } from 'svelte/transition';
-  import { elasticOut } from 'svelte/easing';
 
   export let organization: Organization | undefined;
   export let organizations: Organization[];
@@ -62,30 +60,5 @@
     {/if}
   </div>
 
-  <a href="/d/discussions" class="btn btn-square" title="Your Discussions">
-    <span class="material-symbols-outlined">forum</span>
-  </a>
-
-  <a href="/d/proposals" class="btn btn-square" title="Your Proposals">
-    <span class="material-symbols-outlined">history_edu</span>
-  </a>
-
-  <a href="/d/inbox" class="btn btn-square relative -z-10" title="Inbox">
-    <span class="material-symbols-outlined">inbox</span>
-    {#if inbox?.unread}
-      <mark
-        class="mark w-3 h-3 -top-0.5 -right-0.5 bg-accent absolute"
-        in:scale={{ start: 0, easing: elasticOut, duration: 2000 }}
-      />
-    {/if}
-  </a>
-
-  <UserNav photo_url={profile?.photo_url} name={profile?.name} />
+  <UserNav photo_url={profile?.photo_url} name={profile?.name} {inbox} />
 </header>
-
-<style lang="scss">
-  mark {
-    border-radius: 40%;
-    transform: rotate(45deg);
-  }
-</style>
