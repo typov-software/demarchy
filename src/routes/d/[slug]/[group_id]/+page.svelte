@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import BasicSection from '$lib/components/BasicSection.svelte';
-  import GroupNavigation from '$lib/components/GroupNavigation.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -9,7 +9,7 @@
 
 <BasicSection>
   <div class="flex flex-row w-full items-center">
-    <GroupNavigation organization={data.organization} groups={data.groups} group={data.group} />
+    <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
 
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">

@@ -4,14 +4,14 @@
   import PageView from '$lib/components/PageView.svelte';
   import GroupTable from './GroupTable.svelte';
   import type { PageData } from './$types';
-  import GroupNavigation from '$lib/components/GroupNavigation.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 
   export let data: PageData;
 </script>
 
 <BasicSection>
   <div class="flex flex-row w-full items-center">
-    <GroupNavigation organization={data.organization} groups={data.groups} group={undefined} />
+    <Breadcrumbs organization={data.organization} groups={data.groups} group={undefined} />
 
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">

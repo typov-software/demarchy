@@ -13,7 +13,7 @@
   import { INVITATIONS, ORGANIZATIONS } from '$lib/models/firestore';
   import { working } from '$lib/stores/working';
   import PageView from '$lib/components/PageView.svelte';
-  import GroupNavigation from '$lib/components/GroupNavigation.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 
   export let data: PageData;
 
@@ -105,7 +105,7 @@
 
 <BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
-    <GroupNavigation organization={data.organization} groups={data.groups} group={data.group} />
+    <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-square btn-sm btn-primary rounded-xl">

@@ -25,7 +25,7 @@
   import { fly } from 'svelte/transition';
   import SvelteMarkdown from 'svelte-markdown';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
-  import GroupNavigation from '$lib/components/GroupNavigation.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 
   export let data: PageData;
 
@@ -142,7 +142,7 @@
 
 <BasicSection otherClass="py-0 pb-2">
   <div class="flex flex-row w-full items-center">
-    <GroupNavigation organization={data.organization} groups={data.groups} group={data.group} />
+    <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-square btn-sm btn-primary rounded-xl">
