@@ -6,14 +6,11 @@
   import type { PageData } from './$types';
 
   export let data: PageData;
-
-  $: group = data.group!;
-  let groups = data.groups.slice();
 </script>
 
 <BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
-    <Breadcrumbs {group} {groups} />
+    <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-square btn-sm btn-primary rounded-xl">
@@ -23,7 +20,7 @@
         <ul class="menu w-60">
           <li>
             <a href="{$page.url.pathname}/todo" title="TODO">
-              <span class="material-symbols-outlined">person_add</span>
+              <span class="material-symbols-outlined">add</span>
               TODO
             </a>
           </li>

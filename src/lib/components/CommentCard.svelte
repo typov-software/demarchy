@@ -240,7 +240,7 @@
       <div class="flex flex-col items-end gap-2 pt-2">
         <div class="flex flex-row-reverse flex-wrap" in:fade={{ duration: 300 }}>
           {#each reactionTypes as reactionType}
-            {#if thisReaction && liveComment[reactionType] !== 0}
+            {#if thisReaction && liveComment[reactionType] > 0}
               <span
                 class="flex items-center border-2 rounded-full pr-2"
                 class:border-base-300={thisReaction !== reactionType}
@@ -258,7 +258,7 @@
                   class:text-base-content={thisReaction === reactionType}
                   class="text-sm"
                 >
-                  {liveComment[reactionType].toLocaleString()}
+                  {liveComment[reactionType]?.toLocaleString()}
                 </span>
               </span>
             {:else}
@@ -279,7 +279,7 @@
 
         <div class="flex flex-row-reverse gap-1" in:fade={{ duration: 300, delay: 150 }}>
           {#each REENFORCEMENT_TYPES as reenforcementType}
-            {#if thisReenforcement && liveComment[reenforcementType] !== 0}
+            {#if thisReenforcement && liveComment[reenforcementType] > 0}
               <button
                 title={titleCase(reenforcementType)}
                 class="btn btn-sm"

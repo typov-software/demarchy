@@ -3,11 +3,14 @@
   import BasicSection from '$lib/components/BasicSection.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import PageView from '$lib/components/PageView.svelte';
+  import type { PageData } from './$types';
+
+  export let data: PageData;
 </script>
 
 <BasicSection otherClass="!items-start">
   <div class="flex flex-row w-full items-center">
-    <Breadcrumbs />
+    <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-sm btn-square btn-primary rounded-xl">

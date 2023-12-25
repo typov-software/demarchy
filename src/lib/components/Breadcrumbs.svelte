@@ -1,100 +1,78 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import type { Group } from '$lib/models/groups';
+  import type { Organization } from '$lib/models/organizations';
   import { titleCase } from '$lib/utils/string';
 
-  export let group: Group | undefined = undefined;
-  export let groups: Group[] | undefined = undefined;
+  export let organization: Organization;
+  export let groups: undefined | Group[];
+  export let group: undefined | Group;
 
-  $: orgPath = `/d/${$page.params.slug}`;
-
+  $: root = `/d/${organization.slug}/`;
   $: parts = $page.url.pathname.split('/');
-  $: orgPart = parts?.at(3) ?? 'activity';
-  $: subPart = parts?.at(5);
+  $: matchedRoute = parts.at(4);
 
-  $: groupId = group?.id;
-  $: groupName = group?.name;
-  $: groupsPath = `${orgPath}/groups`;
-  $: groupPath = `${groupsPath}/${groupId}`;
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let config: Record<string, any>;
   $: config = {
+    access: {
+      path: root + group?.id + '/access',
+      symbol: 'key'
+    },
     activity: {
-      symbol: 'timeline',
-      path: orgPath + '/activity',
-      subroutes: {}
+      disabled: true,
+      path: root + group?.id + '/activity',
+      symbol: 'timeline'
     },
     discussions: {
-      symbol: 'forum',
-      path: orgPath + '/discussions',
-      subroutes: {}
+      disabled: true,
+      path: root + group?.id + '/discussions',
+      symbol: 'forum'
     },
-    groups: {
-      symbol: 'groups',
-      path: orgPath + '/groups',
-      subroutes: {
-        access: {
-          path: groupPath + '/access',
-          symbol: 'key'
-        },
-        feedback: {
-          path: groupPath + '/feedback',
-          symbol: 'feedback'
-        },
-        invitations: {
-          path: groupPath + '/invitations',
-          symbol: 'person_add'
-        },
-        settings: {
-          path: groupPath + '/settings',
-          symbol: 'settings'
-        }
-      }
+    documents: {
+      disabled: true,
+      path: root + group?.id + '/documents',
+      symbol: 'article'
     },
-    libraries: {
-      symbol: 'library_books',
-      path: orgPath + '/libraries',
-      subroutes: {}
+    feedback: {
+      path: root + group?.id + '/feedback',
+      symbol: 'feedback'
+    },
+    invitations: {
+      path: root + group?.id + '/invitations',
+      symbol: 'person_add'
     },
     proposals: {
-      symbol: 'history_edu',
-      path: orgPath + '/proposals',
-      subroutes: {}
+      disabled: true,
+      path: root + group?.id + '/proposals',
+      symbol: 'history_edu'
+    },
+    settings: {
+      disabled: true,
+      path: root + group?.id + '/settings',
+      symbol: 'settings'
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } as any;
-
-  $: crumbConfig = config[orgPart] ?? {};
+  };
 </script>
 
 <div class="breadcrumbs p-0">
   <ul>
-    {#if subPart}
-      <li>
-        <a
-          href={crumbConfig.path}
-          title={titleCase(orgPart ?? '')}
-          class="border-b-2 border-neutral text-neutral !no-underline hover:border-primary hover:text-base-content transition-all"
-        >
-          <span class="material-symbols-outlined mr-2">{crumbConfig.symbol}</span>
-          {titleCase(orgPart ?? '')}
-        </a>
-      </li>
-    {:else}
+    {#if groups}
       <li class="dropdown dropdown-start dropdown-bottom dropdown-hover">
-        <a
-          href={crumbConfig.path}
-          title={titleCase(orgPart ?? '')}
-          class="border-b-2 border-neutral !no-underline hover:border-primary hover:text-base-content transition-all"
-        >
-          <span class="material-symbols-outlined mr-2">{crumbConfig.symbol}</span>
-          {titleCase(orgPart ?? '')}
-        </a>
-        <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box -left-4">
-          {#each Object.keys(config) as key}
+        {#if !group}
+          <div role="button" tabindex="0" class="btn btn-sm btn-warning rounded-xl">
+            Select group
+          </div>
+        {:else}
+          <a role="button" tabindex="0" class="btn btn-sm btn-success rounded-xl" href={root}>
+            {group.name}
+          </a>
+        {/if}
+        <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
+          {#each groups as g}
             <li>
-              <a href={config[key].path} title={titleCase(key)}>
-                <span class="material-symbols-outlined">{config[key].symbol}</span>
-                {titleCase(key)}
+              <a href={root + g.id + (matchedRoute ? `/${matchedRoute}` : '')} title={g.name}>
+                {g.name}
               </a>
             </li>
           {/each}
@@ -102,44 +80,33 @@
       </li>
     {/if}
 
-    {#if group && groups}
+    {#if group}
       <li class="dropdown dropdown-start dropdown-bottom dropdown-hover">
-        <div tabindex="0" role="button" class="flex items-center">
-          {groupName}
-        </div>
-        <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
-          {#each groups as g}
+        {#if matchedRoute}
+          <div role="button" tabindex="0" class="btn btn-sm btn-ghost rounded-xl px-2">
+            <span class="material-symbols-outlined">{config[matchedRoute].symbol}</span>
+            {titleCase(matchedRoute)}
+          </div>
+        {:else}
+          <div role="button" tabindex="0" class="btn btn-sm btn-warning rounded-xl">Go to</div>
+        {/if}
+        <ul class="menu w-47 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
+          {#each Object.keys(config) as route}
             <li>
-              <a href={groupsPath + '/' + g.id + (subPart ? `/${subPart}` : '')} title={g.name}>
-                {g.name}
+              <a
+                href={config[route].path}
+                title={titleCase(route)}
+                aria-disabled={config[route].disabled}
+                class:text-neutral={config[route].disabled}
+                class:pointer-events-none={config[route].disabled}
+              >
+                <span class="material-symbols-outlined">{config[route].symbol}</span>
+                {titleCase(route)}
               </a>
             </li>
           {/each}
         </ul>
       </li>
-
-      {#if subPart}
-        <li class="dropdown dropdown-start dropdown-bottom dropdown-hover">
-          <div tabindex="0" role="button" class="flex items-center">
-            <span class="material-symbols-outlined mr-2">
-              {crumbConfig.subroutes[subPart].symbol}
-            </span>
-            {titleCase(subPart)}
-          </div>
-          <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
-            {#each Object.keys(crumbConfig.subroutes) as route}
-              <li>
-                <a href={crumbConfig.subroutes[route].path} title={titleCase(route)}>
-                  <span class="material-symbols-outlined">
-                    {crumbConfig.subroutes[route].symbol}
-                  </span>
-                  {titleCase(route)}
-                </a>
-              </li>
-            {/each}
-          </ul>
-        </li>
-      {/if}
     {/if}
   </ul>
 </div>
