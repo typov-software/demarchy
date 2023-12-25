@@ -32,10 +32,6 @@
   $: group = data.group!;
   $: groups = data.groups.slice();
 
-  $: {
-    console.log(group.name);
-  }
-
   $: showForm = false;
   $: commentBody = '';
   $: commentAnon = false;
@@ -47,6 +43,10 @@
   $: realtimeComments = [] as QueryDocumentSnapshot<DocumentData, CommentProps>[];
   $: hasMore = true;
   $: loadingMore = false;
+
+  let unsubscribe: undefined | (() => void);
+  $: unsubscribe = undefined;
+  $: settingUp = false;
 
   async function getPage() {
     if (!hasMore || loadingMore) {
@@ -80,9 +80,12 @@
     loadingMore = false;
   }
 
-  let unsubscribe: () => void;
-
-  async function subscribe() {
+  async function setup() {
+    if (settingUp) {
+      // A lifecycle method is already attempting to subscribe to firestore
+      return;
+    }
+    settingUp = true;
     await getPage();
     const after = comments.slice().shift();
     let q: Query;
@@ -108,22 +111,35 @@
         realtimeComments = [...realtimeComments, ...newComments];
       }
     });
+    settingUp = false;
+  }
+
+  function teardown() {
+    if (unsubscribe) {
+      unsubscribe();
+    }
+    comments = [];
+    realtimeComments = [];
+    hasMore = true;
+    loadingMore = false;
+    unsubscribe = undefined;
   }
 
   onMount(() => {
-    subscribe();
-    return () => {
-      unsubscribe();
-    };
+    setup();
+    return () => teardown();
   });
 
-  beforeNavigate(() => {
-    console.log('before navigate');
-    unsubscribe();
+  beforeNavigate(({ from, to }) => {
+    if (from?.url.pathname !== to?.url.pathname) {
+      teardown();
+    }
   });
 
   afterNavigate(() => {
-    console.log('after navigate');
+    if (!unsubscribe) {
+      setup();
+    }
   });
 </script>
 

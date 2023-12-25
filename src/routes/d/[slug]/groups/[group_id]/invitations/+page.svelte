@@ -6,7 +6,7 @@
   import { page } from '$app/stores';
   import type { Invitation, InvitationProps } from '$lib/models/invitations';
   import { getRoleName } from '$lib/models/roles';
-  import { goto } from '$app/navigation';
+  import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
   import type { Profile, ProfileProps } from '$lib/models/profiles';
   import { enhance } from '$app/forms';
   import BasicSection from '$lib/components/BasicSection.svelte';
@@ -22,18 +22,48 @@
 
   $: invitations = [] as Invitation[];
 
-  onMount(() => {
+  let unsubscribe: undefined | (() => void);
+  $: unsubscribe = undefined;
+  $: settingUp = false;
+
+  async function setup() {
+    if (settingUp) return;
+    settingUp = true;
     const ref = query(
       collection(db, ORGANIZATIONS, data.organization!.id, INVITATIONS),
       where('group_id', '==', $page.params.group_id)
     );
-    const unsubscribe = onSnapshot(ref, (snapshot) => {
+    unsubscribe = onSnapshot(ref, (snapshot) => {
       invitations = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as InvitationProps)
       }));
     });
-    return () => unsubscribe();
+    settingUp = false;
+  }
+
+  function teardown() {
+    if (unsubscribe) {
+      unsubscribe();
+    }
+    unsubscribe = undefined;
+  }
+
+  onMount(() => {
+    setup();
+    return () => teardown();
+  });
+
+  beforeNavigate(({ from, to }) => {
+    if (from?.url.pathname !== to?.url.pathname) {
+      teardown();
+    }
+  });
+
+  afterNavigate(() => {
+    if (!unsubscribe) {
+      setup();
+    }
   });
 
   async function onCloseModal() {
