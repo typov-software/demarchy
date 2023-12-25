@@ -9,12 +9,11 @@
   import { working } from '$lib/stores/working';
   import { user } from '$lib/firebase';
   import PageView from '$lib/components/PageView.svelte';
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import GroupNavigation from '$lib/components/GroupNavigation.svelte';
 
   export let data: PageData;
 
   $: group = data.group!;
-  $: groups = data.groups.slice();
   $: context = group.id === data.organization.id ? 'organization' : 'group';
 
   let numMembers = data.members.length ?? 0;
@@ -36,7 +35,7 @@
 
 <BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
-    <Breadcrumbs {group} {groups} />
+    <GroupNavigation organization={data.organization} groups={data.groups} group={data.group} />
 
     <div class="flex flex-1" />
 

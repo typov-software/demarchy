@@ -56,6 +56,6 @@ export const actions = {
     );
     await batch.commit();
 
-    throw redirect(301, `/d/${params.slug}/groups/${groupRef.id}`);
+    throw redirect(301, `/d/${params.slug}/${groupRef.id}`);
   }
 } satisfies Actions;

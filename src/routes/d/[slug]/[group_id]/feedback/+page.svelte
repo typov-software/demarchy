@@ -2,7 +2,6 @@
   import { autosize } from '$lib/stores/use-autosize';
   import { enhance } from '$app/forms';
   import BasicSection from '$lib/components/BasicSection.svelte';
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import CommentCard from '$lib/components/CommentCard.svelte';
   import PageView from '$lib/components/PageView.svelte';
   import { db, user } from '$lib/firebase';
@@ -26,11 +25,9 @@
   import { fly } from 'svelte/transition';
   import SvelteMarkdown from 'svelte-markdown';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
+  import GroupNavigation from '$lib/components/GroupNavigation.svelte';
 
   export let data: PageData;
-
-  $: group = data.group!;
-  $: groups = data.groups.slice();
 
   $: showForm = false;
   $: commentBody = '';
@@ -145,7 +142,7 @@
 
 <BasicSection otherClass="py-0 pb-2">
   <div class="flex flex-row w-full items-center">
-    <Breadcrumbs {group} {groups} />
+    <GroupNavigation organization={data.organization} groups={data.groups} group={data.group} />
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-square btn-sm btn-primary rounded-xl">

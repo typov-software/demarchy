@@ -16,6 +16,7 @@
   $: groupName = group?.name;
   $: groupsPath = `${orgPath}/groups`;
   $: groupPath = `${groupsPath}/${groupId}`;
+  $: libraryPath = `${orgPath}/libraries/${groupId}`;
 
   $: config = {
     activity: {
@@ -53,7 +54,16 @@
     libraries: {
       symbol: 'library_books',
       path: orgPath + '/libraries',
-      subroutes: {}
+      subroutes: {
+        documents: {
+          path: libraryPath + '/documents',
+          symbol: 'article'
+        },
+        settings: {
+          path: libraryPath + '/settings',
+          symbol: 'settings'
+        }
+      }
     },
     proposals: {
       symbol: 'history_edu',
@@ -110,7 +120,10 @@
         <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
           {#each groups as g}
             <li>
-              <a href={groupsPath + '/' + g.id + (subPart ? `/${subPart}` : '')} title={g.name}>
+              <a
+                href={orgPath + '/' + orgPart + '/' + g.id + (subPart ? `/${subPart}` : '')}
+                title={g.name}
+              >
                 {g.name}
               </a>
             </li>

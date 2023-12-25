@@ -5,13 +5,14 @@
   export let slug: string;
   export let group: Group;
   export let role: RoleAccess;
+
   let allowed = ['obs', 'mem', 'mod', 'adm'].includes(role);
 </script>
 
 <tr class="hover">
   <td>
     {#if allowed}
-      <a href="/d/{slug}/groups/{group.id}" class="link link-hover">
+      <a href="/d/{slug}/{group.id}" class="link link-hover">
         {group.name}
       </a>
     {:else}
@@ -31,15 +32,7 @@
       </button>
       <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
         <ul class="menu w-60">
-          <li>
-            <a href="/d/{slug}/groups/{group.id}">Members</a>
-          </li>
-          <li>
-            <a href="/d/{slug}/groups/{group.id}/invitations">Invitations</a>
-          </li>
-          <li>
-            <a href="/d/{slug}/groups/{group.id}/settings">Settings</a>
-          </li>
+          <li><button>TODO</button></li>
         </ul>
       </div>
     </div>

@@ -8,7 +8,7 @@ const sharedThemeOptions = {
   '--border-btn': '1px', // border width of buttons
   '--tab-border': '1px', // border width of tabs
   '--tab-radius': '0.5rem', // border radius of tabs
-  info: '#0891b2',
+  info: '#0ea5e9',
   success: '#22c55e',
   warning: '#fbbf24',
   error: '#ef4444',
