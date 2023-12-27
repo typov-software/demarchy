@@ -10,7 +10,7 @@ import type { Voucher, VoucherProps } from '$lib/models/vouchers';
 export const load = (async ({ locals, setHeaders }) => {
   const uid = locals.user_id;
   if (!uid) {
-    throw redirect(301, '/login');
+    redirect(301, '/login');
   }
 
   const snapshot = await adminVoucherRef().where('uid', '==', uid).get();

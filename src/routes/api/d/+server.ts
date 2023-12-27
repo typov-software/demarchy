@@ -15,7 +15,7 @@ import { getComparator, stableSort } from '$lib/utils/sorting';
 export const GET: RequestHandler = async ({ locals, setHeaders }) => {
   const uid = locals.user_id;
   if (!uid) {
-    throw error(401, 'unauthorized');
+    error(401, 'unauthorized');
   }
 
   const profileDoc = await adminProfileRef().doc(uid).get();

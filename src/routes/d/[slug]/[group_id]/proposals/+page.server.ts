@@ -9,7 +9,7 @@ export const load = (async ({ locals, parent }) => {
   const data = await parent();
   const groupId = data.group?.id;
   if (!groupId) {
-    throw error(403, 'invalid group id');
+    error(403, 'invalid group id');
   }
 
   // get user draft proposals and open group proposals

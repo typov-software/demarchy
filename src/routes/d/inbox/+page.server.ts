@@ -59,7 +59,7 @@ export const actions = {
 
     const invitationDoc = await adminInvitationRef(organization_id).doc(invitation_id).get();
     if (!invitationDoc.exists) {
-      throw error(401, 'unauthorized');
+      error(401, 'unauthorized');
     }
 
     const invitation: Invitation = {

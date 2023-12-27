@@ -40,7 +40,7 @@ export const actions = {
     const membersRef = adminMemberRef(organizationId, groupId);
     const membersSnapshot = await membersRef.limit(2).get();
     if (membersSnapshot.docs.length === 1 && membersSnapshot.docs.at(0)?.id === uid) {
-      throw error(403, 'forbidden');
+      error(403, 'forbidden');
     }
 
     const batch = adminDB.batch();
@@ -73,9 +73,9 @@ export const actions = {
     await batch.commit();
 
     if (context === 'group') {
-      throw redirect(301, `/d/${params.slug}/groups`);
+      redirect(301, `/d/${params.slug}/groups`);
     } else if (context === 'organization') {
-      throw redirect(301, `/d`);
+      redirect(301, `/d`);
     }
   }
 } satisfies Actions;

@@ -22,7 +22,7 @@ export const actions = {
     const created_by = formData.get('created_by') as string;
     const handle = formData.get('handle') as string;
     if (!organization_id || !group_id || !user_id || !role || !created_by || !handle) {
-      throw error(401, 'unauthorized');
+      error(401, 'unauthorized');
     }
     const invitation: InvitationProps = {
       created_at: new Date(),
@@ -62,7 +62,7 @@ export const actions = {
     });
     await batch.commit();
 
-    throw redirect(303, url.pathname);
+    redirect(303, url.pathname);
   },
 
   uninvite: async ({ request }) => {

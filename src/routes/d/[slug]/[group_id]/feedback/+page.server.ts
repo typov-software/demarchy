@@ -17,7 +17,7 @@ export const actions = {
     const isAnonymous = anonymous === 'on';
 
     if (!body) {
-      throw error(403, 'Malformed comment props');
+      error(403, 'Malformed comment props');
     }
 
     const feedbackRef = adminGroupFeedbackRef(organizationId, groupId).doc();
@@ -40,6 +40,6 @@ export const actions = {
       created_at: FieldValue.serverTimestamp()
     });
 
-    throw redirect(301, url.pathname);
+    redirect(301, url.pathname);
   }
 } satisfies Actions;

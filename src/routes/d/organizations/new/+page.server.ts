@@ -17,7 +17,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 export const load = (async ({ locals }) => {
   const uid = locals.user_id;
   if (!uid) {
-    throw redirect(301, '/login');
+    redirect(301, '/login');
   }
 
   const snapshot = await adminVoucherRef()
@@ -39,7 +39,7 @@ export const actions = {
   default: async ({ request, locals }) => {
     const uid = locals.user_id;
     if (!uid) {
-      throw redirect(301, '/login');
+      redirect(301, '/login');
     }
     const formData = await request.formData();
     const voucher_id = formData.get('voucher_id') as string;
@@ -85,6 +85,6 @@ export const actions = {
     });
     await batch.commit();
 
-    throw redirect(301, `/d/${slug}`);
+    redirect(301, `/d/${slug}`);
   }
 } satisfies Actions;

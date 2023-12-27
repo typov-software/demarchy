@@ -27,7 +27,7 @@ export const load = (async ({ params, parent, locals }) => {
    * and applies to all subroutes.
    */
   if (!organization_memberships || !organization || !allowed) {
-    throw error(403, 'forbidden');
+    error(403, 'forbidden');
   }
 
   return {

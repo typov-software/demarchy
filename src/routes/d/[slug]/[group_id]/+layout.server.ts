@@ -13,7 +13,7 @@ export const load = (async ({ parent, params, locals }) => {
   );
 
   if (!allowed) {
-    throw error(403, 'forbidden');
+    error(403, 'forbidden');
   }
 
   return {
