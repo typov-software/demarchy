@@ -283,5 +283,4 @@
   <div use:inview={{}} on:inview_enter={() => getPage()} />
 </BasicSection>
 
-<div class="flex-1" />
 <PageView />

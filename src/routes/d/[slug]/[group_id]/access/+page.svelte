@@ -125,5 +125,4 @@
   </table>
 </BasicSection>
 
-<div class="flex-1" />
 <PageView />
