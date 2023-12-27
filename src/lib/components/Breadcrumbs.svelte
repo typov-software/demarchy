@@ -43,7 +43,6 @@
       symbol: 'person_add'
     },
     proposals: {
-      disabled: true,
       path: root + group?.id + '/proposals',
       symbol: 'history_edu'
     },
@@ -107,6 +106,13 @@
           {/each}
         </ul>
       </li>
+      {#if parts.at(5)}
+        <li>
+          <a class="btn btn-sm btn-ghost rounded-xl" href={`${parts.slice(0, 6).join('/')}`}>
+            {titleCase(parts[5])}
+          </a>
+        </li>
+      {/if}
     {/if}
   </ul>
 </div>

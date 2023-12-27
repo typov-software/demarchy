@@ -14,7 +14,8 @@ import {
   SLUGS,
   VOUCHERS,
   GROUPS,
-  FEEDBACK
+  FEEDBACK,
+  PROPOSALS
 } from '$lib/models/firestore';
 
 try {
@@ -73,6 +74,10 @@ export function adminMemberRef(organization_id: string, group_id: string) {
 
 export function adminGroupFeedbackRef(organization_id: string, group_id: string) {
   return adminGroupRef(organization_id).doc(group_id).collection(FEEDBACK);
+}
+
+export function adminGroupProposalRef(organization_id: string, group_id: string) {
+  return adminGroupRef(organization_id).doc(group_id).collection(PROPOSALS);
 }
 
 export function adminInvitationRef(organization_id: string) {

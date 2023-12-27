@@ -1,7 +1,16 @@
 import type { WithId } from './utils';
 
 export interface ProposalProps {
-  archived: boolean;
+  state: 'draft' | 'open' | 'closed' | 'archived';
+
+  title: string;
+  description: string;
+
+  created_by: string;
+  created_at: Date;
+
+  // doc.id: doc.name
+  linked_docs: Record<string, string>;
 }
 
-export type Proposal = ProposalProps & WithId;
+export type Proposal = ProposalProps & WithId & { path: string };
