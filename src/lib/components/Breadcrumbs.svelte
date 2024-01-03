@@ -29,9 +29,9 @@
       path: root + group?.id + '/discussions',
       symbol: 'forum'
     },
-    documents: {
+    docs: {
       disabled: true,
-      path: root + group?.id + '/documents',
+      path: root + group?.id + '/docs',
       symbol: 'article'
     },
     feedback: {
@@ -54,7 +54,7 @@
   };
 </script>
 
-<div class="breadcrumbs p-0">
+<div class="breadcrumbs p-0 w-full">
   <ul>
     {#if groups}
       <li class="dropdown dropdown-start dropdown-bottom dropdown-hover">
@@ -82,10 +82,15 @@
     {#if group}
       <li class="dropdown dropdown-start dropdown-bottom dropdown-hover">
         {#if matchedRoute}
-          <div role="button" tabindex="0" class="btn btn-sm btn-ghost rounded-xl px-2">
+          <a
+            role="button"
+            tabindex="0"
+            class="btn btn-sm btn-ghost rounded-xl px-2"
+            href={`${parts.slice(0, 5).join('/')}`}
+          >
             <span class="material-symbols-outlined">{config[matchedRoute].symbol}</span>
             {titleCase(matchedRoute)}
-          </div>
+          </a>
         {:else}
           <div role="button" tabindex="0" class="btn btn-sm btn-warning rounded-xl">Go to</div>
         {/if}
