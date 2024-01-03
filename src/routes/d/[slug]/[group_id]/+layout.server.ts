@@ -12,11 +12,13 @@ export const load = (async ({ parent, params, locals }) => {
     organization_memberships
   );
 
-  if (!allowed) {
+  const group = groups.find((ws) => ws.id === params.group_id);
+
+  if (!allowed || !group) {
     error(403, 'forbidden');
   }
 
   return {
-    group: groups.find((ws) => ws.id === params.group_id)
+    group
   };
 }) satisfies LayoutServerLoad;
