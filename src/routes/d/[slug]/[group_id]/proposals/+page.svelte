@@ -5,6 +5,8 @@
   import PageView from '$lib/components/PageView.svelte';
   import { formatRelative } from 'date-fns';
   import type { PageData } from './$types';
+  import { enhance } from '$app/forms';
+  import { working } from '$lib/stores/working';
 
   export let data: PageData;
 
@@ -23,12 +25,28 @@
         <span class="material-symbols-outlined">more_vert</span>
       </div>
       <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+        <form
+          id="create-proposal"
+          method="post"
+          action="?/createProposal"
+          use:enhance={() => {
+            const job = working.add();
+            return ({ update }) => {
+              working.remove(job);
+              update({ reset: false });
+            };
+          }}
+        >
+          <input type="hidden" name="organization_id" value={data.organization.id} />
+          <input type="hidden" name="group_id" value={data.group.id} />
+          <input type="hidden" name="user_handle" value={data.profile.handle} />
+        </form>
         <ul class="menu w-60">
           <li>
-            <a href="{$page.url.pathname}/new">
+            <button type="submit" form="create-proposal">
               <span class="material-symbols-outlined">add</span>
               New Proposal
-            </a>
+            </button>
           </li>
         </ul>
       </div>

@@ -1,20 +1,22 @@
 <script lang="ts">
   import BasicSection from '$lib/components/BasicSection.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import PageView from '$lib/components/PageView.svelte';
-  import ProposalForm from '../ProposalForm.svelte';
+  import ProposalEditor from '../ProposalEditor.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
-
-  $: proposal = data.proposal;
-
-  $: {
-    console.log({ proposal });
-  }
 </script>
 
 <BasicSection>
-  <ProposalForm {proposal} />
+  <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
+  <ProposalEditor
+    organization={data.organization}
+    group={data.group}
+    profile={data.profile}
+    proposal={data.proposal}
+    docs={data.docs}
+  />
 </BasicSection>
 
 <PageView />

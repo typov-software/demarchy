@@ -27,6 +27,7 @@
   import { db } from '$lib/firebase';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
+  import HtmlRenderer from './HtmlRenderer.svelte';
 
   export let document: QueryDocumentSnapshot<DocumentData, CommentProps>;
   export let context: CommentContext;
@@ -230,9 +231,9 @@
       </div>
     </div>
 
-    <p class="comment-body text-base w-full">
+    <p class="markdown-body text-base w-full">
       {#if liveComment.body}
-        <SvelteMarkdown source={liveComment.body} />
+        <SvelteMarkdown source={liveComment.body} renderers={{ html: HtmlRenderer }} />
       {/if}
     </p>
 

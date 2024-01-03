@@ -3,7 +3,7 @@
   import BasicSection from '$lib/components/BasicSection.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import PageView from '$lib/components/PageView.svelte';
-  import type { PageData } from './$types';
+  import type { PageData } from '../docs/$types';
 
   export let data: PageData;
 </script>

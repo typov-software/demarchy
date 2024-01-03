@@ -26,6 +26,7 @@
   import SvelteMarkdown from 'svelte-markdown';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import HtmlRenderer from '$lib/components/HtmlRenderer.svelte';
 
   export let data: PageData;
 
@@ -201,9 +202,9 @@
           bind:value={commentBody}
         ></textarea>
       {:else}
-        <div class="comment-body bg-base-200 p-4">
+        <div class="markdown-body bg-base-200 p-4">
           <input type="hidden" name="body" value={commentBody} />
-          <SvelteMarkdown source={commentBody} />
+          <SvelteMarkdown source={commentBody} renderers={{ html: HtmlRenderer }} />
         </div>
       {/if}
       <div class="flex flex-row items-center gap-4">
