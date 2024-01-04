@@ -29,8 +29,11 @@
 
   let liveProposal = docStore<Proposal>(proposal.path);
 
+  $: hasChanges =
+    $liveProposal && (title !== $liveProposal.title || description !== $liveProposal.description);
+
   async function saveForm() {
-    if (saving) return;
+    if (saving || !hasChanges) return;
     saving = true;
     const job = working.add();
     const ref = doc(db, proposal.path);

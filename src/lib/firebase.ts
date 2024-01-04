@@ -90,7 +90,7 @@ export function docStore<T extends WithRef>(path: string) {
     unsubscribe = onSnapshot(docRef, (snapshot) => {
       const data = makeDocument<T>(snapshot);
       if (import.meta.env.DEV) {
-        console.debug(`[docStore:${path}]`, { data });
+        console.debug(`[${path}]`, { data });
       }
       set(data);
     });
