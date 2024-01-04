@@ -1,5 +1,5 @@
 import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { FB_CLIENT_EMAIL, FB_PRIVATE_KEY, FB_PROJECT_ID } from '$env/static/private';
 import pkg from 'firebase-admin';
 import {
@@ -35,6 +35,18 @@ try {
 
 export const adminDB = getFirestore();
 export const adminAuth = getAuth();
+
+export function createdTimestamps() {
+  return {
+    created_at: FieldValue.serverTimestamp(),
+    updated_at: FieldValue.serverTimestamp(),
+    archived_at: null
+  };
+}
+
+export function updatedTimestamps() {
+  return { updated_at: FieldValue.serverTimestamp() };
+}
 
 export function adminInboxRef() {
   return adminDB.collection(INBOXES);

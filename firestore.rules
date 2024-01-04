@@ -155,7 +155,7 @@ service cloud.firestore {
         match /proposals/{proposalId} {
           allow read: if canReadOrg();
           allow create: if isGroupMemberOrHigher(groupId);
-          allow update: if isGroupMemberOrHigher(groupId) && !resource.data.archived;
+          allow update: if ownsResource(resource.data.user_id);
 
           match /docs/{docId} {
             allow read: if isGroupMemberOrHigher(groupId);

@@ -1,5 +1,5 @@
 import type { Block } from './blocks';
-import type { WithId } from './utils';
+import type { WithRef } from './utils';
 
 export interface DocProps {
   user_id: string;
@@ -13,4 +13,4 @@ export interface DocProps {
   blocks: Block[];
 }
 
-export type Doc = DocProps & WithId & { path: string };
+export type Doc = DocProps & WithRef;

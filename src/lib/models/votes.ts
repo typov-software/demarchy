@@ -1,5 +1,5 @@
-import type { WithId } from './utils';
+import type { WithRef } from './utils';
 
 export interface VoteProps {}
 
-export type Vote = VoteProps & WithId;
+export type Vote = VoteProps & WithRef;

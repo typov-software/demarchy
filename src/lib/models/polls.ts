@@ -1,5 +1,5 @@
-import type { WithId } from './utils';
+import type { WithRef } from './utils';
 
 export interface PollProps {}
 
-export type Poll = PollProps & WithId;
+export type Poll = PollProps & WithRef;

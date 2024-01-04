@@ -1,7 +1,8 @@
 import { adminProfileRef } from '$lib/server/admin';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import type { Profile, ProfileProps } from '$lib/models/profiles';
+import type { Profile } from '$lib/models/profiles';
+import { makeDocument } from '$lib/models/utils';
 
 export const load = (async ({ params }) => {
   const handle = params.handle;
@@ -10,10 +11,7 @@ export const load = (async ({ params }) => {
   if (!doc) {
     error(404, 'No profile with this handle');
   }
-  const userProfile: Profile = {
-    id: doc.id,
-    ...(doc.data() as ProfileProps)
-  };
+  const userProfile: Profile = makeDocument(doc);
   return {
     userProfile
   };

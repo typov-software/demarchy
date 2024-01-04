@@ -5,7 +5,9 @@ import {
   adminDB,
   adminInboxRef,
   adminInvitationRef,
-  adminNotificationRef
+  adminNotificationRef,
+  createdTimestamps,
+  updatedTimestamps
 } from '$lib/server/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import type { InvitationProps } from '$lib/models/invitations';
@@ -37,12 +39,13 @@ export const actions = {
     const invitationRef = adminInvitationRef(organization_id).doc();
     const batch = adminDB.batch();
     batch.create(invitationRef, {
-      ...invitation,
-      created_at: FieldValue.serverTimestamp()
+      ...createdTimestamps(),
+      ...invitation
     });
     batch.set(
       adminInboxRef().doc(user_id),
       {
+        ...updatedTimestamps(),
         unread: FieldValue.increment(1)
       },
       {
@@ -50,7 +53,7 @@ export const actions = {
       }
     );
     batch.create(adminNotificationRef(user_id).doc(), {
-      created_at: FieldValue.serverTimestamp(),
+      ...createdTimestamps(),
       type: 'invitation',
       read: false,
       data: {

@@ -1,4 +1,4 @@
-import type { WithId } from './utils';
+import type { WithRef } from './utils';
 
 /**
  * Demarchy organizations are made up of many groups -- including one for the org and one
@@ -15,4 +15,4 @@ export interface GroupProps {
   created_by: string;
 }
 
-export type Group = GroupProps & WithId;
+export type Group = GroupProps & WithRef;

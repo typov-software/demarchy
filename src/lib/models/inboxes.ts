@@ -1,7 +1,7 @@
-import type { WithId } from './utils';
+import type { WithRef } from './utils';
 
 export interface InboxProps {
   unread: number;
 }
 
-export type Inbox = InboxProps & WithId;
+export type Inbox = InboxProps & WithRef;

@@ -1,9 +1,7 @@
 <script lang="ts">
-  import SvelteMarkdown from 'svelte-markdown';
   import type { Block } from '$lib/models/blocks';
-  import { autosize } from '$lib/stores/use-autosize';
   import { afterUpdate } from 'svelte';
-  import HtmlRenderer from '$lib/components/HtmlRenderer.svelte';
+  import MarkdownTextarea from '$lib/components/MarkdownTextarea.svelte';
 
   export let index: number;
   export let block: Block;
@@ -24,7 +22,6 @@
 
   $: dragging = false;
   $: over = false;
-  $: placeholder = `Empty ${block.type} block`;
   $: focused = false;
   $: hasUnfocused = false;
   $: saving = false;
@@ -36,56 +33,33 @@
     }
   });
 
-  function onKeydown(e: KeyboardEvent) {
-    switch (e.key) {
-      case 'Enter': {
-        if (!e.shiftKey) {
-          console.log('add block');
-          textareaEl?.blur();
-          onAddBlock(index + 1);
-          e.preventDefault();
-        }
-        break;
-      }
-      case 'Escape': {
-        textareaEl?.blur();
-        break;
-      }
-    }
-  }
-
-  function onDragStart(e: DragEvent) {
+  function handleDragStart(e: DragEvent) {
     dragging = true;
     e.dataTransfer!.clearData();
     e.dataTransfer!.effectAllowed = 'move';
     e.dataTransfer!.setData('text/plain', index.toString());
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function onDragEnd(e: DragEvent) {
+  function handleDragEnd() {
     dragging = false;
     over = false;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function onDragOver(e: DragEvent) {
+  function handleDragOver(e: DragEvent) {
     e.preventDefault();
     over = true;
     return false;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function onDragEnter(e: DragEvent) {
+  function handleDragEnter() {
     over = true;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function onDragLeave(e: DragEvent) {
+  function handleDragLeave() {
     over = false;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function onDragDrop(e: DragEvent) {
+  function handleDragDrop(e: DragEvent) {
     const previous = Number(e.dataTransfer!.getData('text/plain'));
     if (previous === index) {
       return;
@@ -113,53 +87,24 @@
   class:opacity-40={dragging}
   class:over
   draggable={!focused}
-  on:dragstart={onDragStart}
-  on:dragend={onDragEnd}
-  on:dragover={onDragOver}
-  on:dragenter={onDragEnter}
-  on:dragleave={onDragLeave}
-  on:drop={onDragDrop}
+  on:dragstart={handleDragStart}
+  on:dragend={handleDragEnd}
+  on:dragover={handleDragOver}
+  on:dragenter={handleDragEnter}
+  on:dragleave={handleDragLeave}
+  on:drop={handleDragDrop}
 >
   <div class="input-container">
-    <div class="input-wrap" class:absolute={!focused}>
-      <textarea
-        class="input-textarea"
-        class:opacity-0={!focused}
-        bind:this={textareaEl}
-        autocapitalize="off"
-        autocomplete="off"
-        rows={1}
-        {placeholder}
-        disabled={saving}
-        on:focus={() => {
-          placeholder = '';
-          focused = true;
-        }}
-        on:blur={() => {
-          placeholder = `Empty ${block.type} block`;
-          focused = false;
-          hasUnfocused = true;
-          saveBlock();
-        }}
-        use:autosize
-        bind:value={content}
-        on:keydown={onKeydown}
-      ></textarea>
-    </div>
+    <MarkdownTextarea
+      inputName="content"
+      bind:value={content}
+      placeholder={focused ? `Empty ${block.type} block` : ''}
+      onSave={() => saveBlock()}
+      onFocusChange={(f) => (focused = f)}
+      onEnter={() => onAddBlock(index + 1)}
+    />
+
     {#if !focused}
-      <button
-        on:click={() => textareaEl?.focus()}
-        class="focus-input-btn markdown-body"
-        class:absolute={focused}
-      >
-        <SvelteMarkdown
-          source={content}
-          options={{ breaks: true }}
-          renderers={{
-            html: HtmlRenderer
-          }}
-        />
-      </button>
       <div class="dropdown dropdown-top dropdown-end">
         <button class="options-btn">
           <span class="material-symbols-outlined">drag_indicator</span>
@@ -221,25 +166,6 @@
 
   .input-container {
     @apply flex relative w-full;
-  }
-
-  .input-wrap {
-    @apply w-full;
-  }
-
-  .input-textarea {
-    @apply textarea text-sm leading-6;
-    @apply px-2 py-0;
-    @apply min-h-0 w-full;
-    @apply bg-base-200;
-    @apply rounded-none;
-  }
-
-  .focus-input-btn {
-    @apply px-2 py-0 pb-2;
-    @apply w-full min-h-8 h-full;
-    @apply text-left;
-    @apply relative z-10;
   }
 
   .options-btn {

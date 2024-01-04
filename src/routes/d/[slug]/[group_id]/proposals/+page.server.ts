@@ -1,8 +1,8 @@
-import { adminGroupProposalRef } from '$lib/server/admin';
+import { adminGroupProposalRef, createdTimestamps } from '$lib/server/admin';
 import { error, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import type { Proposal, ProposalProps } from '$lib/models/proposals';
-import { FieldValue } from 'firebase-admin/firestore';
+import { makeDocument } from '$lib/models/utils';
 
 export const load = (async ({ locals, parent }) => {
   const uid = locals.user_id!;
@@ -20,27 +20,13 @@ export const load = (async ({ locals, parent }) => {
     .orderBy('created_at', 'desc')
     .get();
 
-  const drafts: Proposal[] = draftSnap.docs.map((doc) => ({
-    id: doc.id,
-    path: doc.ref.path,
-    ...(doc.data() as ProposalProps),
-    created_at: doc.data().created_at.toDate(),
-    updated_at: doc.data().updated_at.toDate()
-  }));
-
+  const drafts: Proposal[] = draftSnap.docs.map((doc) => makeDocument(doc));
   const groupSnap = await adminGroupProposalRef(data.organization.id, groupId)
     .where('state', '==', 'open')
     .orderBy('created_at', 'desc')
     .get();
 
-  const open: Proposal[] = groupSnap.docs.map((doc) => ({
-    id: doc.id,
-    path: doc.ref.path,
-    ...(doc.data() as ProposalProps),
-    created_at: doc.data().created_at.toDate(),
-    updated_at: doc.data().updated_at.toDate()
-  }));
-
+  const open: Proposal[] = groupSnap.docs.map((doc) => makeDocument(doc));
   return {
     drafts,
     open
@@ -59,16 +45,15 @@ export const actions = {
       user_handle,
       group_id,
       state: 'draft',
-      title: '',
+      title: `Unnamed proposal by @${user_handle}`,
       description: '',
       amendments: {},
       links: {}
     };
     const proposalDoc = await adminGroupProposalRef(organization_id, group_id).doc();
     await proposalDoc.set({
-      ...props,
-      created_at: FieldValue.serverTimestamp(),
-      updated_at: FieldValue.serverTimestamp()
+      ...createdTimestamps(),
+      ...props
     });
     redirect(301, `/d/${params.slug}/${group_id}/proposals/${proposalDoc.id}`);
   }

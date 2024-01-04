@@ -4,14 +4,13 @@
   import type { Organization } from '$lib/models/organizations';
   import type { Profile } from '$lib/models/profiles';
   import type { Proposal } from '$lib/models/proposals';
-  import { autosize } from '$lib/stores/use-autosize';
   import { working } from '$lib/stores/working';
-  import { onMount } from 'svelte';
-  import SvelteMarkdown from 'svelte-markdown';
   import DocEditor from '../docs/DocEditor.svelte';
   import type { Doc } from '$lib/models/docs';
   import { pluralize } from '$lib/utils/string';
-  import HtmlRenderer from '$lib/components/HtmlRenderer.svelte';
+  import { doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+  import { db, docStore } from '$lib/firebase';
+  import MarkdownTextarea from '$lib/components/MarkdownTextarea.svelte';
 
   export let profile: Profile;
   export let organization: Organization;
@@ -19,23 +18,33 @@
   export let proposal: Proposal;
   export let docs: Doc[];
 
-  $: title = '';
-  $: description = '';
+  let title = proposal.title;
+  $: title;
+
+  let description = proposal.description;
+  $: description;
 
   $: nAmendments = Object.keys(proposal.amendments).length;
+  $: saving = false;
 
-  onMount(() => {
-    title = proposal.title;
-    description = proposal.description;
-  });
+  let liveProposal = docStore<Proposal>(proposal.path);
 
-  $: hasChanges = title !== proposal.title || description !== proposal.description;
-  $: canSave = title.trim().length > 0;
-  $: viewRaw = true;
+  async function saveForm() {
+    if (saving) return;
+    saving = true;
+    const job = working.add();
+    const ref = doc(db, proposal.path);
+    await updateDoc(ref, {
+      title,
+      description,
+      updated_at: serverTimestamp()
+    });
+    working.remove(job);
+    saving = false;
+  }
 </script>
 
 <div class="card bg-base-200 max-w-4xl w-full rounded-lg">
-  <form id="proposal-form" method="post" action="?/saveProposal" />
   <div class="card-body p-4 gap-4">
     <input
       bind:value={title}
@@ -45,51 +54,19 @@
       name="title"
       class="input bg-base-300 rounded-lg"
       placeholder="Proposal Title"
+      on:blur={() => saveForm()}
     />
-    {#if viewRaw}
-      <textarea
-        use:autosize
-        form="proposal-form"
-        class="textarea bg-base-300 rounded-lg"
-        name="description"
-        id="description"
-        placeholder="Describe the intentions and changes of this proposal"
-        rows={3}
-        autocomplete="off"
-        bind:value={description}
-      ></textarea>
-    {:else}
-      <div class="markdown-body p-4 bg-base-300 rounded-xl">
-        <input
-          form="proposal-form"
-          type="hidden"
-          id="description"
-          name="description"
-          value={description}
-        />
-        <SvelteMarkdown source={description} renderers={{ html: HtmlRenderer }} />
-      </div>
-    {/if}
+    <MarkdownTextarea
+      bind:value={description}
+      inputName="description"
+      placeholder="Describe the intentions and changes of this proposal"
+      onSave={async () => {
+        if (description !== $liveProposal?.description) {
+          await saveForm();
+        }
+      }}
+    />
 
-    <div class="flex flex-1 gap-2">
-      <button
-        class="btn btn-xs text-xs"
-        class:btn-error={viewRaw}
-        on:click={(e) => {
-          e.preventDefault();
-          viewRaw = true;
-        }}>Raw</button
-      >
-      <button
-        class="btn btn-xs text-xs"
-        disabled={!description.trim().length}
-        class:btn-success={!viewRaw}
-        on:click={(e) => {
-          e.preventDefault();
-          viewRaw = false;
-        }}>Formatted</button
-      >
-    </div>
     <div class="card-actions items-center">
       <div class="dropdown dropdown-bottom dropdown-hover">
         <div role="button" tabindex="0" class="btn rounded-xl btn-warning">
@@ -135,16 +112,6 @@
           </li>
         </ul>
       </div>
-      <div class="flex-1" />
-      <button
-        form="proposal-form"
-        type="submit"
-        class="btn btn-success rounded-xl"
-        disabled={!hasChanges || !canSave}
-      >
-        <span class="material-symbols-outlined">edit_note</span>
-        {proposal ? 'Save' : 'Create'}
-      </button>
     </div>
   </div>
 </div>

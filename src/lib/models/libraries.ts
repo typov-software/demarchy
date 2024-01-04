@@ -1,4 +1,4 @@
-import type { WithId } from './utils';
+import type { WithRef } from './utils';
 
 export interface LibraryProps {
   organization_id: string;
@@ -14,4 +14,4 @@ export interface LibraryProps {
   };
 }
 
-export type Library = LibraryProps & WithId;
+export type Library = LibraryProps & WithRef;

@@ -1,5 +1,5 @@
 import type { RoleAccess } from './roles';
-import type { WithId } from './utils';
+import type { WithRef } from './utils';
 
 /**
  * The `id` for this document is a Firebase User id. This document is only
@@ -26,4 +26,4 @@ export interface MembershipProps {
   standing: 'ok' | 'pause';
 }
 
-export type Membership = MembershipProps & WithId;
+export type Membership = MembershipProps & WithRef;

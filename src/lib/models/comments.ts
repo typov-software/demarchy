@@ -1,5 +1,5 @@
 import type { ReactionType, ReenforcementType } from './reactions';
-import type { WithId } from './utils';
+import type { WithRef } from './utils';
 
 export type CommentContext = 'feedback' | 'proposals' | 'polls';
 
@@ -34,6 +34,6 @@ export interface CommentProps extends ReactionCounts, ReenforcementCounts {
 }
 
 export type Comment = CommentProps &
-  WithId & {
+  WithRef & {
     path: string;
   };

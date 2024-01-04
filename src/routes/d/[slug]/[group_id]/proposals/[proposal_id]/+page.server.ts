@@ -1,29 +1,18 @@
 import type { Doc, DocProps } from '$lib/models/docs';
-import type { Amendment, Proposal, ProposalProps } from '$lib/models/proposals';
+import type { Amendment, Proposal } from '$lib/models/proposals';
 import { adminDB, adminGroupProposalRef } from '$lib/server/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import type { Actions, PageServerLoad } from './$types';
+import { makeDocument } from '$lib/models/utils';
 
 export const load = (async ({ params, parent }) => {
   const data = await parent();
   const proposalId = params.proposal_id;
   const proposalRef = adminGroupProposalRef(data.organization.id, data.group!.id).doc(proposalId);
   const proposalDoc = await proposalRef.get();
-  const proposal: Proposal = {
-    id: proposalDoc.id,
-    path: proposalDoc.ref.path,
-    ...(proposalDoc.data() as ProposalProps),
-    created_at: proposalDoc.data()?.created_at.toDate(),
-    updated_at: proposalDoc.data()?.updated_at.toDate()
-  };
+  const proposal = makeDocument<Proposal>(proposalDoc);
   const docsSnapshot = await proposalRef.collection('docs').orderBy('name', 'asc').get();
-  const docs: Doc[] = docsSnapshot.docs.map((doc) => ({
-    id: doc.id,
-    path: doc.ref.path,
-    ...(doc.data() as DocProps),
-    created_at: doc.data().created_at.toDate(),
-    updated_at: doc.data().updated_at.toDate()
-  }));
+  const docs: Doc[] = docsSnapshot.docs.map((doc) => makeDocument(doc));
   return {
     proposal,
     docs
@@ -31,7 +20,6 @@ export const load = (async ({ params, parent }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  saveProposal: async () => {},
   addDoc: async ({ request, locals }) => {
     const formData = await request.formData();
     const userId = locals.user_id!;
@@ -48,7 +36,13 @@ export const actions = {
       user_handle: userHandle,
       group_id: groupId,
       name: 'Unnamed',
-      blocks: []
+      blocks: [
+        {
+          id: crypto.randomUUID(),
+          type: 'text',
+          content: ''
+        }
+      ]
     };
     const amendment: Amendment = {
       doc_id: docRef.id,
