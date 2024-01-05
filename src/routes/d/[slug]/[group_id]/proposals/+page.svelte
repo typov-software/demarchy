@@ -9,11 +9,6 @@
   import { working } from '$lib/stores/working';
 
   export let data: PageData;
-
-  console.log({
-    drafts: data.drafts,
-    open: data.open
-  });
 </script>
 
 <BasicSection>
@@ -59,6 +54,7 @@
         <thead>
           <tr>
             <th>Your Drafts</th>
+            <th class="text-right">Last updated</th>
           </tr>
         </thead>
         <tbody>
@@ -70,7 +66,7 @@
                 </a>
               </td>
               <td class="text-right text-neutral">
-                <span>{formatRelative(proposal.created_at, new Date())}</span>
+                <span>{formatRelative(proposal.updated_at, new Date())}</span>
               </td>
             </tr>
           {/each}
@@ -85,6 +81,7 @@
         <thead>
           <tr>
             <th>Open proposals</th>
+            <th class="text-right">Last updated</th>
           </tr>
         </thead>
         <tbody>
@@ -96,10 +93,7 @@
                 </a>
               </td>
               <td class="text-right text-neutral">
-                <span>{formatRelative(proposal.created_at, new Date())}</span>
-              </td>
-              <td class="text-right text-neutral">
-                <span>{formatRelative(proposal.created_at, new Date())}</span>
+                <span>{formatRelative(proposal.updated_at, new Date())}</span>
               </td>
             </tr>
           {/each}

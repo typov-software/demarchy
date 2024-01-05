@@ -6,6 +6,7 @@
   export let value: string;
   export let inputName: string;
   export let placeholder = 'placeholder';
+  export let editable = true;
   export let onSave: () => Promise<void>;
   export let onFocusChange: undefined | ((focused: boolean) => void) = undefined;
   export let onEnter: undefined | (() => void) = undefined;
@@ -54,21 +55,24 @@
     on:focus={handleFocus}
     on:keydown={onKeydown}
     use:autosize
+    disabled={!editable}
     autocapitalize="off"
     autocomplete="off"
-    class="markdown-textarea-input"
+    class="markdown-textarea-input disabled:text-base-content"
     class:absolute={!focused}
     class:opacity-0={!focused}
+    class:pointer-events-none={!editable}
     name={inputName}
     {placeholder}
     rows={1}
   />
   {#if !focused}
     <button
-      on:click={() => element.focus()}
+      on:click={() => editable && element.focus()}
       class="markdown-textarea-focus-btn markdown-body"
       class:absolute={focused}
       class:opacity-50={!value.trim().length}
+      class:pointer-events-none={!editable}
     >
       <SvelteMarkdown
         source={value.trim().length ? value : placeholder}

@@ -6,6 +6,7 @@
   export let index: number;
   export let block: Block;
   export let focus: boolean = false;
+  export let editable = true;
 
   export let onAddBlock: (afterIndex: number) => void;
   export let onSaveBlock: (index: number, block: Block) => Promise<void>;
@@ -34,6 +35,7 @@
   });
 
   function handleDragStart(e: DragEvent) {
+    if (!editable) return;
     dragging = true;
     e.dataTransfer!.clearData();
     e.dataTransfer!.effectAllowed = 'move';
@@ -60,6 +62,7 @@
   }
 
   function handleDragDrop(e: DragEvent) {
+    if (!editable) return;
     const previous = Number(e.dataTransfer!.getData('text/plain'));
     if (previous === index) {
       return;
@@ -69,7 +72,7 @@
   }
 
   async function saveBlock() {
-    if (saving || content === block.content) return;
+    if (saving || content === block.content || !editable) return;
     saving = true;
     await onSaveBlock(index, {
       ...block,
@@ -86,7 +89,7 @@
   class="block-editor flex items-center focus-within:z-10"
   class:opacity-40={dragging}
   class:over
-  draggable={!focused}
+  draggable={!focused && editable}
   on:dragstart={handleDragStart}
   on:dragend={handleDragEnd}
   on:dragover={handleDragOver}
@@ -96,6 +99,7 @@
 >
   <div class="input-container">
     <MarkdownTextarea
+      {editable}
       inputName="content"
       bind:value={content}
       placeholder={focused ? `Empty ${block.type} block` : ''}
@@ -104,7 +108,7 @@
       onEnter={() => onAddBlock(index + 1)}
     />
 
-    {#if !focused}
+    {#if !focused && editable}
       <div class="dropdown dropdown-top dropdown-end">
         <button class="options-btn">
           <span class="material-symbols-outlined">drag_indicator</span>

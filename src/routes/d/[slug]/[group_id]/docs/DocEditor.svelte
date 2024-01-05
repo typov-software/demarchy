@@ -11,6 +11,7 @@
 
   export let doc: Doc;
   export let amendment: Amendment;
+  export let editable = true;
 
   let docName = doc.name;
   $: docName;
@@ -99,7 +100,7 @@
           delete
         {/if}
       </span>
-      {#if expanded}
+      {#if expanded && editable}
         <input
           bind:this={nameInput}
           bind:value={docName}
@@ -159,6 +160,7 @@
             {onDeleteBlock}
             {onSortBlock}
             focus={focused === index}
+            {editable}
           />
         {/each}
       </div>

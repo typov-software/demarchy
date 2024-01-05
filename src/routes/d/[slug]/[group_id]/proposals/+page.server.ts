@@ -17,13 +17,13 @@ export const load = (async ({ locals, parent }) => {
   const draftSnap = await adminGroupProposalRef(data.organization.id, groupId)
     .where('user_id', '==', uid)
     .where('state', '==', 'draft')
-    .orderBy('created_at', 'desc')
+    .orderBy('updated_at', 'desc')
     .get();
 
   const drafts: Proposal[] = draftSnap.docs.map((doc) => makeDocument(doc));
   const groupSnap = await adminGroupProposalRef(data.organization.id, groupId)
     .where('state', '==', 'open')
-    .orderBy('created_at', 'desc')
+    .orderBy('updated_at', 'desc')
     .get();
 
   const open: Proposal[] = groupSnap.docs.map((doc) => makeDocument(doc));

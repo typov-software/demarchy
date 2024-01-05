@@ -11,6 +11,7 @@
   import { doc, serverTimestamp, updateDoc } from 'firebase/firestore';
   import { db, docStore } from '$lib/firebase';
   import MarkdownTextarea from '$lib/components/MarkdownTextarea.svelte';
+  import { formatRelative } from 'date-fns';
 
   export let profile: Profile;
   export let organization: Organization;
@@ -29,11 +30,12 @@
 
   let liveProposal = docStore<Proposal>(proposal.path);
 
+  $: editable = $liveProposal?.state === 'draft';
   $: hasChanges =
     $liveProposal && (title !== $liveProposal.title || description !== $liveProposal.description);
 
   async function saveForm() {
-    if (saving || !hasChanges) return;
+    if (saving || !hasChanges || !editable) return;
     saving = true;
     const job = working.add();
     const ref = doc(db, proposal.path);
@@ -48,14 +50,30 @@
 </script>
 
 <div class="card bg-base-200 max-w-4xl w-full rounded-lg">
-  <div class="card-body p-4 gap-4">
+  <div
+    class="card-title text-xs font-semibold bg-base-300 p-4 rounded-lg"
+    style:border-bottom-left-radius="0"
+    style:border-bottom-right-radius="0"
+  >
+    <h3>
+      Created by
+      <a class="link link-success" href={`/d/profiles/${proposal.user_handle}`}
+        >@{proposal.user_handle}</a
+      >
+      {formatRelative(proposal.created_at, new Date())}
+    </h3>
+  </div>
+
+  <div class="card-body p-4 gap-2">
     <input
       bind:value={title}
       form="proposal-form"
       type="text"
       id="title"
       name="title"
-      class="input bg-base-300 rounded-lg"
+      class="input text-xl bg-base-200 rounded-none font-bold px-2 disabled:text-base-content font-noto"
+      disabled={!editable}
+      class:pointer-events-none={!editable}
       placeholder="Proposal Title"
       on:blur={() => saveForm()}
     />
@@ -63,6 +81,7 @@
       bind:value={description}
       inputName="description"
       placeholder="Describe the intentions and changes of this proposal"
+      {editable}
       onSave={async () => {
         if (description !== $liveProposal?.description) {
           await saveForm();
@@ -70,52 +89,78 @@
       }}
     />
 
-    <div class="card-actions items-center">
-      <div class="dropdown dropdown-bottom dropdown-hover">
-        <div role="button" tabindex="0" class="btn rounded-xl btn-warning">
-          <span class="material-symbols-outlined">history_edu</span>
-          Amendments
+    {#if editable}
+      <div class="card-actions h-10 mt-2">
+        <div class="flex-1" />
+        <div class="dropdown dropdown-bottom dropdown-hover">
+          <div
+            role="button"
+            tabindex="0"
+            class="btn btn-sm rounded-lg btn-neutral"
+            style:height="35px"
+          >
+            <span class="material-symbols-outlined">history_edu</span>
+            Amendments
+          </div>
+          <ul class="menu w-80 z-[1] dropdown-content shadow bg-base-300 rounded-box">
+            <li>
+              <form
+                id="add-doc"
+                class="hidden"
+                method="post"
+                action="?/addDoc"
+                use:enhance={() => {
+                  const job = working.add();
+                  return ({ update }) => {
+                    working.remove(job);
+                    update({ reset: true });
+                  };
+                }}
+              >
+                <input type="hidden" name="organization_id" value={organization.id} />
+                <input type="hidden" name="group_id" value={group.id} />
+                <input type="hidden" name="user_handle" value={profile.handle} />
+                <input type="hidden" name="proposal_id" value={proposal.id} />
+              </form>
+              <button form="add-doc" type="submit">
+                <span class="material-symbols-outlined">post_add</span>
+                Add a Doc
+              </button>
+            </li>
+            <li>
+              <button on:click|preventDefault={() => ({})}>
+                <span class="material-symbols-outlined">edit_note</span>
+                Update a Doc</button
+              >
+            </li>
+            <li>
+              <button on:click|preventDefault={() => ({})}>
+                <span class="material-symbols-outlined">delete</span>
+                Destroy a Doc</button
+              >
+            </li>
+          </ul>
         </div>
-        <ul class="menu w-80 z-[1] dropdown-content shadow bg-base-300 rounded-box">
-          <li>
-            <form
-              id="add-doc"
-              class="hidden"
-              method="post"
-              action="?/addDoc"
-              use:enhance={() => {
-                const job = working.add();
-                return ({ update }) => {
-                  working.remove(job);
-                  update({ reset: true });
-                };
-              }}
-            >
-              <input type="hidden" name="organization_id" value={organization.id} />
-              <input type="hidden" name="group_id" value={group.id} />
-              <input type="hidden" name="user_handle" value={profile.handle} />
-              <input type="hidden" name="proposal_id" value={proposal.id} />
-            </form>
-            <button form="add-doc" type="submit">
-              <span class="material-symbols-outlined">post_add</span>
-              Add a Doc
-            </button>
-          </li>
-          <li>
-            <button on:click|preventDefault={() => ({})}>
-              <span class="material-symbols-outlined">edit_note</span>
-              Update a Doc</button
-            >
-          </li>
-          <li>
-            <button on:click|preventDefault={() => ({})}>
-              <span class="material-symbols-outlined">delete</span>
-              Destroy a Doc</button
-            >
-          </li>
-        </ul>
+
+        <form
+          method="post"
+          action="?/openProposal"
+          use:enhance={() => {
+            const job = working.add();
+            return ({ update }) => {
+              working.remove(job);
+              update({ reset: false });
+            };
+          }}
+        >
+          <input type="hidden" name="path" value={proposal.path} />
+          <button class="btn btn-success btn-sm rounded-lg h-9">
+            <span class="material-symbols-outlined">present_to_all</span>
+            Open Proposal</button
+          >
+        </form>
       </div>
-    </div>
+    {/if}
   </div>
 </div>
 
@@ -126,7 +171,7 @@
   </h2>
   <div class="flex flex-col items-center w-full gap-2">
     {#each docs as doc (doc.id)}
-      <DocEditor {doc} amendment={proposal.amendments[doc.id]} />
+      <DocEditor {doc} amendment={proposal.amendments[doc.id]} {editable} />
     {/each}
   </div>
 {/if}
