@@ -9,7 +9,7 @@
   import type { Doc } from '$lib/models/docs';
   import { pluralize } from '$lib/utils/string';
   import { doc, serverTimestamp, updateDoc } from 'firebase/firestore';
-  import { db, docStore } from '$lib/firebase';
+  import { db, docStore, user } from '$lib/firebase';
   import MarkdownTextarea from '$lib/components/MarkdownTextarea.svelte';
   import { formatRelative } from 'date-fns';
 
@@ -31,8 +31,12 @@
   let liveProposal = docStore<Proposal>(proposal.path);
 
   $: editable = $liveProposal?.state === 'draft';
+  $: ownsProposal = $liveProposal && $liveProposal.user_id === $user?.uid;
   $: hasChanges =
     $liveProposal && (title !== $liveProposal.title || description !== $liveProposal.description);
+
+  let closeModal: HTMLDialogElement;
+  let revertToDraft: HTMLDialogElement;
 
   async function saveForm() {
     if (saving || !hasChanges || !editable) return;
@@ -51,17 +55,49 @@
 
 <div class="card bg-base-200 max-w-4xl w-full rounded-lg">
   <div
-    class="card-title text-xs font-semibold bg-base-300 p-4 rounded-lg"
+    class="card-title text-xs font-semibold bg-base-300 pl-4 pr-2 py-2 rounded-lg"
     style:border-bottom-left-radius="0"
     style:border-bottom-right-radius="0"
   >
-    <h3>
+    <h3 class="flex-1">
       Created by
       <a class="link link-success" href={`/d/profiles/${proposal.user_handle}`}
         >@{proposal.user_handle}</a
       >
       {formatRelative(proposal.created_at, new Date())}
     </h3>
+    {#if editable}
+      <button class="btn btn-square btn-sm btn-ghost rounded-lg">
+        <span class="material-symbols-outlined">draft</span>
+      </button>
+    {/if}
+    {#if ownsProposal && !editable}
+      <div class="dropdown dropdown-bottom dropdown-end">
+        <button class="btn btn-square btn-sm rounded-lg"
+          ><span class="material-symbols-outlined">more_vert</span></button
+        >
+        <ul class="dropdown-content w-60 menu z-[1] shadow bg-base-100 rounded-box">
+          <li>
+            <button
+              class="flex items-center gap-2 text-warning w-full flex-1"
+              on:click={() => revertToDraft?.showModal()}
+            >
+              <span class="material-symbols-outlined">undo</span>
+              Revert to draft</button
+            >
+          </li>
+          <li>
+            <button
+              class="flex items-center gap-2 text-error w-full flex-1"
+              on:click={() => closeModal?.showModal()}
+            >
+              <span class="material-symbols-outlined">cancel_presentation</span>
+              Close proposal</button
+            >
+          </li>
+        </ul>
+      </div>
+    {/if}
   </div>
 
   <div class="card-body p-4 gap-2">
@@ -175,3 +211,61 @@
     {/each}
   </div>
 {/if}
+
+<dialog id="close-proposal" class="modal" bind:this={closeModal}>
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Warning</h3>
+    <p class="py-4">Are you sure you want to close this proposal?</p>
+
+    <div class="flex justify-end gap-2">
+      <button class="btn btn-info" on:click={() => closeModal.close()}>No, keep it open</button>
+      <form
+        method="post"
+        action="?/closeProposal"
+        use:enhance={() => {
+          closeModal?.close();
+          const job = working.add();
+          return ({ update }) => {
+            working.remove(job);
+            update({ reset: true });
+          };
+        }}
+      >
+        <input type="hidden" name="path" value={proposal.path} />
+        <button class="btn btn-error btn-outline">I'm sure, close it</button>
+      </form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<dialog id="revert-to-draft" class="modal" bind:this={revertToDraft}>
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Warning</h3>
+    <p class="py-4">Are you sure you want to revert this proposal to a draft?</p>
+
+    <div class="flex justify-end gap-2">
+      <button class="btn btn-info" on:click={() => revertToDraft.close()}>No, keep it open</button>
+      <form
+        method="post"
+        action="?/revertToDraft"
+        use:enhance={() => {
+          revertToDraft?.close();
+          const job = working.add();
+          return ({ update }) => {
+            working.remove(job);
+            update({ reset: true });
+          };
+        }}
+      >
+        <input type="hidden" name="path" value={proposal.path} />
+        <button class="btn btn-warning btn-outline">I'm sure, revert to draft</button>
+      </form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>

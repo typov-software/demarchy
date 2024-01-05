@@ -1,5 +1,5 @@
 import type { Doc, DocProps } from '$lib/models/docs';
-import type { Amendment, Proposal } from '$lib/models/proposals';
+import type { Amendment, Proposal, ProposalProps } from '$lib/models/proposals';
 import { adminDB, adminGroupProposalRef, updatedTimestamps } from '$lib/server/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import type { Actions, PageServerLoad } from './$types';
@@ -20,34 +20,54 @@ export const load = (async ({ params, parent }) => {
   };
 }) satisfies PageServerLoad;
 
+async function updateProposalState(
+  proposalPath: string,
+  userId: string,
+  state: ProposalProps['state']
+) {
+  if (!proposalPath) {
+    // ensure form has not been tampered with
+    return error(403, 'unauthorized');
+  }
+  const proposalDoc = await adminDB.doc(proposalPath).get();
+  if (!proposalDoc.exists) {
+    console.log('not exists');
+    // proposal must exist, sanity check
+    return error(403, 'unauthorized');
+  }
+  const proposalData = proposalDoc.data() ?? {};
+  if (proposalData.user_id !== userId) {
+    console.log('created mismatch');
+    // only the author can open their proposal drafts
+    return error(403, 'unauthorized');
+  }
+  const batch = adminDB.batch();
+  // update proposal state
+  batch.update(proposalDoc.ref, {
+    ...updatedTimestamps(),
+    state
+  });
+  await batch.commit();
+}
+
 export const actions = {
   openProposal: async ({ request, locals }) => {
     const formData = await request.formData();
     const userId = locals.user_id!;
     const proposalPath = formData.get('path') as string;
-    if (!proposalPath) {
-      // ensure form has not been tampered with
-      return error(403, 'unauthorized');
-    }
-    const proposalDoc = await adminDB.doc(proposalPath).get();
-    if (!proposalDoc.exists) {
-      console.log('not exists');
-      // proposal must exist, sanity check
-      return error(403, 'unauthorized');
-    }
-    const proposalData = proposalDoc.data() ?? {};
-    if (proposalData.user_id !== userId) {
-      console.log('created mismatch');
-      // only the author can open their proposal drafts
-      return error(403, 'unauthorized');
-    }
-    const batch = adminDB.batch();
-    // update proposal state
-    batch.update(proposalDoc.ref, {
-      ...updatedTimestamps(),
-      state: 'open'
-    });
-    await batch.commit();
+    await updateProposalState(proposalPath, userId, 'open');
+  },
+  closeProposal: async ({ request, locals }) => {
+    const formData = await request.formData();
+    const userId = locals.user_id!;
+    const proposalPath = formData.get('path') as string;
+    await updateProposalState(proposalPath, userId, 'closed');
+  },
+  revertToDraft: async ({ request, locals }) => {
+    const formData = await request.formData();
+    const userId = locals.user_id!;
+    const proposalPath = formData.get('path') as string;
+    await updateProposalState(proposalPath, userId, 'draft');
   },
   addDoc: async ({ request, locals }) => {
     const formData = await request.formData();
