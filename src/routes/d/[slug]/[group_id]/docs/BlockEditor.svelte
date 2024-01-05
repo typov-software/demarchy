@@ -86,9 +86,12 @@
   bind:this={dragSrcEl}
   id={block.id}
   role="listitem"
-  class="block-editor flex items-center focus-within:z-10"
+  class="flex items-center focus-within:z-10 px-2 hover:bg-base-300"
   class:opacity-40={dragging}
-  class:over
+  class:border-2={over}
+  class:border-info={over}
+  class:border-dashed={over}
+  style:padding-top="0.4rem"
   draggable={!focused && editable}
   on:dragstart={handleDragStart}
   on:dragend={handleDragEnd}
@@ -97,7 +100,7 @@
   on:dragleave={handleDragLeave}
   on:drop={handleDragDrop}
 >
-  <div class="input-container">
+  <div class="flex relative w-full">
     <MarkdownTextarea
       {editable}
       inputName="content"
@@ -110,8 +113,11 @@
 
     {#if !focused && editable}
       <div class="dropdown dropdown-top dropdown-end">
-        <button class="options-btn">
-          <span class="material-symbols-outlined">drag_indicator</span>
+        <button
+          class="options-btn btn btn-sm btn-square shadow-none rounded-lg h-auto absolute z-20 right-0 px-1 w-auto opacity-0"
+          style:top="-0.2rem"
+        >
+          <span class="material-symbols-outlined text-neutral text-lg">drag_indicator</span>
         </button>
         <div class="dropdown-content z-30 shadow bg-base-300">
           <ul class="menu menu-sm px-0 w-80">
@@ -154,43 +160,7 @@
 </div>
 
 <style lang="scss">
-  .block-editor {
-    @apply flex;
-    @apply px-2;
-    padding-top: 0.4rem;
-
-    &:hover {
-      @apply bg-base-300;
-    }
-
-    &.over {
-      @apply border-2 border-info border-dashed;
-    }
-  }
-
-  .input-container {
-    @apply flex relative w-full;
-  }
-
-  .options-btn {
-    @apply btn btn-sm btn-square;
-    @apply shadow-none rounded-lg;
-    @apply h-auto;
-    @apply absolute z-20 right-0;
-    @apply px-1 w-auto;
-    top: -0.2rem;
-    opacity: 0;
-
-    span {
-      @apply text-neutral text-lg;
-    }
-  }
-
-  [draggable='true'] {
-    &:hover {
-      .options-btn {
-        opacity: 1;
-      }
-    }
+  [draggable='true']:hover .options-btn {
+    opacity: 1;
   }
 </style>
