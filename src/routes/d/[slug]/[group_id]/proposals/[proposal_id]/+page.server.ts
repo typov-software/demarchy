@@ -31,13 +31,11 @@ async function updateProposalState(
   }
   const proposalDoc = await adminDB.doc(proposalPath).get();
   if (!proposalDoc.exists) {
-    console.log('not exists');
     // proposal must exist, sanity check
     return error(403, 'unauthorized');
   }
   const proposalData = proposalDoc.data() ?? {};
   if (proposalData.user_id !== userId) {
-    console.log('created mismatch');
     // only the author can open their proposal drafts
     return error(403, 'unauthorized');
   }
