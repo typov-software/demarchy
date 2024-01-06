@@ -1,5 +1,12 @@
 import type { WithRef } from './utils';
 
+export interface DocSummary {
+  id: string;
+  path: string;
+  name: string;
+  updated_at: FirebaseFirestore.FieldValue | Date;
+}
+
 export interface LibraryProps {
   extends_library_id: string | null;
   organization_id: string;
@@ -7,8 +14,7 @@ export interface LibraryProps {
   latest: boolean;
 
   docs: {
-    // [filepath]: doc_id
-    [key: string]: string;
+    [key: string]: DocSummary;
   };
 
   assets: {

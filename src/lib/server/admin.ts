@@ -15,7 +15,9 @@ import {
   VOUCHERS,
   GROUPS,
   FEEDBACK,
-  PROPOSALS
+  PROPOSALS,
+  LIBRARIES,
+  DOCS
 } from '$lib/models/firestore';
 
 try {
@@ -86,6 +88,14 @@ export function adminMemberRef(organization_id: string, group_id: string) {
 
 export function adminGroupFeedbackRef(organization_id: string, group_id: string) {
   return adminGroupRef(organization_id).doc(group_id).collection(FEEDBACK);
+}
+
+export function adminGroupDocRef(organization_id: string, group_id: string) {
+  return adminGroupRef(organization_id).doc(group_id).collection(DOCS);
+}
+
+export function adminGroupLibraryRef(organization_id: string, group_id: string) {
+  return adminGroupRef(organization_id).doc(group_id).collection(LIBRARIES);
 }
 
 export function adminGroupProposalRef(organization_id: string, group_id: string) {

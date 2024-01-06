@@ -10,7 +10,7 @@
   import './editor.scss';
 
   export let doc: Doc;
-  export let amendment: Amendment;
+  export let amendment: undefined | Amendment = undefined;
   export let editable = true;
 
   let docName = doc.name;
@@ -19,7 +19,9 @@
   let nameInput: HTMLInputElement;
   $: nameInput;
 
-  let expanded = false;
+  export let expanded = false;
+  $: expanded;
+
   let focused: number | undefined;
   $: focused = undefined;
 
@@ -91,15 +93,17 @@
 <div class="card bg-base-200 max-w-4xl w-full rounded-lg">
   <div class="card-body gap-0 p-0" class:pb-4={expanded}>
     <h3 class="card-title text-sm w-full items-center flex pl-4">
-      <span class="material-symbols-outlined">
-        {#if amendment.type === 'create'}
-          post_add
-        {:else if amendment.type === 'update'}
-          edit_note
-        {:else if amendment.type === 'destroy'}
-          delete
-        {/if}
-      </span>
+      {#if amendment}
+        <span class="material-symbols-outlined">
+          {#if amendment.type === 'create'}
+            post_add
+          {:else if amendment.type === 'update'}
+            edit_note
+          {:else if amendment.type === 'destroy'}
+            delete
+          {/if}
+        </span>
+      {/if}
       {#if expanded && editable}
         <input
           bind:this={nameInput}
@@ -124,14 +128,16 @@
         </span>
       {/if}
       <div class="flex-1" />
-      <span
-        class="text-xs rounded-full py-1 px-2"
-        class:bg-success={amendment.type === 'create'}
-        class:bg-warning={amendment.type === 'update'}
-        class:bg-error={amendment.type === 'destroy'}
-      >
-        {amendment.type}
-      </span>
+      {#if amendment}
+        <span
+          class="text-xs rounded-full py-1 px-2"
+          class:bg-success={amendment.type === 'create'}
+          class:bg-warning={amendment.type === 'update'}
+          class:bg-error={amendment.type === 'destroy'}
+        >
+          {amendment.type}
+        </span>
+      {/if}
       <button
         class="expand-button btn btn-square shadow-none bg-base-200 rounded-lg flex"
         class:expanded

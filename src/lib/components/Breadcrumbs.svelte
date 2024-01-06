@@ -30,7 +30,6 @@
       symbol: 'forum'
     },
     docs: {
-      disabled: true,
       path: root + group?.id + '/docs',
       symbol: 'article'
     },

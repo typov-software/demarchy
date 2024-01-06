@@ -137,7 +137,13 @@ export const actions = {
           ...createdTimestamps()
         });
         // Update next library doc map, with doc name to doc id
-        nextLibraryProps.docs[createdDoc.name] = createdDoc.id;
+        // nextLibraryProps.docs[createdDoc.name] = createdDoc.id;
+        nextLibraryProps.docs[destRef.id] = {
+          id: destRef.id,
+          path: destRef.path,
+          name: createdDoc.name,
+          updated_at: FieldValue.serverTimestamp()
+        };
       }
     }
 
@@ -199,6 +205,7 @@ export const actions = {
     batch.set(
       proposalRef,
       {
+        ...updatedTimestamps(),
         amendments: { [docRef.id]: amendment }
       },
       { merge: true }
