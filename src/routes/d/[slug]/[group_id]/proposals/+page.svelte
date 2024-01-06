@@ -101,6 +101,33 @@
       </table>
     </div>
   {/if}
+
+  {#if data.adopted.length}
+    <div class="flex flex-col w-full">
+      <table class="table w-full">
+        <thead>
+          <tr>
+            <th>Adopted proposals</th>
+            <th class="text-right">Last updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each data.adopted as proposal}
+            <tr>
+              <td>
+                <a href={$page.url.pathname + '/' + proposal.id} class="link">
+                  <span>{proposal.title}</span>
+                </a>
+              </td>
+              <td class="text-right text-neutral">
+                <span>{formatRelative(proposal.updated_at, new Date())}</span>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+  {/if}
 </BasicSection>
 
 <PageView />

@@ -161,6 +161,10 @@ service cloud.firestore {
             allow read: if isGroupMemberOrHigher(groupId);
             allow write: if ownsResource(resource.data.user_id);
           }
+
+          match /tallies/{tallyId} {
+            allow read, write: if isGroupMemberOrHigher(groupId);
+          }
         }
 
         match /ballots/{ballotId} {

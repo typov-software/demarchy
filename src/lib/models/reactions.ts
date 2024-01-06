@@ -58,6 +58,16 @@ export function createEmptyReenforcements() {
   return out as Record<ReenforcementType, number>;
 }
 
+export type ReactionCounts = {
+  [key in ReactionType]: number;
+};
+
+export type ReenforcementCounts = {
+  [key in ReenforcementType]: number;
+};
+
+export type ReactionTally = ReactionCounts & ReenforcementCounts;
+
 export interface ReactionProps {
   context: CommentContext;
   context_id: string;

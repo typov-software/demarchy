@@ -1,15 +1,7 @@
-import type { ReactionType, ReenforcementType } from './reactions';
+import type { ReactionCounts, ReenforcementCounts } from './reactions';
 import type { WithRef } from './utils';
 
 export type CommentContext = 'feedback' | 'proposals' | 'polls';
-
-type ReactionCounts = {
-  [key in ReactionType]: number;
-};
-
-type ReenforcementCounts = {
-  [key in ReenforcementType]: number;
-};
 
 // https://fireship.io/courses/firestore-data-modeling/models-tree/
 export interface CommentProps extends ReactionCounts, ReenforcementCounts {
@@ -33,7 +25,4 @@ export interface CommentProps extends ReactionCounts, ReenforcementCounts {
   // reenforcement_counts: Record<ReenforcementType, number>;
 }
 
-export type Comment = CommentProps &
-  WithRef & {
-    path: string;
-  };
+export type Comment = CommentProps & WithRef;

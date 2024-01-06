@@ -16,7 +16,7 @@ export interface ProposalProps {
   user_handle: string;
   group_id: string;
 
-  state: 'draft' | 'open' | 'closed' | 'archived';
+  state: 'draft' | 'open' | 'dropped' | 'adopted' | 'archived';
 
   title: string;
   description: string;

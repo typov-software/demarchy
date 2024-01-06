@@ -19,17 +19,24 @@ export const load = (async ({ locals, parent }) => {
     .where('state', '==', 'draft')
     .orderBy('updated_at', 'desc')
     .get();
-
   const drafts: Proposal[] = draftSnap.docs.map((doc) => makeDocument(doc));
-  const groupSnap = await adminGroupProposalRef(data.organization.id, groupId)
+
+  const openSnap = await adminGroupProposalRef(data.organization.id, groupId)
     .where('state', '==', 'open')
     .orderBy('updated_at', 'desc')
     .get();
+  const open: Proposal[] = openSnap.docs.map((doc) => makeDocument(doc));
 
-  const open: Proposal[] = groupSnap.docs.map((doc) => makeDocument(doc));
+  const adoptedSnap = await adminGroupProposalRef(data.organization.id, groupId)
+    .where('state', '==', 'adopted')
+    .orderBy('updated_at', 'desc')
+    .get();
+  const adopted: Proposal[] = adoptedSnap.docs.map((doc) => makeDocument(doc));
+
   return {
     drafts,
-    open
+    open,
+    adopted
   };
 }) satisfies PageServerLoad;
 

@@ -12,12 +12,16 @@
   import { db, docStore, user } from '$lib/firebase';
   import MarkdownTextarea from '$lib/components/MarkdownTextarea.svelte';
   import { formatRelative } from 'date-fns';
+  import type { Reaction } from '$lib/models/reactions';
 
   export let profile: Profile;
   export let organization: Organization;
   export let group: Group;
   export let proposal: Proposal;
   export let docs: Doc[];
+
+  let reaction: null | Reaction;
+  $: reaction = null;
 
   let title = proposal.title;
   $: title;
@@ -30,13 +34,15 @@
 
   let liveProposal = docStore<Proposal>(proposal.path);
 
+  $: isOpen = $liveProposal?.state === 'open';
   $: editable = $liveProposal?.state === 'draft';
   $: ownsProposal = $liveProposal && $liveProposal.user_id === $user?.uid;
   $: hasChanges =
     $liveProposal && (title !== $liveProposal.title || description !== $liveProposal.description);
 
-  let closeModal: HTMLDialogElement;
-  let revertToDraft: HTMLDialogElement;
+  let dropModal: HTMLDialogElement;
+  let revertModal: HTMLDialogElement;
+  let adoptModal: HTMLDialogElement;
 
   async function saveForm() {
     if (saving || !hasChanges || !editable) return;
@@ -50,6 +56,10 @@
     });
     working.remove(job);
     saving = false;
+  }
+
+  function handleClickSeen() {
+    //
   }
 </script>
 
@@ -71,7 +81,7 @@
         <span class="material-symbols-outlined">draft</span>
       </button>
     {/if}
-    {#if ownsProposal && !editable}
+    {#if ownsProposal && isOpen && !editable}
       <div class="dropdown dropdown-bottom dropdown-end">
         <button class="btn btn-square btn-sm rounded-lg"
           ><span class="material-symbols-outlined">more_vert</span></button
@@ -80,7 +90,7 @@
           <li>
             <button
               class="flex items-center gap-2 text-warning w-full flex-1"
-              on:click={() => revertToDraft?.showModal()}
+              on:click={() => revertModal?.showModal()}
             >
               <span class="material-symbols-outlined">undo</span>
               Revert to draft</button
@@ -89,10 +99,10 @@
           <li>
             <button
               class="flex items-center gap-2 text-error w-full flex-1"
-              on:click={() => closeModal?.showModal()}
+              on:click={() => dropModal?.showModal()}
             >
               <span class="material-symbols-outlined">cancel_presentation</span>
-              Close proposal</button
+              Drop proposal</button
             >
           </li>
         </ul>
@@ -197,11 +207,33 @@
         </form>
       </div>
     {/if}
+    {#if isOpen}
+      <div class="flex">
+        <div class="flex-1" />
+        <button
+          class="flex flex-row items-center btn btn-xs"
+          class:btn-filled={!reaction}
+          class:btn-neutral={!reaction}
+          class:btn-primary={reaction}
+          class:pointer-events-none={reaction}
+          on:click={handleClickSeen}
+        >
+          {#if saving}
+            <div class="loading loading-xs loading-spinner" />
+          {:else}
+            <span class="material-symbols-outlined text-base">
+              {reaction ? 'visibility' : 'visibility_off'}
+            </span>
+          {/if}
+          0
+        </button>
+      </div>
+    {/if}
   </div>
 </div>
 
 {#if nAmendments}
-  <h2 class="divider divider-primary w-full text-sm m-0">
+  <h2 class="divider divider-info w-full text-sm m-0">
     {nAmendments}
     {pluralize('Amendment', nAmendments)}
   </h2>
@@ -212,18 +244,27 @@
   </div>
 {/if}
 
-<dialog id="close-proposal" class="modal" bind:this={closeModal}>
+{#if isOpen}
+  <h2 class="divider divider-success w-full text-sm m-0">Consensus</h2>
+  <div class="flex flex-wrap items-center w-full gap-2">
+    <!-- <button class="btn">Add clarifying question or concern</button>
+    <button class="btn">Block proposal</button> -->
+    <button class="btn" on:click={() => adoptModal.showModal()}>Adopt proposal</button>
+  </div>
+{/if}
+
+<dialog id="drop-proposal" class="modal" bind:this={dropModal}>
   <div class="modal-box">
     <h3 class="font-bold text-lg">Warning</h3>
-    <p class="py-4">Are you sure you want to close this proposal?</p>
+    <p class="py-4">Are you sure you want to drop this proposal?</p>
 
     <div class="flex justify-end gap-2">
-      <button class="btn btn-info" on:click={() => closeModal.close()}>No, keep it open</button>
+      <button class="btn btn-info" on:click={() => dropModal.close()}>No, keep it open</button>
       <form
         method="post"
-        action="?/closeProposal"
+        action="?/dropProposal"
         use:enhance={() => {
-          closeModal?.close();
+          dropModal?.close();
           const job = working.add();
           return ({ update }) => {
             working.remove(job);
@@ -232,7 +273,7 @@
         }}
       >
         <input type="hidden" name="path" value={proposal.path} />
-        <button class="btn btn-error btn-outline">I'm sure, close it</button>
+        <button class="btn btn-error btn-outline">I'm sure, drop it</button>
       </form>
     </div>
   </div>
@@ -241,18 +282,18 @@
   </form>
 </dialog>
 
-<dialog id="revert-to-draft" class="modal" bind:this={revertToDraft}>
+<dialog id="revert-to-draft" class="modal" bind:this={revertModal}>
   <div class="modal-box">
     <h3 class="font-bold text-lg">Warning</h3>
     <p class="py-4">Are you sure you want to revert this proposal to a draft?</p>
 
     <div class="flex justify-end gap-2">
-      <button class="btn btn-info" on:click={() => revertToDraft.close()}>No, keep it open</button>
+      <button class="btn btn-info" on:click={() => revertModal.close()}>No, keep it open</button>
       <form
         method="post"
         action="?/revertToDraft"
         use:enhance={() => {
-          revertToDraft?.close();
+          revertModal?.close();
           const job = working.add();
           return ({ update }) => {
             working.remove(job);
@@ -262,6 +303,38 @@
       >
         <input type="hidden" name="path" value={proposal.path} />
         <button class="btn btn-warning btn-outline">I'm sure, revert to draft</button>
+      </form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<dialog id="adopt-proposal" class="modal" bind:this={adoptModal}>
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Warning</h3>
+    <p class="py-4">
+      This bypasses the planned consensus process. Are you sure you want to adopt this proposal?
+    </p>
+
+    <div class="flex justify-end gap-2">
+      <button class="btn btn-secondary" on:click={() => adoptModal.close()}>No</button>
+      <form
+        method="post"
+        action="?/DEV_adoptProposal"
+        use:enhance={() => {
+          adoptModal?.close();
+          const job = working.add();
+          return ({ update }) => {
+            working.remove(job);
+            update({ reset: true });
+          };
+        }}
+      >
+        <input type="hidden" name="path" value={proposal.path} />
+        <input type="hidden" name="organization_id" value={organization.id} />
+        <button class="btn btn-primary">I'm sure, immediately adopt this</button>
       </form>
     </div>
   </div>
