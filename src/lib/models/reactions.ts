@@ -1,5 +1,5 @@
 import type { CommentContext } from './comments';
-import type { WithRef } from './utils';
+import type { DocumentMeta } from './utils';
 
 export type ReactionType =
   | 'joy'
@@ -76,4 +76,4 @@ export interface ReactionProps {
   reenforcement: ReenforcementType | null;
 }
 
-export type Reaction = ReactionProps & WithRef;
+export type Reaction = ReactionProps & DocumentMeta;

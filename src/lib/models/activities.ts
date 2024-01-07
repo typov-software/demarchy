@@ -1,4 +1,4 @@
-import type { WithRef } from './utils';
+import type { DocumentMeta } from './utils';
 
 export type ActivityType = 'proposal_opened' | 'proposal_adopted' | 'proposal_rejected';
 
@@ -7,4 +7,4 @@ export interface ActivityProps {
   type: ActivityType;
 }
 
-export type Activity = ActivityProps & WithRef;
+export type Activity = ActivityProps & DocumentMeta;

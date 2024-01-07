@@ -1,5 +1,5 @@
 import type { RoleAccess } from './roles';
-import type { WithRef } from './utils';
+import type { DocumentMeta } from './utils';
 
 /**
  * This document type belongs to a members collection on a group document.
@@ -18,4 +18,4 @@ export interface MemberProps {
   handle: string;
 }
 
-export type Member = MemberProps & WithRef;
+export type Member = MemberProps & DocumentMeta;

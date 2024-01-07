@@ -1,5 +1,5 @@
-import type { WithRef } from './utils';
+import type { DocumentMeta } from './utils';
 
 export interface VoteProps {}
 
-export type Vote = VoteProps & WithRef;
+export type Vote = VoteProps & DocumentMeta;

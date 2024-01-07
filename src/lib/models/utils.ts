@@ -1,4 +1,4 @@
-export interface WithRef {
+export interface DocumentMeta {
   id: string;
   path: string;
   created_at: Date;
@@ -6,7 +6,7 @@ export interface WithRef {
   archived_at: Date | null;
 }
 
-export function makeDocument<T extends WithRef>(d: {
+export function makeDocument<T extends DocumentMeta>(d: {
   id: string;
   ref: { path: string };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

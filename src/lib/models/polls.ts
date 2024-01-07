@@ -1,5 +1,5 @@
-import type { WithRef } from './utils';
+import type { DocumentMeta } from './utils';
 
 export interface PollProps {}
 
-export type Poll = PollProps & WithRef;
+export type Poll = PollProps & DocumentMeta;

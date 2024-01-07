@@ -1,4 +1,4 @@
-import type { WithRef } from './utils';
+import type { DocumentMeta } from './utils';
 
 export interface DocSummary {
   id: string;
@@ -22,4 +22,4 @@ export interface LibraryProps {
   };
 }
 
-export type Library = LibraryProps & WithRef;
+export type Library = LibraryProps & DocumentMeta;

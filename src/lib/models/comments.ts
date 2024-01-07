@@ -1,5 +1,5 @@
 import type { ReactionCounts, ReenforcementCounts } from './reactions';
-import type { WithRef } from './utils';
+import type { DocumentMeta } from './utils';
 
 export type CommentContext = 'feedback' | 'proposals' | 'polls';
 
@@ -25,4 +25,4 @@ export interface CommentProps extends ReactionCounts, ReenforcementCounts {
   // reenforcement_counts: Record<ReenforcementType, number>;
 }
 
-export type Comment = CommentProps & WithRef;
+export type Comment = CommentProps & DocumentMeta;

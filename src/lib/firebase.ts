@@ -14,7 +14,7 @@ import {
   PUBLIC_FB_STORAGE_BUCKET,
   PUBLIC_USE_EMULATORS
 } from '$env/static/public';
-import { makeDocument, type WithRef } from './models/utils';
+import { makeDocument, type DocumentMeta } from './models/utils';
 
 const firebaseConfig = {
   apiKey: PUBLIC_FB_API_KEY,
@@ -81,7 +81,7 @@ export const user = userStore();
  * @param  {string} path document path or reference
  * @returns a store with realtime updates on document data
  */
-export function docStore<T extends WithRef>(path: string) {
+export function docStore<T extends DocumentMeta>(path: string) {
   let unsubscribe: () => void;
 
   const docRef = doc(db, path);

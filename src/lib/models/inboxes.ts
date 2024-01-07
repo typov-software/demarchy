@@ -1,7 +1,7 @@
-import type { WithRef } from './utils';
+import type { DocumentMeta } from './utils';
 
 export interface InboxProps {
   unread: number;
 }
 
-export type Inbox = InboxProps & WithRef;
+export type Inbox = InboxProps & DocumentMeta;

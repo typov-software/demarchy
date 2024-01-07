@@ -1,5 +1,5 @@
 import type { Block } from './blocks';
-import type { WithRef } from './utils';
+import type { DocumentMeta } from './utils';
 
 export interface DocProps {
   user_id: string;
@@ -13,4 +13,4 @@ export interface DocProps {
   blocks: Block[];
 }
 
-export type Doc = DocProps & WithRef;
+export type Doc = DocProps & DocumentMeta;

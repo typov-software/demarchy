@@ -1,4 +1,4 @@
-import type { WithRef } from './utils';
+import type { DocumentMeta } from './utils';
 
 export interface Amendment {
   doc_id: string;
@@ -28,4 +28,4 @@ export interface ProposalProps {
   links: Record<string, LinkedResource>;
 }
 
-export type Proposal = ProposalProps & WithRef;
+export type Proposal = ProposalProps & DocumentMeta;
