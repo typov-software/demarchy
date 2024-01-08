@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { doc, getFirestore, onSnapshot } from 'firebase/firestore';
+import { doc, getFirestore, initializeFirestore, onSnapshot } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import { derived, writable, type Readable } from 'svelte/store';
@@ -14,6 +14,7 @@ import {
   PUBLIC_FB_STORAGE_BUCKET,
   PUBLIC_USE_EMULATORS
 } from '$env/static/public';
+import { makeDocument, type DocumentMeta } from './models/utils';
 
 const firebaseConfig = {
   apiKey: PUBLIC_FB_API_KEY,
@@ -27,6 +28,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
+initializeFirestore(app, {
+  ignoreUndefinedProperties: true
+});
 export const db = getFirestore();
 export const auth = getAuth();
 export const storage = getStorage();
@@ -77,17 +81,23 @@ export const user = userStore();
  * @param  {string} path document path or reference
  * @returns a store with realtime updates on document data
  */
-export function docStore<T>(path: string) {
+export function docStore<T extends DocumentMeta>(path: string) {
   let unsubscribe: () => void;
 
   const docRef = doc(db, path);
 
   const { subscribe } = writable<T | null>(null, (set) => {
     unsubscribe = onSnapshot(docRef, (snapshot) => {
-      set((snapshot.data() as T) ?? null);
+      const data = makeDocument<T>(snapshot);
+      if (import.meta.env.DEV) {
+        console.debug(`[${path}]`, { data });
+      }
+      set(data);
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+    };
   });
 
   return {

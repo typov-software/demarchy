@@ -33,3 +33,11 @@ const HANDLE_REGEXP = /^(?=[a-z0-9._]{3,33}$)(?!.*[_.]{2})[^_.].*[^_.]$/;
 export function checkValidHandle(handle: string): boolean {
   return handle.length > 2 && handle.length <= 32 && HANDLE_REGEXP.test(handle);
 }
+
+export function pluralize(text: string, n: number, s = 's') {
+  if (n === 1) {
+    return text;
+  } else {
+    return `${text}${s}`;
+  }
+}

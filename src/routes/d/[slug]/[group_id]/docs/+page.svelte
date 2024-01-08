@@ -3,9 +3,13 @@
   import BasicSection from '$lib/components/BasicSection.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import PageView from '$lib/components/PageView.svelte';
-  import type { PageData } from './$types';
+  import type { PageData } from '../docs/$types';
 
   export let data: PageData;
+
+  console.log(data.library);
+
+  $: docIds = data.library ? Object.keys(data.library.docs) : [];
 </script>
 
 <BasicSection otherClass="!items-start">
@@ -28,7 +32,29 @@
       </div>
     </div>
   </div>
+
+  {#if data.library && docIds.length}
+    <div class="flex flex-col w-full">
+      <table class="table w-full">
+        <thead>
+          <tr>
+            <th>{data.group.name} library</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each docIds as docId (docId)}
+            <tr>
+              <td>
+                <a href={$page.url.pathname + '/' + docId} class="link">
+                  <span>{data.library.docs[docId].name}</span>
+                </a>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+  {/if}
 </BasicSection>
 
-<div class="flex-1" />
 <PageView />

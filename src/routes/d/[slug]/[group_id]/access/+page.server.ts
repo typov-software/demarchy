@@ -1,25 +1,20 @@
 import type { Actions, PageServerLoad } from './$types';
 import { adminDB, adminMemberRef, adminMembershipRef } from '$lib/server/admin';
-import type { Member, MemberProps } from '$lib/models/members';
+import type { Member } from '$lib/models/members';
 import { error, redirect } from '@sveltejs/kit';
-import type { OrderByDirection, Timestamp } from 'firebase-admin/firestore';
+import type { OrderByDirection } from 'firebase-admin/firestore';
+import { makeDocument } from '$lib/models/utils';
 
 export const load = (async ({ params, url, parent }) => {
   const direction: OrderByDirection = (url.searchParams.get('direction') ??
     'asc') as OrderByDirection;
   const sortField = url.searchParams.get('sortBy') ?? 'name';
-
-  const wid = params.group_id;
+  const groupId = params.group_id;
   const data = await parent();
-  const snapshot = await adminMemberRef(data.organization!.id, wid)
+  const snapshot = await adminMemberRef(data.organization!.id, groupId)
     .orderBy(sortField, direction)
     .get();
-  const members: Member[] = snapshot.docs.map((doc) => ({
-    ...(doc.data() as MemberProps),
-    id: doc.id,
-    joined_at: (doc.data().joined_at as Timestamp).toDate()
-  }));
-
+  const members: Member[] = snapshot.docs.map((doc) => makeDocument(doc));
   return {
     members
   };
@@ -40,7 +35,7 @@ export const actions = {
     const membersRef = adminMemberRef(organizationId, groupId);
     const membersSnapshot = await membersRef.limit(2).get();
     if (membersSnapshot.docs.length === 1 && membersSnapshot.docs.at(0)?.id === uid) {
-      throw error(403, 'forbidden');
+      error(403, 'forbidden');
     }
 
     const batch = adminDB.batch();
@@ -73,9 +68,9 @@ export const actions = {
     await batch.commit();
 
     if (context === 'group') {
-      throw redirect(301, `/d/${params.slug}/groups`);
+      redirect(301, `/d/${params.slug}/groups`);
     } else if (context === 'organization') {
-      throw redirect(301, `/d`);
+      redirect(301, `/d`);
     }
   }
 } satisfies Actions;

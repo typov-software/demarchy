@@ -6,7 +6,7 @@ import { SUPPORTED_PROVIDER_IDS, type AuthProvider } from '$lib/models/profiles'
 export const load = (async ({ locals }) => {
   const uid = locals.user_id;
   if (!uid) {
-    throw redirect(301, '/login');
+    redirect(301, '/login');
   }
 
   const user = await adminAuth.getUser(uid);

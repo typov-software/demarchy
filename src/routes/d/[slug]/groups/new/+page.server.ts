@@ -1,5 +1,11 @@
-import { adminDB, adminMemberRef, adminMembershipRef, adminGroupRef } from '$lib/server/admin';
-import { FieldValue } from 'firebase-admin/firestore';
+import {
+  adminDB,
+  adminMemberRef,
+  adminMembershipRef,
+  adminGroupRef,
+  createdTimestamps,
+  updatedTimestamps
+} from '$lib/server/admin';
 import type { Actions } from './$types';
 import { redirect } from '@sveltejs/kit';
 
@@ -18,16 +24,17 @@ export const actions = {
     const memberRef = adminMemberRef(organization_id, groupRef.id).doc(uid);
     const batch = adminDB.batch();
     batch.create(groupRef, {
+      ...createdTimestamps(),
       name,
       description,
       library_id: null,
       organization_id,
-      created_at: FieldValue.serverTimestamp(),
       created_by: uid
     });
     batch.set(
       membershipRef,
       {
+        ...updatedTimestamps(),
         uid,
         organization_id,
         roles: {
@@ -42,11 +49,11 @@ export const actions = {
     batch.set(
       memberRef,
       {
+        ...createdTimestamps(),
         uid,
         group_id: groupRef.id,
         organization_id,
         role: 'mem',
-        joined_at: FieldValue.serverTimestamp(),
         name: profileName,
         handle: profileHandle
       },
@@ -56,6 +63,6 @@ export const actions = {
     );
     await batch.commit();
 
-    throw redirect(301, `/d/${params.slug}/${groupRef.id}`);
+    redirect(301, `/d/${params.slug}/${groupRef.id}`);
   }
 } satisfies Actions;

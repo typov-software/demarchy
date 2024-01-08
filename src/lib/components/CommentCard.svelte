@@ -15,18 +15,19 @@
   import { titleCase } from '$lib/utils/string';
   import {
     QueryDocumentSnapshot,
-    Timestamp,
     doc,
     getDoc,
     increment,
     onSnapshot,
-    serverTimestamp,
     writeBatch,
-    type DocumentData
+    type DocumentData,
+    serverTimestamp
   } from 'firebase/firestore';
   import { db } from '$lib/firebase';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
+  import HtmlRenderer from './HtmlRenderer.svelte';
+  import { makeDocument } from '$lib/models/utils';
 
   export let document: QueryDocumentSnapshot<DocumentData, CommentProps>;
   export let context: CommentContext;
@@ -37,15 +38,11 @@
   let now = new Date();
 
   let comment: Comment;
-  $: comment = {
-    id: document.id,
-    path: document.ref.path,
-    ...(document.data() as CommentProps),
-    created_at: document.data().created_at?.toDate()
-  };
+  $: comment = makeDocument(document);
   $: liveComment = { ...comment };
   $: isAnonymous = liveComment.user_id === null;
-  $: existingReaction = null as Reaction | null;
+  let existingReaction: null | Reaction;
+  $: existingReaction = null;
   $: thisReaction = existingReaction?.reaction;
   $: thisReenforcement = existingReaction?.reenforcement;
 
@@ -78,16 +75,12 @@
     unsubscribe = onSnapshot(commentRef, function onNext(snapshot) {
       liveComment = {
         ...liveComment,
-        ...snapshot.data(),
-        created_at: (snapshot.data()?.created_at as Timestamp).toDate()
+        ...makeDocument(snapshot)
       };
     });
     const reactionDoc = await getDoc(reactionRef);
     if (reactionDoc.exists()) {
-      existingReaction = {
-        id: reactionDoc.id,
-        ...(reactionDoc.data() as ReactionProps)
-      };
+      existingReaction = makeDocument<Reaction>(reactionDoc);
     } else {
       existingReaction = null;
     }
@@ -109,17 +102,22 @@
     const batch = writeBatch(db);
     batch.set(reactionRef, {
       ...reactionProps,
-      created_at: serverTimestamp()
+      created_at: serverTimestamp(),
+      updated_at: serverTimestamp()
     });
     batch.update(commentRef, {
-      seen: increment(1)
+      seen: increment(1),
+      updated_at: serverTimestamp()
     });
     working = true;
     await batch.commit();
     existingReaction = {
-      id: userId,
       ...reactionProps,
-      created_at: new Date()
+      id: userId,
+      path: reactionRef.path,
+      created_at: new Date(),
+      updated_at: new Date(),
+      archived_at: null
     };
     working = false;
   }
@@ -138,21 +136,25 @@
       const batch = writeBatch(db);
       if (existingReaction?.reaction && existingReaction?.reaction === reactionType) {
         // console.log('unreacting');
-        batch.update(commentRef, { [existingReaction.reaction]: increment(-1) });
-        batch.update(reactionRef, { reaction: null });
+        batch.update(commentRef, {
+          [existingReaction.reaction]: increment(-1),
+          updated_at: serverTimestamp()
+        });
+        batch.update(reactionRef, { reaction: null, updated_at: serverTimestamp() });
         existingReaction.reaction = null;
       } else if (existingReaction?.reaction) {
         // console.log('changing reaction');
         batch.update(commentRef, {
           [reactionType]: increment(1),
-          [existingReaction.reaction]: increment(-1)
+          [existingReaction.reaction]: increment(-1),
+          updated_at: serverTimestamp()
         });
-        batch.update(reactionRef, { reaction: reactionType });
+        batch.update(reactionRef, { reaction: reactionType, updated_at: serverTimestamp() });
         existingReaction.reaction = reactionType;
       } else if (existingReaction) {
         // console.log('adding reaction');
-        batch.update(commentRef, { [reactionType]: increment(1) });
-        batch.update(reactionRef, { reaction: reactionType });
+        batch.update(commentRef, { [reactionType]: increment(1), updated_at: serverTimestamp() });
+        batch.update(reactionRef, { reaction: reactionType, updated_at: serverTimestamp() });
         existingReaction.reaction = reactionType;
       }
       await batch.commit();
@@ -167,21 +169,34 @@
         existingReaction?.reenforcement === reenforcementType
       ) {
         // console.log('unreenforcing');
-        batch.update(commentRef, { [existingReaction.reenforcement]: increment(-1) });
-        batch.update(reactionRef, { reenforcement: null });
+        batch.update(commentRef, {
+          [existingReaction.reenforcement]: increment(-1),
+          updated_at: serverTimestamp()
+        });
+        batch.update(reactionRef, { reenforcement: null, updated_at: serverTimestamp() });
         existingReaction.reenforcement = null;
       } else if (existingReaction?.reenforcement) {
         // console.log('changing reenforcement');
         batch.update(commentRef, {
           [reenforcementType]: increment(1),
-          [existingReaction.reenforcement]: increment(-1)
+          [existingReaction.reenforcement]: increment(-1),
+          updated_at: serverTimestamp()
         });
-        batch.update(reactionRef, { reenforcement: reenforcementType });
+        batch.update(reactionRef, {
+          reenforcement: reenforcementType,
+          updated_at: serverTimestamp()
+        });
         existingReaction.reenforcement = reenforcementType;
       } else if (existingReaction) {
         // console.log('adding reenforcement');
-        batch.update(commentRef, { [reenforcementType]: increment(1) });
-        batch.update(reactionRef, { reenforcement: reenforcementType });
+        batch.update(commentRef, {
+          [reenforcementType]: increment(1),
+          updated_at: serverTimestamp()
+        });
+        batch.update(reactionRef, {
+          reenforcement: reenforcementType,
+          updated_at: serverTimestamp()
+        });
         existingReaction.reenforcement = reenforcementType;
       }
       await batch.commit();
@@ -230,9 +245,9 @@
       </div>
     </div>
 
-    <p class="comment-body text-base w-full">
+    <p class="markdown-body text-base w-full">
       {#if liveComment.body}
-        <SvelteMarkdown source={liveComment.body} />
+        <SvelteMarkdown source={liveComment.body} renderers={{ html: HtmlRenderer }} />
       {/if}
     </p>
 

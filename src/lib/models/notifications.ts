@@ -1,4 +1,4 @@
-import type { WithId } from './utils';
+import type { DocumentMeta } from './utils';
 
 export type NotificationType = 'invitation';
 
@@ -9,7 +9,7 @@ export interface NotificationProps<T = unknown> {
   data: T;
 }
 
-export type Notification<T = unknown> = NotificationProps<T> & WithId;
+export type Notification<T = unknown> = NotificationProps<T> & DocumentMeta;
 
 export interface NotificationInvitationData {
   invitation_id: string;

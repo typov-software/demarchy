@@ -1,5 +1,8 @@
-import type { WithId } from './utils';
+import type { DocumentMeta } from './utils';
 
-export interface BallotProps {}
+export interface BallotProps {
+  prompt: string;
+  description: null | string;
+}
 
-export type Ballot = BallotProps & WithId;
+export type Ballot = BallotProps & DocumentMeta;

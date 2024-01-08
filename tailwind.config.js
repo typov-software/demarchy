@@ -24,7 +24,8 @@ export default {
   theme: {
     extend: {},
     fontFamily: {
-      sans: ['Fira Code', 'monospace']
+      sans: ['Fira Code', 'monospace'],
+      noto: ['Noto Sans', 'sans-serif']
     }
   },
   daisyui: {
@@ -45,7 +46,7 @@ export default {
           ...sharedThemeOptions,
           'color-scheme': 'dark',
           neutral: '#a1a1aa',
-          'base-100': '#09090b',
+          'base-100': '#0f0f0f',
           'base-200': '#18181b',
           'base-300': '#27272a',
           'base-content': '#f4f4f5'
