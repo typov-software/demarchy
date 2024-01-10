@@ -1,6 +1,6 @@
 <script lang="ts">
-  import DocEditor from '../docs/DocEditor.svelte';
   import type { Doc } from '$lib/models/docs';
+  import DocViewer from './DocViewer.svelte';
 
   export let doc: Doc;
 </script>
@@ -17,7 +17,7 @@
         <span class="material-symbols-outlined"> more_vert </span>
       </button>
     </h3>
-    <DocEditor path={doc.path} editable={false} />
+    <DocViewer {doc} />
   </div>
 </div>
 
