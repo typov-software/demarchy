@@ -84,7 +84,7 @@
     saving = false;
   }
 
-  async function onSaveBlock(index: number, block: Block) {
+  async function saveBlock(index: number, block: Block) {
     if (!$doc || saving) return;
     saving = true;
     const nextBlocks = blocks.slice();
@@ -116,7 +116,7 @@
         on:blur={async (e) => {
           await tick();
           requestFocus = undefined;
-          onSaveBlock(e.detail.index, {
+          saveBlock(e.detail.index, {
             ...block,
             content: e.detail.content
           });
