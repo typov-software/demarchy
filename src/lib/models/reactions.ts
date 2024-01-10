@@ -66,8 +66,6 @@ export type ReenforcementCounts = {
   [key in ReenforcementType]: number;
 };
 
-export type ReactionTally = ReactionCounts & ReenforcementCounts;
-
 export interface ReactionProps {
   context: CommentContext;
   context_id: string;
@@ -77,3 +75,5 @@ export interface ReactionProps {
 }
 
 export type Reaction = ReactionProps & DocumentMeta;
+
+export type ReactionTally = ReactionCounts & ReenforcementCounts;
