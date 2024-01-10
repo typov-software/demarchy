@@ -44,7 +44,7 @@
             rel="noopener noreferrer"
             class="link link-hover"
           >
-            Typov LLC
+            typov LLC
           </a>
         </p>
       </aside>
