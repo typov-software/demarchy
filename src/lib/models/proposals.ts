@@ -3,6 +3,7 @@ import type { DocumentMeta } from './utils';
 export interface Amendment {
   doc_id: string;
   doc_name: string;
+  doc_path: string;
   type: 'create' | 'update' | 'destroy';
 }
 

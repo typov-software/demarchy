@@ -15,7 +15,6 @@
     group={data.group}
     profile={data.profile}
     proposal={data.proposal}
-    docs={data.docs}
   />
 </BasicSection>
 

@@ -5,20 +5,20 @@
   import type { Profile } from '$lib/models/profiles';
   import type { Proposal } from '$lib/models/proposals';
   import { working } from '$lib/stores/working';
-  import DocEditor from '../docs/DocEditor.svelte';
-  import type { Doc } from '$lib/models/docs';
   import { pluralize } from '$lib/utils/string';
   import { doc, serverTimestamp, updateDoc } from 'firebase/firestore';
   import { db, docStore, user } from '$lib/firebase';
   import MarkdownTextarea from '$lib/components/MarkdownTextarea.svelte';
   import { formatRelative } from 'date-fns';
   import type { Reaction } from '$lib/models/reactions';
+  import DocSelector from '$lib/components/DocSelector.svelte';
+  import type { DocSummary } from '$lib/models/libraries';
+  import Amendment from './Amendment.svelte';
 
   export let profile: Profile;
   export let organization: Organization;
   export let group: Group;
   export let proposal: Proposal;
-  export let docs: Doc[];
 
   let reaction: null | Reaction;
   $: reaction = null;
@@ -29,10 +29,11 @@
   let description = proposal.description;
   $: description;
 
-  $: nAmendments = Object.keys(proposal.amendments).length;
   $: saving = false;
 
   let liveProposal = docStore<Proposal>(proposal.path);
+  $: amendments = Object.values($liveProposal?.amendments ?? {});
+  $: nAmendments = amendments.length;
 
   $: isOpen = $liveProposal?.state === 'open';
   $: editable = $liveProposal?.state === 'draft';
@@ -43,6 +44,10 @@
   let dropModal: HTMLDialogElement;
   let revertModal: HTMLDialogElement;
   let adoptModal: HTMLDialogElement;
+
+  let destroyDocModal: HTMLDialogElement;
+  $: destroyDocModal;
+  $: mountDocSelector = false;
 
   async function saveForm() {
     if (saving || !hasChanges || !editable) return;
@@ -60,6 +65,31 @@
 
   function handleClickSeen() {
     //
+  }
+
+  function handleShowDestroyDocModal() {
+    destroyDocModal?.showModal();
+    mountDocSelector = true;
+  }
+
+  function handleHideDestroyDocModal() {
+    mountDocSelector = false;
+  }
+
+  async function handleSelectDestroyDoc(e: CustomEvent<DocSummary>) {
+    console.log(e, e.detail);
+    // add proposal amendment
+    const ref = doc(db, proposal.path);
+    await updateDoc(ref, {
+      amendments: {
+        ...proposal.amendments,
+        [e.detail.id]: {
+          doc_id: e.detail.id,
+          doc_name: e.detail.name,
+          type: 'destroy'
+        }
+      }
+    });
   }
 </script>
 
@@ -170,7 +200,7 @@
               </form>
               <button form="add-doc" type="submit">
                 <span class="material-symbols-outlined">post_add</span>
-                Add a Doc
+                Create a Doc
               </button>
             </li>
             <li>
@@ -180,9 +210,15 @@
               >
             </li>
             <li>
-              <button on:click|preventDefault={() => ({})}>
+              <button on:click={handleShowDestroyDocModal}>
                 <span class="material-symbols-outlined">delete</span>
                 Destroy a Doc</button
+              >
+            </li>
+            <li>
+              <button on:click|preventDefault={() => ({})}>
+                <span class="material-symbols-outlined">tune</span>
+                Update a Setting</button
               >
             </li>
           </ul>
@@ -238,8 +274,8 @@
     {pluralize('Amendment', nAmendments)}
   </h2>
   <div class="flex flex-col items-center w-full gap-2">
-    {#each docs as doc (doc.id)}
-      <DocEditor {doc} amendment={proposal.amendments[doc.id]} {editable} />
+    {#each amendments as amendment (amendment.doc_id)}
+      <Amendment {amendment} proposal={$liveProposal ?? proposal} {editable} />
     {/each}
   </div>
 {/if}
@@ -336,6 +372,26 @@
         <input type="hidden" name="organization_id" value={organization.id} />
         <button class="btn btn-primary">I'm sure, immediately adopt this</button>
       </form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<dialog
+  id="destroy-doc-modal"
+  class="modal"
+  bind:this={destroyDocModal}
+  on:close={handleHideDestroyDocModal}
+>
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Warning</h3>
+    <p class="py-4">Select a document to remove from the group library.</p>
+    <div class="flex">
+      {#if mountDocSelector}
+        <DocSelector {organization} {group} on:select={handleSelectDestroyDoc} />
+      {/if}
     </div>
   </div>
   <form method="dialog" class="modal-backdrop">

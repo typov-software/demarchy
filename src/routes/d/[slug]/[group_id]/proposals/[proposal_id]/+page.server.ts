@@ -19,11 +19,8 @@ export const load = (async ({ params, parent }) => {
   const proposalRef = adminGroupProposalRef(data.organization.id, data.group!.id).doc(proposalId);
   const proposalDoc = await proposalRef.get();
   const proposal = makeDocument<Proposal>(proposalDoc);
-  const docsSnapshot = await proposalRef.collection('docs').orderBy('name', 'asc').get();
-  const docs: Doc[] = docsSnapshot.docs.map((doc) => makeDocument(doc));
   return {
-    proposal,
-    docs
+    proposal
   };
 }) satisfies PageServerLoad;
 
@@ -107,6 +104,9 @@ export const actions = {
     const nextLibraryRef = adminDB
       .collection(`/organizations/${organizationId}/groups/${groupId}/libraries`)
       .doc();
+    const latestLibraryRef = adminDB
+      .collection(`/organizations/${organizationId}/groups/${groupId}/libraries`)
+      .doc('latest');
     const nextLibraryProps: LibraryProps = {
       extends_library_id: latestLibrary?.id ?? null,
       organization_id: organizationId,
@@ -159,6 +159,10 @@ export const actions = {
       ...createdTimestamps(),
       ...nextLibraryProps
     });
+    batch.set(latestLibraryRef, {
+      ...createdTimestamps(),
+      ...nextLibraryProps
+    });
     // Update proposal state
     batch.update(proposalDoc.ref, {
       ...updatedTimestamps(),
@@ -194,6 +198,7 @@ export const actions = {
     const amendment: Amendment = {
       doc_id: docRef.id,
       doc_name: docProps.name,
+      doc_path: docRef.path,
       type: 'create'
     };
     const batch = adminDB.batch();
