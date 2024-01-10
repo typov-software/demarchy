@@ -7,11 +7,9 @@ import type { PageServerLoad } from './$types';
 export const load = (async ({ parent }) => {
   const data = await parent();
   // get latest library doc
-  const snapshot = await adminGroupLibraryRef(data.organization.id, data.group.id)
-    .where('latest', '==', true)
-    .limit(1)
+  const libraryDoc = await adminGroupLibraryRef(data.organization.id, data.group.id)
+    .doc('latest')
     .get();
-  const libraryDoc = snapshot.docs[0];
   if (!libraryDoc) {
     return { library: undefined };
   }

@@ -93,7 +93,7 @@
   }
 </script>
 
-<div class="card bg-base-200 max-w-4xl w-full rounded-lg">
+<div class="card bg-base-200 max-w-3xl w-full rounded-lg">
   <div
     class="card-title text-xs font-semibold bg-base-300 pl-4 pr-2 py-2 rounded-lg"
     style:border-bottom-left-radius="0"
@@ -275,7 +275,12 @@
   </h2>
   <div class="flex flex-col items-center w-full gap-2">
     {#each amendments as amendment (amendment.doc_id)}
-      <Amendment {amendment} proposal={$liveProposal ?? proposal} {editable} />
+      <Amendment
+        {amendment}
+        proposal={$liveProposal ?? proposal}
+        {editable}
+        docsRoute={`/d/${organization.slug}/${group.id}/docs`}
+      />
     {/each}
   </div>
 {/if}

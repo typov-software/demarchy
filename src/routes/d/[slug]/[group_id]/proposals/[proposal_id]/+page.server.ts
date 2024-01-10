@@ -93,7 +93,7 @@ export const actions = {
     const proposalDocs: Doc[] = docsSnapshot.docs.map((doc) => makeDocument(doc));
     const latestLibraryDocs = await adminDB
       .collection(`/organizations/${organizationId}/groups/${groupId}/libraries`)
-      .orderBy('created_at', 'desc')
+      .where('latest', '==', true)
       .limit(1)
       .get();
     const latestLibraryDoc = latestLibraryDocs.docs[0];
@@ -144,6 +144,8 @@ export const actions = {
           name: createdDoc.name,
           updated_at: FieldValue.serverTimestamp()
         };
+      } else if (amendment.type === 'destroy') {
+        delete nextLibraryProps.docs[amendment.doc_id];
       }
     }
 

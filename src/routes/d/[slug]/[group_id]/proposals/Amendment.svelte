@@ -7,6 +7,7 @@
   export let editable = true;
   export let amendment: Amendment;
   export let proposal: Proposal;
+  export let docsRoute: string;
   $: expanded = false;
   $: saving = false;
 
@@ -37,7 +38,7 @@
   }
 </script>
 
-<div class="card bg-base-200 max-w-4xl w-full rounded-lg">
+<div class="card bg-base-200 max-w-3xl w-full rounded-lg">
   <div class="card-body gap-0 p-0" class:pb-4={expanded}>
     <h3 class="card-title text-sm w-full items-center flex pl-4">
       {#if amendment}
@@ -96,8 +97,22 @@
       </button>
     </h3>
 
-    {#if expanded}
+    {#if expanded && (amendment.type === 'create' || amendment.type === 'update')}
       <DocEditor path={amendment.doc_path} {editable} />
+    {/if}
+
+    {#if expanded && amendment.type === 'destroy'}
+      <div class="px-4">
+        <a
+          href={`${docsRoute}/${amendment.doc_id}`}
+          class="link link-hover hover:link-info"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          See latest doc
+          <span class="material-symbols-outlined text-base">open_in_new</span>
+        </a>
+      </div>
     {/if}
   </div>
 </div>
