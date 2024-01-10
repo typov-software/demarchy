@@ -155,12 +155,12 @@
     />
     <MarkdownTextarea
       bind:value={description}
-      inputName="description"
+      name="description"
       placeholder="Describe the intentions and changes of this proposal"
       {editable}
-      onSave={async () => {
+      on:blur={() => {
         if (description !== $liveProposal?.description) {
-          await saveForm();
+          saveForm();
         }
       }}
     />

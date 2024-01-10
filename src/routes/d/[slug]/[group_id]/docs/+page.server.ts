@@ -10,7 +10,7 @@ export const load = (async ({ parent }) => {
   const libraryDoc = await adminGroupLibraryRef(data.organization.id, data.group.id)
     .doc('latest')
     .get();
-  if (!libraryDoc) {
+  if (!libraryDoc || !libraryDoc.exists) {
     return { library: undefined };
   }
   const library: Library = makeDocument(libraryDoc);

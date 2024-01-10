@@ -2,43 +2,70 @@
   import { autosize } from '$lib/stores/use-autosize';
   import SvelteMarkdown from 'svelte-markdown';
   import HtmlRenderer from './HtmlRenderer.svelte';
+  import { afterUpdate, createEventDispatcher, onMount } from 'svelte';
 
   export let value: string;
-  export let inputName: string;
+  export let name: string;
+
   export let placeholder = 'placeholder';
   export let editable = true;
-  export let onSave: () => Promise<void>;
-  export let onFocusChange: undefined | ((focused: boolean) => void) = undefined;
-  export let onEnter: undefined | (() => void) = undefined;
+  export let requestFocus = false;
 
+  const dispatch = createEventDispatcher();
   let element: HTMLTextAreaElement;
 
   $: focused = false;
+  onMount(() => {
+    if (requestFocus) {
+      element?.focus();
+    }
+  });
+
+  afterUpdate(() => {
+    if (requestFocus && !focused) {
+      element?.focus();
+    }
+  });
 
   async function handleBlur() {
     focused = false;
-    if (onFocusChange) onFocusChange(focused);
-    await onSave();
+    dispatch('blur');
   }
 
   function handleFocus() {
     focused = true;
-    if (onFocusChange) onFocusChange(focused);
+    dispatch('focus');
   }
 
-  function onKeydown(e: KeyboardEvent) {
+  function handleKeydown(e: KeyboardEvent) {
     switch (e.key) {
       case 'Enter': {
         if (!e.shiftKey) {
           e.preventDefault();
+          dispatch('enter');
           element.blur();
-          if (onEnter) onEnter();
         }
         break;
       }
       case 'Escape': {
         e.preventDefault();
+        dispatch('escape');
         element.blur();
+        break;
+      }
+      case 'Backspace': {
+        if ((e.target as HTMLTextAreaElement).value.trim() === '') {
+          e.preventDefault();
+          dispatch('backspace');
+        }
+        break;
+      }
+      case 'ArrowUp': {
+        dispatch('up');
+        break;
+      }
+      case 'ArrowDown': {
+        dispatch('down');
         break;
       }
       default:
@@ -53,7 +80,7 @@
     bind:this={element}
     on:blur={handleBlur}
     on:focus={handleFocus}
-    on:keydown={onKeydown}
+    on:keydown={handleKeydown}
     use:autosize
     disabled={!editable}
     autocapitalize="off"
@@ -62,7 +89,7 @@
     class:absolute={!focused}
     class:opacity-0={!focused}
     class:pointer-events-none={!editable}
-    name={inputName}
+    {name}
     {placeholder}
     rows={1}
   />

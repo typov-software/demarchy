@@ -37,14 +37,14 @@
       <aside class="flex flex-row items-center">
         <DemarchyLogo width={127} />
         <p class="text-sm ml-2 mt-1">
-          &copy; 2023
+          &copy; 2024
           <a
             href="https://typov.com"
             target="_blank"
             rel="noopener noreferrer"
             class="link link-hover"
           >
-            typov LLC
+            typov
           </a>
         </p>
       </aside>

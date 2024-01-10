@@ -7,6 +7,7 @@
   import { db, docStore } from '$lib/firebase';
   import { format } from 'date-fns';
   import './editor.scss';
+  import { tick } from 'svelte';
 
   export let path: string;
   export let editable = true;
@@ -20,38 +21,46 @@
   let nameInput: HTMLInputElement;
   $: nameInput;
 
-  let focused: number | undefined;
-  $: focused = undefined;
+  let requestFocus: number | undefined;
+  $: requestFocus = undefined;
 
   $: blocks = $doc?.blocks.slice() ?? [];
 
-  async function onAddBlock(index: number) {
-    if (!$doc || saving) return;
-    saving = true;
+  function onRequestFocus(index: number) {
+    if (blocks.at(index)) {
+      requestFocus = index;
+    }
+  }
+
+  function onAddBlock(index: number) {
     const nextBlocks = blocks.slice();
-    focused = index;
+    requestFocus = index;
     nextBlocks.splice(index, 0, {
       id: crypto.randomUUID(),
       content: '',
       type: 'text'
     });
-    await updateDoc(fdoc(db, path), {
-      blocks: nextBlocks
-    });
     blocks = [...nextBlocks];
-    saving = false;
+    // no need to save doc here, its just an empty block
+    // and will commit when input loses focus
   }
 
   async function onDeleteBlock(index: number) {
+    if (!$doc || saving) return;
+    saving = true;
     const nextBlocks = blocks.slice();
     nextBlocks.splice(index, 1);
+    requestFocus = index - 1;
     blocks = [...nextBlocks];
     await updateDoc(fdoc(db, path), {
       blocks: nextBlocks
     });
+    saving = false;
   }
 
   async function onSortBlock(from: number, to: number) {
+    if (!$doc || saving) return;
+    saving = true;
     const nextBlocks = blocks.slice();
     if (to > from) {
       if (to > nextBlocks.length - 1) {
@@ -72,15 +81,19 @@
     await updateDoc(fdoc(db, path), {
       blocks: nextBlocks
     });
+    saving = false;
   }
 
   async function onSaveBlock(index: number, block: Block) {
+    if (!$doc || saving) return;
+    saving = true;
     const nextBlocks = blocks.slice();
     nextBlocks.splice(index, 1, block);
     blocks = nextBlocks.slice();
     await updateDoc(fdoc(db, path), {
       blocks
     });
+    saving = false;
   }
 </script>
 
@@ -94,14 +107,28 @@
     </div>
     {#each blocks as block, index (block.id)}
       <BlockEditor
+        focus={requestFocus === index}
         {index}
         {block}
-        {onAddBlock}
-        {onSaveBlock}
+        {editable}
         {onDeleteBlock}
         {onSortBlock}
-        focus={focused === index}
-        {editable}
+        on:blur={async (e) => {
+          await tick();
+          requestFocus = undefined;
+          onSaveBlock(e.detail.index, {
+            ...block,
+            content: e.detail.content
+          });
+        }}
+        on:enter={(e) => {
+          onAddBlock(e.detail + 1);
+        }}
+        on:backspace={(e) => {
+          onDeleteBlock(e.detail);
+        }}
+        on:up={(e) => onRequestFocus(e.detail)}
+        on:down={(e) => onRequestFocus(e.detail)}
       />
     {/each}
   </div>

@@ -1,15 +1,16 @@
 <script lang="ts">
   import type { Block } from '$lib/models/blocks';
-  import { afterUpdate } from 'svelte';
   import MarkdownTextarea from '$lib/components/MarkdownTextarea.svelte';
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
 
   export let index: number;
   export let block: Block;
   export let focus: boolean = false;
   export let editable = true;
 
-  export let onAddBlock: (afterIndex: number) => void;
-  export let onSaveBlock: (index: number, block: Block) => Promise<void>;
+  // export let onSaveBlock: (index: number, block: Block) => Promise<void>;
   export let onDeleteBlock: (index: number) => Promise<void>;
   export let onSortBlock: (index: number, newIndex: number) => Promise<void>;
 
@@ -24,15 +25,6 @@
   $: dragging = false;
   $: over = false;
   $: focused = false;
-  $: hasUnfocused = false;
-  $: saving = false;
-
-  afterUpdate(() => {
-    if (focused) return;
-    if (focus && !focused && !hasUnfocused) {
-      textareaEl?.focus();
-    }
-  });
 
   function handleDragStart(e: DragEvent) {
     if (!editable) return;
@@ -70,16 +62,6 @@
     over = false;
     onSortBlock(previous, index);
   }
-
-  async function saveBlock() {
-    if (saving || content === block.content || !editable) return;
-    saving = true;
-    await onSaveBlock(index, {
-      ...block,
-      content: content ?? ''
-    });
-    saving = false;
-  }
 </script>
 
 <div
@@ -102,13 +84,32 @@
 >
   <div class="flex relative w-full">
     <MarkdownTextarea
-      {editable}
-      inputName="content"
       bind:value={content}
+      requestFocus={focus}
+      name="content"
       placeholder={focused ? `Empty ${block.type} block` : ''}
-      onSave={() => saveBlock()}
-      onFocusChange={(f) => (focused = f)}
-      onEnter={() => onAddBlock(index + 1)}
+      {editable}
+      on:blur={() => {
+        dispatch('blur', { index, content });
+      }}
+      on:focus={() => {
+        dispatch('focus', index);
+      }}
+      on:enter={() => {
+        dispatch('enter', index);
+      }}
+      on:escape={() => {
+        dispatch('escape', index);
+      }}
+      on:backspace={() => {
+        dispatch('backspace', index);
+      }}
+      on:up={() => {
+        dispatch('up', index - 1);
+      }}
+      on:down={() => {
+        dispatch('up', index + 1);
+      }}
     />
 
     {#if !focused && editable}

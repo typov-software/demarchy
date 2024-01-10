@@ -8,7 +8,7 @@
   export let amendment: Amendment;
   export let proposal: Proposal;
   export let docsRoute: string;
-  $: expanded = false;
+  $: expanded = true;
   $: saving = false;
 
   let nameInput: HTMLInputElement;

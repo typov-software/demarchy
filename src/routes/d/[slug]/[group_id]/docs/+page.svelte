@@ -7,8 +7,6 @@
 
   export let data: PageData;
 
-  console.log(data.library);
-
   $: docIds = data.library ? Object.keys(data.library.docs) : [];
 </script>
 
