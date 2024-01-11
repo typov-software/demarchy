@@ -3,12 +3,16 @@
   import type { Amendment, Proposal } from '$lib/models/proposals';
   import { doc as fdoc, writeBatch } from 'firebase/firestore';
   import DocEditor from '../docs/DocEditor.svelte';
+  import { createEventDispatcher } from 'svelte';
 
   export let editable = true;
   export let amendment: Amendment;
   export let proposal: Proposal;
   export let docsRoute: string;
-  $: expanded = true;
+
+  const dispatch = createEventDispatcher();
+
+  $: expanded = false;
   $: saving = false;
 
   let nameInput: HTMLInputElement;
@@ -40,7 +44,7 @@
 
 <div class="card bg-base-200 max-w-3xl w-full rounded-lg">
   <div class="card-body gap-0 p-0" class:pb-4={expanded}>
-    <h3 class="card-title text-sm w-full items-center flex pl-4">
+    <h3 class="card-title text-sm w-full items-center flex pl-4 gap-0">
       {#if amendment}
         <span class="material-symbols-outlined">
           {#if amendment.type === 'create'}
@@ -87,14 +91,32 @@
         </span>
       {/if}
       <button
-        class="expand-button btn btn-square shadow-none bg-base-200 rounded-lg flex"
-        class:expanded
+        class="expand-button btn btn-square shadow-none bg-base-200 rounded-lg flex ml-2"
+        class:rounded-none={expanded}
         on:click={() => (expanded = !expanded)}
       >
         <span class="material-symbols-outlined">
           {expanded ? 'expand_less' : 'expand_more'}
         </span>
       </button>
+      {#if expanded}
+        <div class="dropdown dropdown-end">
+          <button
+            class="expand-button btn btn-square shadow-none bg-base-200 rounded-lg flex"
+            class:expanded-more={expanded}
+          >
+            <span class="material-symbols-outlined"> more_vert </span>
+          </button>
+          <ul class="dropdown-content w-60 menu z-[1] shadow bg-base-100 rounded-box">
+            <li>
+              <button on:click={() => dispatch('remove', amendment)} class="text-error">
+                <span class="material-symbols-outlined">delete</span>
+                Remove amendment
+              </button>
+            </li>
+          </ul>
+        </div>
+      {/if}
     </h3>
 
     {#if expanded && (amendment.type === 'create' || amendment.type === 'update')}
@@ -124,7 +146,8 @@
   .expand-button {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-    &.expanded {
+
+    &.expanded-more {
       border-bottom-right-radius: 0;
     }
   }

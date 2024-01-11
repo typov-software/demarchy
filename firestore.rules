@@ -159,7 +159,8 @@ service cloud.firestore {
 
           match /docs/{docId} {
             allow read: if isGroupMemberOrHigher(groupId);
-            allow write: if ownsResource(resource.data.user_id);
+            allow create: if isGroupMemberOrHigher(groupId);
+            allow update: if ownsResource(resource.data.user_id);
           }
 
           match /tallies/{tallyId} {

@@ -3,17 +3,26 @@
   import type { Group } from '$lib/models/groups';
   import type { Organization } from '$lib/models/organizations';
   import type { Profile } from '$lib/models/profiles';
-  import type { Proposal } from '$lib/models/proposals';
+  import type { Amendment, Proposal } from '$lib/models/proposals';
   import { working } from '$lib/stores/working';
   import { pluralize } from '$lib/utils/string';
-  import { doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+  import {
+    collection,
+    doc,
+    serverTimestamp,
+    setDoc,
+    updateDoc,
+    writeBatch
+  } from 'firebase/firestore';
   import { db, docStore, user } from '$lib/firebase';
   import MarkdownTextarea from '$lib/components/MarkdownTextarea.svelte';
   import { formatRelative } from 'date-fns';
   import type { Reaction } from '$lib/models/reactions';
   import DocSelector from '$lib/components/DocSelector.svelte';
   import type { DocSummary } from '$lib/models/libraries';
-  import Amendment from './Amendment.svelte';
+  import AmendmentItem from './Amendment.svelte';
+  import type { DocProps } from '$lib/models/docs';
+  import { blurActive } from '$lib/utils/dom';
 
   export let profile: Profile;
   export let organization: Organization;
@@ -44,6 +53,7 @@
   let dropModal: HTMLDialogElement;
   let revertModal: HTMLDialogElement;
   let adoptModal: HTMLDialogElement;
+  let amendmentsMenu: HTMLDivElement;
 
   let destroyDocModal: HTMLDialogElement;
   $: destroyDocModal;
@@ -76,20 +86,77 @@
     mountDocSelector = false;
   }
 
+  async function handleCreateDoc() {
+    blurActive();
+    if (saving) return;
+    saving = true;
+    const ref = doc(db, proposal.path);
+    const docRef = doc(collection(ref, 'docs'));
+    const docProps: Omit<DocProps, 'created_at' | 'updated_at'> = {
+      user_id: profile.id,
+      user_handle: profile.handle,
+      group_id: group.id,
+      name: `Unnamed ${docRef.id}`,
+      blocks: [
+        {
+          id: crypto.randomUUID(),
+          type: 'text',
+          content: ''
+        }
+      ]
+    };
+    const amendment: Amendment = {
+      doc_id: docRef.id,
+      doc_name: docProps.name,
+      doc_path: docRef.path,
+      type: 'create'
+    };
+    const batch = writeBatch(db);
+    batch.set(docRef, {
+      ...docProps,
+      created_at: serverTimestamp(),
+      updated_at: serverTimestamp()
+    });
+    batch.set(
+      ref,
+      {
+        amendments: { [docRef.id]: amendment },
+        updated_at: serverTimestamp()
+      },
+      { merge: true }
+    );
+    try {
+      await batch.commit();
+    } catch (e: unknown) {
+      console.log(e);
+    }
+    saving = false;
+  }
+
   async function handleSelectDestroyDoc(e: CustomEvent<DocSummary>) {
-    console.log(e, e.detail);
+    destroyDocModal?.close();
     // add proposal amendment
     const ref = doc(db, proposal.path);
-    await updateDoc(ref, {
-      amendments: {
-        ...proposal.amendments,
-        [e.detail.id]: {
-          doc_id: e.detail.id,
-          doc_name: e.detail.name,
-          type: 'destroy'
+    await setDoc(
+      ref,
+      {
+        amendments: {
+          [e.detail.id]: {
+            doc_id: e.detail.id,
+            doc_name: e.detail.name,
+            type: 'destroy'
+          }
         }
-      }
-    });
+      },
+      { merge: true }
+    );
+  }
+
+  async function handleRemoveAmendment(amendment: Amendment) {
+    const ref = doc(db, proposal.path);
+    const amendments = { ...($liveProposal?.amendments ?? {}) };
+    delete amendments[amendment.doc_id];
+    await updateDoc(ref, { amendments });
   }
 </script>
 
@@ -168,10 +235,11 @@
     {#if editable}
       <div class="card-actions h-10 mt-2">
         <div class="flex-1" />
-        <div class="dropdown dropdown-bottom dropdown-hover">
+        <div class="dropdown dropdown-bottom">
           <div
             role="button"
             tabindex="0"
+            bind:this={amendmentsMenu}
             class="btn btn-sm rounded-lg btn-neutral"
             style:height="35px"
           >
@@ -180,25 +248,7 @@
           </div>
           <ul class="menu w-80 z-[1] dropdown-content shadow bg-base-300 rounded-box">
             <li>
-              <form
-                id="add-doc"
-                class="hidden"
-                method="post"
-                action="?/addDoc"
-                use:enhance={() => {
-                  const job = working.add();
-                  return ({ update }) => {
-                    working.remove(job);
-                    update({ reset: true });
-                  };
-                }}
-              >
-                <input type="hidden" name="organization_id" value={organization.id} />
-                <input type="hidden" name="group_id" value={group.id} />
-                <input type="hidden" name="user_handle" value={profile.handle} />
-                <input type="hidden" name="proposal_id" value={proposal.id} />
-              </form>
-              <button form="add-doc" type="submit">
+              <button on:click={handleCreateDoc}>
                 <span class="material-symbols-outlined">post_add</span>
                 Create a Doc
               </button>
@@ -275,11 +325,12 @@
   </h2>
   <div class="flex flex-col items-center w-full gap-2">
     {#each amendments as amendment (amendment.doc_id)}
-      <Amendment
+      <AmendmentItem
         {amendment}
         proposal={$liveProposal ?? proposal}
         {editable}
         docsRoute={`/d/${organization.slug}/${group.id}/docs`}
+        on:remove={(e) => handleRemoveAmendment(e.detail)}
       />
     {/each}
   </div>
@@ -391,7 +442,6 @@
   on:close={handleHideDestroyDocModal}
 >
   <div class="modal-box">
-    <h3 class="font-bold text-lg">Warning</h3>
     <p class="py-4">Select a document to remove from the group library.</p>
     <div class="flex">
       {#if mountDocSelector}

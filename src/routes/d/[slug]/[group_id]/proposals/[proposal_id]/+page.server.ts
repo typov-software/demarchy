@@ -1,5 +1,5 @@
-import type { Doc, DocProps } from '$lib/models/docs';
-import type { Amendment, Proposal, ProposalProps } from '$lib/models/proposals';
+import type { Doc } from '$lib/models/docs';
+import type { Proposal, ProposalProps } from '$lib/models/proposals';
 import {
   adminDB,
   adminGroupProposalRef,
@@ -172,53 +172,5 @@ export const actions = {
     });
 
     await batch.commit();
-  },
-  addDoc: async ({ request, locals }) => {
-    const formData = await request.formData();
-    const userId = locals.user_id!;
-    const userHandle = formData.get('user_handle') as string;
-    const organizationId = formData.get('organization_id') as string;
-    const groupId = formData.get('group_id') as string;
-    const proposalId = formData.get('proposal_id') as string;
-
-    const proposalRef = adminGroupProposalRef(organizationId, groupId).doc(proposalId);
-    const docRef = proposalRef.collection('docs').doc();
-
-    const docProps: Omit<DocProps, 'created_at' | 'updated_at'> = {
-      user_id: userId,
-      user_handle: userHandle,
-      group_id: groupId,
-      name: 'Unnamed',
-      blocks: [
-        {
-          id: crypto.randomUUID(),
-          type: 'text',
-          content: ''
-        }
-      ]
-    };
-    const amendment: Amendment = {
-      doc_id: docRef.id,
-      doc_name: docProps.name,
-      doc_path: docRef.path,
-      type: 'create'
-    };
-    const batch = adminDB.batch();
-    batch.set(docRef, {
-      ...docProps,
-      created_at: FieldValue.serverTimestamp(),
-      updated_at: FieldValue.serverTimestamp()
-    });
-    batch.set(
-      proposalRef,
-      {
-        ...updatedTimestamps(),
-        amendments: { [docRef.id]: amendment }
-      },
-      { merge: true }
-    );
-    await batch.commit();
-  },
-  updateDoc: async () => {},
-  destroyDoc: async () => {}
+  }
 } satisfies Actions;
