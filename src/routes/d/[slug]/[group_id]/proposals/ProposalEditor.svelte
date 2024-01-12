@@ -9,6 +9,7 @@
   import {
     collection,
     doc,
+    getDoc,
     serverTimestamp,
     setDoc,
     updateDoc,
@@ -20,9 +21,11 @@
   import type { Reaction } from '$lib/models/reactions';
   import DocSelector from '$lib/components/DocSelector.svelte';
   import type { DocSummary } from '$lib/models/libraries';
-  import AmendmentItem from './Amendment.svelte';
-  import type { DocProps } from '$lib/models/docs';
+  import AmendmentItem from './AmendmentItem.svelte';
+  import { type Doc, type DocProps } from '$lib/models/docs';
   import { blurActive } from '$lib/utils/dom';
+  import { makeDocument } from '$lib/models/utils';
+  import uniq from 'lodash/uniq';
 
   export let profile: Profile;
   export let organization: Organization;
@@ -57,7 +60,12 @@
 
   let destroyDocModal: HTMLDialogElement;
   $: destroyDocModal;
-  $: mountDocSelector = false;
+
+  let updateDocModal: HTMLDialogElement;
+  $: updateDocModal;
+
+  $: mountDestroyDocSelector = false;
+  $: mountUpdateDocSelector = false;
 
   async function saveForm() {
     if (saving || !hasChanges || !editable) return;
@@ -79,11 +87,20 @@
 
   function handleShowDestroyDocModal() {
     destroyDocModal?.showModal();
-    mountDocSelector = true;
+    mountDestroyDocSelector = true;
   }
 
   function handleHideDestroyDocModal() {
-    mountDocSelector = false;
+    mountDestroyDocSelector = false;
+  }
+
+  function handleShowUpdateDocModal() {
+    updateDocModal?.showModal();
+    mountUpdateDocSelector = true;
+  }
+
+  function handleHideUpdateDocModal() {
+    mountUpdateDocSelector = false;
   }
 
   async function handleCreateDoc() {
@@ -93,6 +110,7 @@
     const ref = doc(db, proposal.path);
     const docRef = doc(collection(ref, 'docs'));
     const docProps: Omit<DocProps, 'created_at' | 'updated_at'> = {
+      contributor_ids: [profile.id],
       user_id: profile.id,
       user_handle: profile.handle,
       group_id: group.id,
@@ -106,9 +124,11 @@
       ]
     };
     const amendment: Amendment = {
-      doc_id: docRef.id,
-      doc_name: docProps.name,
-      doc_path: docRef.path,
+      doc: {
+        id: docRef.id,
+        path: docRef.path,
+        name: docProps.name
+      },
       type: 'create'
     };
     const batch = writeBatch(db);
@@ -127,35 +147,102 @@
     );
     try {
       await batch.commit();
-    } catch (e: unknown) {
-      console.log(e);
+    } catch (e) {
+      const err = e as Error;
+      console.error(err);
+      alert(err.message);
     }
     saving = false;
   }
 
   async function handleSelectDestroyDoc(e: CustomEvent<DocSummary>) {
+    if (saving) return;
+    saving = true;
     destroyDocModal?.close();
-    // add proposal amendment
+    const amendment: Amendment = {
+      doc: e.detail,
+      type: 'destroy'
+    };
     const ref = doc(db, proposal.path);
-    await setDoc(
+    try {
+      await setDoc(
+        ref,
+        {
+          amendments: { [e.detail.id]: amendment }
+        },
+        { merge: true }
+      );
+    } catch (e) {
+      const err = e as Error;
+      console.error(err);
+      alert(err.message);
+    }
+    saving = false;
+  }
+
+  async function handleSelectUpdateDoc(e: CustomEvent<DocSummary>) {
+    updateDocModal?.close();
+
+    const ref = doc(db, proposal.path);
+
+    // Get the source doc that we'll be updating
+    const sourceRef = doc(db, e.detail.path);
+    const sourceDoc = await getDoc(sourceRef);
+    if (!sourceDoc.exists) {
+      throw new Error('Source doc does not exist');
+    }
+    const sourceData = makeDocument<Doc>(sourceDoc);
+
+    // Create a new doc with unique id that extends source doc
+    const docRef = doc(collection(ref, 'docs'));
+    const docProps: Omit<DocProps, 'created_at' | 'updated_at'> = {
+      contributor_ids: uniq([...(sourceDoc.data()?.contributor_ids?.slice() ?? []), profile.id]),
+      user_id: profile.id,
+      user_handle: profile.handle,
+      group_id: group.id,
+      name: sourceData.name,
+      blocks: sourceData.blocks.slice()
+    };
+    const amendment: Amendment = {
+      type: 'update',
+      doc: {
+        id: docRef.id,
+        path: docRef.path,
+        name: e.detail.name
+      },
+      update: {
+        doc: e.detail
+      }
+    };
+
+    const batch = writeBatch(db);
+    batch.set(docRef, {
+      ...docProps,
+      // use original doc timestamp
+      created_at: sourceDoc.data()!.created_at,
+      updated_at: serverTimestamp()
+    });
+    batch.set(
       ref,
       {
-        amendments: {
-          [e.detail.id]: {
-            doc_id: e.detail.id,
-            doc_name: e.detail.name,
-            type: 'destroy'
-          }
-        }
+        amendments: { [docRef.id]: amendment },
+        updated_at: serverTimestamp()
       },
       { merge: true }
     );
+    try {
+      await batch.commit();
+    } catch (e) {
+      const err = e as Error;
+      console.error(err);
+      alert(err.message);
+    }
   }
 
   async function handleRemoveAmendment(amendment: Amendment) {
     const ref = doc(db, proposal.path);
     const amendments = { ...($liveProposal?.amendments ?? {}) };
-    delete amendments[amendment.doc_id];
+    delete amendments[amendment.doc.id];
     await updateDoc(ref, { amendments });
   }
 </script>
@@ -254,7 +341,7 @@
               </button>
             </li>
             <li>
-              <button on:click|preventDefault={() => ({})}>
+              <button on:click={handleShowUpdateDocModal}>
                 <span class="material-symbols-outlined">edit_note</span>
                 Update a Doc</button
               >
@@ -324,8 +411,9 @@
     {pluralize('Amendment', nAmendments)}
   </h2>
   <div class="flex flex-col items-center w-full gap-2">
-    {#each amendments as amendment (amendment.doc_id)}
+    {#each amendments as amendment (amendment.doc.id)}
       <AmendmentItem
+        expanded
         {amendment}
         proposal={$liveProposal ?? proposal}
         {editable}
@@ -444,8 +532,27 @@
   <div class="modal-box">
     <p class="py-4">Select a document to remove from the group library.</p>
     <div class="flex">
-      {#if mountDocSelector}
+      {#if mountDestroyDocSelector}
         <DocSelector {organization} {group} on:select={handleSelectDestroyDoc} />
+      {/if}
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<dialog
+  id="update-doc-modal"
+  class="modal"
+  bind:this={updateDocModal}
+  on:close={handleHideUpdateDocModal}
+>
+  <div class="modal-box">
+    <p class="py-4">Select a document to update from the library.</p>
+    <div class="flex">
+      {#if mountUpdateDocSelector}
+        <DocSelector {organization} {group} on:select={handleSelectUpdateDoc} />
       {/if}
     </div>
   </div>

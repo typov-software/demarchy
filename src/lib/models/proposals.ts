@@ -1,10 +1,13 @@
+import type { DocSummary } from './libraries';
 import type { DocumentMeta } from './utils';
 
 export interface Amendment {
-  doc_id: string;
-  doc_name: string;
-  doc_path: string;
+  doc: DocSummary;
   type: 'create' | 'update' | 'destroy';
+  update?: {
+    doc: DocSummary;
+    // from_library: string;
+  };
 }
 
 export interface LinkedResource {

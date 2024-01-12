@@ -9,34 +9,42 @@
   export let amendment: Amendment;
   export let proposal: Proposal;
   export let docsRoute: string;
+  export let expanded = false;
 
   const dispatch = createEventDispatcher();
 
-  $: expanded = false;
+  $: expanded;
   $: saving = false;
 
   let nameInput: HTMLInputElement;
   $: nameInput;
 
-  let docName = amendment.doc_name;
+  let docName = amendment.doc.name;
   $: docName;
 
   async function saveDocName() {
-    if (saving || docName === amendment.doc_name) return;
+    if (saving || docName === amendment.doc.name) return;
     saving = true;
     const batch = writeBatch(db);
-    batch.update(fdoc(db, amendment.doc_path), {
+    batch.update(fdoc(db, amendment.doc.path), {
       name: docName
     });
-    batch.update(fdoc(db, proposal.path), {
-      amendments: {
-        ...proposal.amendments,
-        [amendment.doc_id]: {
-          ...amendment,
-          doc_name: docName
+    batch.set(
+      fdoc(db, proposal.path),
+      {
+        amendments: {
+          ...proposal.amendments,
+          [amendment.doc.id]: {
+            ...amendment,
+            doc: {
+              ...amendment.doc,
+              name: docName
+            }
+          }
         }
-      }
-    });
+      },
+      { merge: true }
+    );
     await batch.commit();
     saving = false;
   }
@@ -119,14 +127,24 @@
       {/if}
     </h3>
 
-    {#if expanded && (amendment.type === 'create' || amendment.type === 'update')}
-      <DocEditor path={amendment.doc_path} {editable} />
+    {#if expanded && amendment.type === 'update'}
+      <div class="px-4 pb-2 flex">
+        <a
+          href={`${docsRoute}/${amendment.update?.doc.id}`}
+          class="link link-hover hover:link-info text-sm"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          See latest doc
+          <span class="material-symbols-outlined text-base">open_in_new</span>
+        </a>
+      </div>
     {/if}
 
     {#if expanded && amendment.type === 'destroy'}
       <div class="px-4">
         <a
-          href={`${docsRoute}/${amendment.doc_id}`}
+          href={`${docsRoute}/${amendment.doc.id}`}
           class="link link-hover hover:link-info"
           target="_blank"
           rel="noopener noreferrer"
@@ -135,6 +153,10 @@
           <span class="material-symbols-outlined text-base">open_in_new</span>
         </a>
       </div>
+    {/if}
+
+    {#if expanded && (amendment.type === 'create' || amendment.type === 'update')}
+      <DocEditor path={amendment.doc.path} {editable} />
     {/if}
   </div>
 </div>

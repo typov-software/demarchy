@@ -6,7 +6,6 @@ import {
   createdTimestamps,
   updatedTimestamps
 } from '$lib/server/admin';
-import { FieldValue } from 'firebase-admin/firestore';
 import type { Actions, PageServerLoad } from './$types';
 import { makeDocument } from '$lib/models/utils';
 import { error } from '@sveltejs/kit';
@@ -91,24 +90,19 @@ export const actions = {
     const proposal: Proposal = makeDocument(proposalDoc);
     const docsSnapshot = await proposalDoc.ref.collection('docs').get();
     const proposalDocs: Doc[] = docsSnapshot.docs.map((doc) => makeDocument(doc));
-    const latestLibraryDocs = await adminDB
-      .collection(`/organizations/${organizationId}/groups/${groupId}/libraries`)
-      .where('latest', '==', true)
-      .limit(1)
-      .get();
-    const latestLibraryDoc = latestLibraryDocs.docs[0];
-    const latestLibrary = latestLibraryDoc ? makeDocument<Library>(latestLibraryDoc) : undefined;
-
-    const batch = adminDB.batch();
-
-    const nextLibraryRef = adminDB
-      .collection(`/organizations/${organizationId}/groups/${groupId}/libraries`)
-      .doc();
     const latestLibraryRef = adminDB
       .collection(`/organizations/${organizationId}/groups/${groupId}/libraries`)
       .doc('latest');
+    const latestLibraryDoc = await latestLibraryRef.get();
+    const latestLibrary = latestLibraryDoc.exists
+      ? makeDocument<Library>(latestLibraryDoc)
+      : undefined;
+    const nextLibraryRef = adminDB
+      .collection(`/organizations/${organizationId}/groups/${groupId}/libraries`)
+      .doc();
     const nextLibraryProps: LibraryProps = {
-      extends_library_id: latestLibrary?.id ?? null,
+      uid: nextLibraryRef.id,
+      extends_library_id: latestLibrary?.uid ?? null,
       organization_id: organizationId,
       group_id: groupId,
       docs: {
@@ -121,11 +115,14 @@ export const actions = {
       latest: true
     };
 
+    const batch = adminDB.batch();
+
     for (const amendment of Object.values(proposal.amendments)) {
       if (amendment.type === 'create') {
-        const createdDoc = proposalDocs.find((d) => d.id === amendment.doc_id);
-        // TODO: this is an unexpected state error
-        if (!createdDoc) continue;
+        const createdDoc = proposalDocs.find((d) => d.id === amendment.doc.id);
+        if (!createdDoc) {
+          throw new Error('Unexpected proposal doc state');
+        }
         const destRef = adminDB.doc(
           `/organizations/${organizationId}/groups/${groupId}/docs/${createdDoc.id}`
         );
@@ -136,22 +133,51 @@ export const actions = {
           ...copiedProps,
           ...createdTimestamps()
         });
-        // Update next library doc map, with doc name to doc id
-        // nextLibraryProps.docs[createdDoc.name] = createdDoc.id;
-        nextLibraryProps.docs[destRef.id] = {
-          id: destRef.id,
+        // Update next library doc map
+        nextLibraryProps.docs[amendment.doc.id] = {
+          id: amendment.doc.id,
           path: destRef.path,
-          name: createdDoc.name,
-          updated_at: FieldValue.serverTimestamp()
+          name: createdDoc.name
         };
+      } else if (amendment.type === 'update') {
+        const update = amendment.update;
+        if (!update) {
+          throw new Error('Unexpected amendment state');
+        }
+        const createdDoc = proposalDocs.find((d) => d.id === amendment.doc.id);
+        if (!createdDoc) {
+          throw new Error('Unexpected proposal doc state');
+        }
+        // add updated doc to latest library
+        const destRef = adminDB.doc(
+          `/organizations/${organizationId}/groups/${groupId}/docs/${createdDoc.id}`
+        );
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id, path, created_at, updated_at, archived_at, ...copiedProps } = createdDoc;
+        // Copy proposal doc to group docs
+        batch.set(destRef, {
+          ...copiedProps,
+          ...createdTimestamps()
+        });
+        // Update next library doc map
+        nextLibraryProps.docs[amendment.doc.id] = {
+          id: amendment.doc.id,
+          path: destRef.path,
+          name: createdDoc.name
+        };
+        // remove source doc from latest library
+        delete nextLibraryProps.docs[update.doc.id];
       } else if (amendment.type === 'destroy') {
-        delete nextLibraryProps.docs[amendment.doc_id];
+        delete nextLibraryProps.docs[amendment.doc.id];
       }
     }
 
-    if (latestLibraryDoc) {
+    if (latestLibraryDoc.exists) {
       // Toggle latest flag on old library
-      batch.update(latestLibraryDoc.ref, {
+      const lastRef = adminDB
+        .collection(`/organizations/${organizationId}/groups/${groupId}/libraries`)
+        .doc(latestLibrary!.uid);
+      batch.update(lastRef, {
         ...updatedTimestamps(),
         latest: false
       });

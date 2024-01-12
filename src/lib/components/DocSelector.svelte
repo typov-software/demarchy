@@ -4,8 +4,6 @@
   import type { Library } from '$lib/models/libraries';
   import type { Organization } from '$lib/models/organizations';
   import { getComparator, stableSort } from '$lib/utils/sorting';
-  import { formatRelative } from 'date-fns';
-  import type { Timestamp } from 'firebase/firestore';
   import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher();
@@ -18,12 +16,7 @@
     `/organizations/${organization.id}/groups/${group.id}/libraries/${libraryId}`
   );
 
-  $: docRefs = stableSort(Object.values($library?.docs ?? {}), getComparator('asc', 'name')).map(
-    (d) => ({
-      ...d,
-      updated_at: (d.updated_at as Timestamp).toDate()
-    })
-  );
+  $: docRefs = stableSort(Object.values($library?.docs ?? {}), getComparator('asc', 'name'));
 </script>
 
 <ul class="w-full">
@@ -35,10 +28,6 @@
       >
         <span class="material-symbols-outlined">article</span>
         {ref.name}
-        <span class="flex-1" />
-        <span class="text-xs text-neutral"
-          >updated {formatRelative(ref.updated_at, new Date())}</span
-        >
       </button>
     </li>
   {/each}
