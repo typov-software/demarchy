@@ -413,7 +413,6 @@
   <div class="flex flex-col items-center w-full gap-2">
     {#each amendments as amendment (amendment.doc.id)}
       <AmendmentItem
-        expanded
         {amendment}
         proposal={$liveProposal ?? proposal}
         {editable}
