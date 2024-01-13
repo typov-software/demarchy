@@ -6,7 +6,7 @@
   import { formatRelative } from 'date-fns';
   import type { PageData } from './$types';
   import { enhance } from '$app/forms';
-  import { working } from '$lib/stores/working';
+  import { workingCallback } from '$lib/stores/working';
 
   export let data: PageData;
 </script>
@@ -24,13 +24,7 @@
           id="create-proposal"
           method="post"
           action="?/createProposal"
-          use:enhance={() => {
-            const job = working.add();
-            return ({ update }) => {
-              working.remove(job);
-              update({ reset: false });
-            };
-          }}
+          use:enhance={workingCallback()}
         >
           <input type="hidden" name="organization_id" value={data.organization.id} />
           <input type="hidden" name="group_id" value={data.group.id} />

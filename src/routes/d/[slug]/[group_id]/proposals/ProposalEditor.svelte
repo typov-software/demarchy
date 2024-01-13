@@ -4,7 +4,7 @@
   import type { Organization } from '$lib/models/organizations';
   import type { Profile } from '$lib/models/profiles';
   import type { Amendment, Proposal } from '$lib/models/proposals';
-  import { working } from '$lib/stores/working';
+  import { working, workingCallback } from '$lib/stores/working';
   import { pluralize } from '$lib/utils/string';
   import {
     collection,
@@ -361,17 +361,7 @@
           </ul>
         </div>
 
-        <form
-          method="post"
-          action="?/openProposal"
-          use:enhance={() => {
-            const job = working.add();
-            return ({ update }) => {
-              working.remove(job);
-              update({ reset: false });
-            };
-          }}
-        >
+        <form method="post" action="?/openProposal" use:enhance={workingCallback()}>
           <input type="hidden" name="path" value={proposal.path} />
           <button class="btn btn-success btn-sm rounded-lg h-9">
             <span class="material-symbols-outlined">present_to_all</span>
@@ -442,14 +432,12 @@
       <form
         method="post"
         action="?/dropProposal"
-        use:enhance={() => {
-          dropModal?.close();
-          const job = working.add();
-          return ({ update }) => {
-            working.remove(job);
-            update({ reset: true });
-          };
-        }}
+        use:enhance={workingCallback({
+          onStart() {
+            dropModal?.close();
+          },
+          reset: true
+        })}
       >
         <input type="hidden" name="path" value={proposal.path} />
         <button class="btn btn-error btn-outline">I'm sure, drop it</button>
@@ -471,14 +459,12 @@
       <form
         method="post"
         action="?/revertToDraft"
-        use:enhance={() => {
-          revertModal?.close();
-          const job = working.add();
-          return ({ update }) => {
-            working.remove(job);
-            update({ reset: true });
-          };
-        }}
+        use:enhance={workingCallback({
+          onStart() {
+            revertModal?.close();
+          },
+          reset: true
+        })}
       >
         <input type="hidden" name="path" value={proposal.path} />
         <button class="btn btn-warning btn-outline">I'm sure, revert to draft</button>
@@ -502,14 +488,12 @@
       <form
         method="post"
         action="?/DEV_adoptProposal"
-        use:enhance={() => {
-          adoptModal?.close();
-          const job = working.add();
-          return ({ update }) => {
-            working.remove(job);
-            update({ reset: true });
-          };
-        }}
+        use:enhance={workingCallback({
+          onStart() {
+            adoptModal?.close();
+          },
+          reset: true
+        })}
       >
         <input type="hidden" name="path" value={proposal.path} />
         <input type="hidden" name="organization_id" value={organization.id} />

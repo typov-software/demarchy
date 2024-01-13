@@ -6,7 +6,7 @@
   import { goto } from '$app/navigation';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import { enhance } from '$app/forms';
-  import { working } from '$lib/stores/working';
+  import { workingCallback } from '$lib/stores/working';
   import { user } from '$lib/firebase';
   import PageView from '$lib/components/PageView.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
@@ -75,13 +75,7 @@
               class="flex justify-start text-left"
               method="post"
               action="?/leaveGroup"
-              use:enhance={() => {
-                const jobId = working.add();
-                return async ({ update }) => {
-                  working.remove(jobId);
-                  update();
-                };
-              }}
+              use:enhance={workingCallback()}
             >
               <input type="hidden" name="context" value={context} />
               <input type="hidden" name="organization_id" value={data.organization.id} />
