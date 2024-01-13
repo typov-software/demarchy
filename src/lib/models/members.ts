@@ -1,5 +1,5 @@
 import type { RoleAccess } from './roles';
-import type { WithId } from './utils';
+import type { DocumentMeta } from './utils';
 
 /**
  * This document type belongs to a members collection on a group document.
@@ -11,7 +11,6 @@ export interface MemberProps {
   organization_id: string;
   group_id: string;
   role: RoleAccess;
-  joined_at: Date;
   // TODO: name and handle need to be updated when a user info changes
   // this doesnt need to be a cloud function, it could be an api endpoint or
   // cloud task triggered by a user action.
@@ -19,4 +18,4 @@ export interface MemberProps {
   handle: string;
 }
 
-export type Member = MemberProps & WithId;
+export type Member = MemberProps & DocumentMeta;

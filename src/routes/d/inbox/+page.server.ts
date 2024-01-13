@@ -1,4 +1,4 @@
-import type { Notification, NotificationProps } from '$lib/models/notifications';
+import type { Notification } from '$lib/models/notifications';
 import {
   adminDB,
   adminInboxRef,
@@ -8,22 +8,19 @@ import {
   adminNotificationRef,
   adminProfileRef
 } from '$lib/server/admin';
-import { FieldValue, type Timestamp } from 'firebase-admin/firestore';
+import { FieldValue } from 'firebase-admin/firestore';
 import type { PageServerLoad } from './$types';
 import { error, type Actions } from '@sveltejs/kit';
-import type { Invitation, InvitationProps } from '$lib/models/invitations';
+import type { Invitation } from '$lib/models/invitations';
 import type { MembershipProps } from '$lib/models/memberships';
 import type { MemberProps } from '$lib/models/members';
-import type { Profile, ProfileProps } from '$lib/models/profiles';
+import type { Profile } from '$lib/models/profiles';
+import { makeDocument } from '$lib/models/utils';
 
 export const load = (async ({ locals }) => {
   const uid = locals.user_id!;
   const snapshot = await adminNotificationRef(uid).limit(50).get();
-  const notifications: Notification[] = snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...(doc.data() as NotificationProps),
-    created_at: (doc.data().created_at as Timestamp)?.toDate() ?? new Date()
-  }));
+  const notifications: Notification[] = snapshot.docs.map((doc) => makeDocument(doc));
   return {
     notifications
   };
@@ -59,22 +56,16 @@ export const actions = {
 
     const invitationDoc = await adminInvitationRef(organization_id).doc(invitation_id).get();
     if (!invitationDoc.exists) {
-      throw error(401, 'unauthorized');
+      error(401, 'unauthorized');
     }
 
-    const invitation: Invitation = {
-      id: invitationDoc.id,
-      ...(invitationDoc.data() as InvitationProps)
-    };
+    const invitation: Invitation = makeDocument(invitationDoc);
 
     const inboxRef = adminInboxRef().doc(uid);
     const notificationRef = adminNotificationRef(uid).doc(notification_id);
 
     const profileDoc = await adminProfileRef().doc(uid).get();
-    const profile: Profile = {
-      id: profileDoc.id,
-      ...(profileDoc.data() as ProfileProps)
-    };
+    const profile: Profile = makeDocument(profileDoc);
 
     const membershipProps: MembershipProps = {
       organization_id,
@@ -90,8 +81,7 @@ export const actions = {
       handle: profile.handle,
       role: invitation.role,
       group_id: invitation.group_id,
-      organization_id: invitation.organization_id,
-      joined_at: new Date()
+      organization_id: invitation.organization_id
     };
 
     const batch = adminDB.batch();
@@ -102,7 +92,8 @@ export const actions = {
       adminMemberRef(organization_id, invitation.group_id).doc(invitation.user_id),
       {
         ...memberProps,
-        joined_at: FieldValue.serverTimestamp()
+        created_at: FieldValue.serverTimestamp(),
+        updated_at: FieldValue.serverTimestamp()
       },
       { merge: true }
     );

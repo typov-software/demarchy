@@ -1,5 +1,5 @@
 import type { RoleAccess } from './roles';
-import type { WithId } from './utils';
+import type { DocumentMeta } from './utils';
 
 export interface InvitationProps {
   organization_id: string;
@@ -12,4 +12,4 @@ export interface InvitationProps {
   created_at: Date;
 }
 
-export type Invitation = InvitationProps & WithId;
+export type Invitation = InvitationProps & DocumentMeta;

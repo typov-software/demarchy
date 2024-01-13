@@ -1,0 +1,176 @@
+<script lang="ts">
+  import { db } from '$lib/firebase';
+  import type { Amendment, Proposal } from '$lib/models/proposals';
+  import { doc as fdoc, writeBatch } from 'firebase/firestore';
+  import DocEditor from '../docs/DocEditor.svelte';
+  import { createEventDispatcher } from 'svelte';
+
+  export let editable = true;
+  export let amendment: Amendment;
+  export let proposal: Proposal;
+  export let docsRoute: string;
+  export let expanded = false;
+
+  const dispatch = createEventDispatcher();
+
+  $: expanded;
+  $: saving = false;
+
+  let nameInput: HTMLInputElement;
+  $: nameInput;
+
+  let docName = amendment.doc.name;
+  $: docName;
+
+  async function saveDocName() {
+    if (saving || docName === amendment.doc.name) return;
+    saving = true;
+    const batch = writeBatch(db);
+    batch.update(fdoc(db, amendment.doc.path), {
+      name: docName
+    });
+    batch.set(
+      fdoc(db, proposal.path),
+      {
+        amendments: {
+          ...proposal.amendments,
+          [amendment.doc.id]: {
+            ...amendment,
+            doc: {
+              ...amendment.doc,
+              name: docName
+            }
+          }
+        }
+      },
+      { merge: true }
+    );
+    await batch.commit();
+    saving = false;
+  }
+</script>
+
+<div class="card bg-base-200 max-w-3xl w-full rounded-lg">
+  <div class="card-body gap-0 p-0" class:pb-4={expanded}>
+    <h3 class="card-title text-sm w-full items-center flex pl-4 gap-0">
+      {#if amendment}
+        <span class="material-symbols-outlined">
+          {#if amendment.type === 'create'}
+            post_add
+          {:else if amendment.type === 'update'}
+            edit_note
+          {:else if amendment.type === 'destroy'}
+            delete
+          {/if}
+        </span>
+      {/if}
+      {#if expanded && editable}
+        <input
+          bind:this={nameInput}
+          bind:value={docName}
+          on:blur={() => {
+            saveDocName();
+          }}
+          on:keypress={(e) => {
+            if (e.key === 'Enter') {
+              nameInput?.blur();
+            }
+          }}
+          autocomplete="off"
+          type="text"
+          name="doc-name"
+          class="input input-sm rounded-sm pl-1 bg-base-200 w-full"
+          class:input-error={docName.trim().length === 0}
+        />
+      {:else}
+        <span class="pl-1 doc-name">
+          {docName}
+        </span>
+      {/if}
+      <div class="flex-1" />
+      {#if amendment}
+        <span
+          class="text-xs rounded-full py-1 px-2"
+          class:bg-success={amendment.type === 'create'}
+          class:bg-warning={amendment.type === 'update'}
+          class:bg-error={amendment.type === 'destroy'}
+        >
+          {amendment.type}
+        </span>
+      {/if}
+      <button
+        class="expand-button btn btn-square shadow-none bg-base-200 rounded-lg flex ml-2"
+        class:rounded-none={expanded}
+        on:click={() => (expanded = !expanded)}
+      >
+        <span class="material-symbols-outlined">
+          {expanded ? 'expand_less' : 'expand_more'}
+        </span>
+      </button>
+      {#if expanded}
+        <div class="dropdown dropdown-end">
+          <button
+            class="expand-button btn btn-square shadow-none bg-base-200 rounded-lg flex"
+            class:expanded-more={expanded}
+          >
+            <span class="material-symbols-outlined"> more_vert </span>
+          </button>
+          <ul class="dropdown-content w-60 menu z-[1] shadow bg-base-100 rounded-box">
+            <li>
+              <button on:click={() => dispatch('remove', amendment)} class="text-error">
+                <span class="material-symbols-outlined">delete</span>
+                Remove amendment
+              </button>
+            </li>
+          </ul>
+        </div>
+      {/if}
+    </h3>
+
+    {#if expanded && amendment.type === 'update'}
+      <div class="px-4 pb-2 flex">
+        <a
+          href={`${docsRoute}/${amendment.update?.doc.id}`}
+          class="link link-hover hover:link-info text-sm"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          See latest doc
+          <span class="material-symbols-outlined text-base">open_in_new</span>
+        </a>
+      </div>
+    {/if}
+
+    {#if expanded && amendment.type === 'destroy'}
+      <div class="px-4">
+        <a
+          href={`${docsRoute}/${amendment.doc.id}`}
+          class="link link-hover hover:link-info"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          See latest doc
+          <span class="material-symbols-outlined text-base">open_in_new</span>
+        </a>
+      </div>
+    {/if}
+
+    {#if expanded && (amendment.type === 'create' || amendment.type === 'update')}
+      <DocEditor path={amendment.doc.path} {editable} />
+    {/if}
+  </div>
+</div>
+
+<style lang="scss">
+  .doc-name {
+    border-left: 1px solid transparent;
+  }
+  .expand-button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+
+    &.expanded-more {
+      border-bottom-right-radius: 0;
+    }
+  }
+</style>

@@ -1,11 +1,12 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { adminDB, adminOrganizationRef, adminProfileRef } from '$lib/server/admin';
-import type { Profile, ProfileProps } from '$lib/models/profiles';
-import type { Membership, MembershipProps } from '$lib/models/memberships';
-import type { Organization, OrganizationProps } from '$lib/models/organizations';
+import type { Profile } from '$lib/models/profiles';
+import type { Membership } from '$lib/models/memberships';
+import type { Organization } from '$lib/models/organizations';
 import { MEMBERSHIPS } from '$lib/models/firestore';
 import { getComparator, stableSort } from '$lib/utils/sorting';
+import { makeDocument } from '$lib/models/utils';
 
 /**
  *
@@ -15,29 +16,19 @@ import { getComparator, stableSort } from '$lib/utils/sorting';
 export const GET: RequestHandler = async ({ locals, setHeaders }) => {
   const uid = locals.user_id;
   if (!uid) {
-    throw error(401, 'unauthorized');
+    error(401, 'unauthorized');
   }
 
   const profileDoc = await adminProfileRef().doc(uid).get();
-  const profile: Profile = {
-    id: profileDoc.id,
-    ...(profileDoc.data() as ProfileProps)
-  };
-
+  const profile: Profile = makeDocument(profileDoc);
   const snapshot = await adminDB.collectionGroup(MEMBERSHIPS).where('uid', '==', uid).get();
-  const memberships: Membership[] = snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...(doc.data() as MembershipProps)
-  }));
+  const memberships: Membership[] = snapshot.docs.map((doc) => makeDocument(doc));
   const organizationIds = memberships.map((membership) => membership.organization_id);
 
   const refs = organizationIds.map((oid) => adminOrganizationRef().doc(oid));
   const orgDocs = refs.length ? await adminDB.getAll(...refs) : [];
   const organizations: Organization[] = stableSort(
-    orgDocs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as OrganizationProps)
-    })),
+    orgDocs.map((doc) => makeDocument(doc)),
     getComparator('asc', 'name')
   );
 

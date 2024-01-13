@@ -1,4 +1,4 @@
-import type { WithId } from './utils';
+import type { DocumentMeta } from './utils';
 
 export type VoucherType = '/d/organizations/new';
 
@@ -11,4 +11,4 @@ export interface VoucherProps {
   redeemed: boolean;
 }
 
-export type Voucher = VoucherProps & WithId;
+export type Voucher = VoucherProps & DocumentMeta;

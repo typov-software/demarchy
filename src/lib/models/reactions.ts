@@ -1,5 +1,5 @@
 import type { CommentContext } from './comments';
-import type { WithId } from './utils';
+import type { DocumentMeta } from './utils';
 
 export type ReactionType =
   | 'joy'
@@ -58,6 +58,14 @@ export function createEmptyReenforcements() {
   return out as Record<ReenforcementType, number>;
 }
 
+export type ReactionCounts = {
+  [key in ReactionType]: number;
+};
+
+export type ReenforcementCounts = {
+  [key in ReenforcementType]: number;
+};
+
 export interface ReactionProps {
   context: CommentContext;
   context_id: string;
@@ -66,4 +74,6 @@ export interface ReactionProps {
   reenforcement: ReenforcementType | null;
 }
 
-export type Reaction = ReactionProps & WithId;
+export type Reaction = ReactionProps & DocumentMeta;
+
+export type ReactionTally = ReactionCounts & ReenforcementCounts;

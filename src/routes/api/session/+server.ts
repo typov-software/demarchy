@@ -14,7 +14,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     cookies.set('__session', cookie, options); // special key for firebase cdn caching
     return json({ status: 'started' });
   } else {
-    throw error(401, 'Recent session required');
+    error(401, 'Recent session required');
   }
 };
 

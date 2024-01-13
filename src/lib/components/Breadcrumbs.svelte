@@ -29,9 +29,8 @@
       path: root + group?.id + '/discussions',
       symbol: 'forum'
     },
-    documents: {
-      disabled: true,
-      path: root + group?.id + '/documents',
+    docs: {
+      path: root + group?.id + '/docs',
       symbol: 'article'
     },
     feedback: {
@@ -43,7 +42,6 @@
       symbol: 'person_add'
     },
     proposals: {
-      disabled: true,
       path: root + group?.id + '/proposals',
       symbol: 'history_edu'
     },
@@ -55,7 +53,7 @@
   };
 </script>
 
-<div class="breadcrumbs p-0">
+<div class="breadcrumbs p-0 w-full">
   <ul>
     {#if groups}
       <li class="dropdown dropdown-start dropdown-bottom dropdown-hover">
@@ -83,7 +81,16 @@
     {#if group}
       <li class="dropdown dropdown-start dropdown-bottom dropdown-hover">
         {#if matchedRoute}
-          <div role="button" tabindex="0" class="btn btn-sm btn-ghost rounded-xl px-2">
+          <!-- <a
+            role="button"
+            tabindex="0"
+            class="btn btn-sm btn-ghost rounded-xl px-2"
+            href={`${parts.slice(0, 5).join('/')}`}
+          >
+            <span class="material-symbols-outlined">{config[matchedRoute].symbol}</span>
+            {titleCase(matchedRoute)}
+          </a> -->
+          <div role="button" tabindex="0" class="btn btn-sm btn-ghost rounded-xl">
             <span class="material-symbols-outlined">{config[matchedRoute].symbol}</span>
             {titleCase(matchedRoute)}
           </div>
@@ -107,6 +114,13 @@
           {/each}
         </ul>
       </li>
+      {#if parts.at(5)}
+        <!-- <li>
+          <a class="btn btn-sm btn-ghost rounded-xl" href={`${parts.slice(0, 6).join('/')}`}>
+            {titleCase(parts[5])}
+          </a>
+        </li> -->
+      {/if}
     {/if}
   </ul>
 </div>

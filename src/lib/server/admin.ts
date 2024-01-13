@@ -1,5 +1,5 @@
 import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { FB_CLIENT_EMAIL, FB_PRIVATE_KEY, FB_PROJECT_ID } from '$env/static/private';
 import pkg from 'firebase-admin';
 import {
@@ -14,7 +14,10 @@ import {
   SLUGS,
   VOUCHERS,
   GROUPS,
-  FEEDBACK
+  FEEDBACK,
+  PROPOSALS,
+  LIBRARIES,
+  DOCS
 } from '$lib/models/firestore';
 
 try {
@@ -34,6 +37,18 @@ try {
 
 export const adminDB = getFirestore();
 export const adminAuth = getAuth();
+
+export function createdTimestamps() {
+  return {
+    created_at: FieldValue.serverTimestamp(),
+    updated_at: FieldValue.serverTimestamp(),
+    archived_at: null
+  };
+}
+
+export function updatedTimestamps() {
+  return { updated_at: FieldValue.serverTimestamp() };
+}
 
 export function adminInboxRef() {
   return adminDB.collection(INBOXES);
@@ -73,6 +88,18 @@ export function adminMemberRef(organization_id: string, group_id: string) {
 
 export function adminGroupFeedbackRef(organization_id: string, group_id: string) {
   return adminGroupRef(organization_id).doc(group_id).collection(FEEDBACK);
+}
+
+export function adminGroupDocRef(organization_id: string, group_id: string) {
+  return adminGroupRef(organization_id).doc(group_id).collection(DOCS);
+}
+
+export function adminGroupLibraryRef(organization_id: string, group_id: string) {
+  return adminGroupRef(organization_id).doc(group_id).collection(LIBRARIES);
+}
+
+export function adminGroupProposalRef(organization_id: string, group_id: string) {
+  return adminGroupRef(organization_id).doc(group_id).collection(PROPOSALS);
 }
 
 export function adminInvitationRef(organization_id: string) {

@@ -1,6 +1,5 @@
 import type { CommentProps } from '$lib/models/comments';
-import { adminGroupFeedbackRef } from '$lib/server/admin';
-import { FieldValue } from 'firebase-admin/firestore';
+import { adminGroupFeedbackRef, createdTimestamps } from '$lib/server/admin';
 import type { Actions } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { createEmptyReactions, createEmptyReenforcements } from '$lib/models/reactions';
@@ -17,7 +16,7 @@ export const actions = {
     const isAnonymous = anonymous === 'on';
 
     if (!body) {
-      throw error(403, 'Malformed comment props');
+      error(403, 'Malformed comment props');
     }
 
     const feedbackRef = adminGroupFeedbackRef(organizationId, groupId).doc();
@@ -36,10 +35,10 @@ export const actions = {
       ...createEmptyReenforcements()
     };
     await feedbackRef.set({
-      ...commentProps,
-      created_at: FieldValue.serverTimestamp()
+      ...createdTimestamps(),
+      ...commentProps
     });
 
-    throw redirect(301, url.pathname);
+    redirect(301, url.pathname);
   }
 } satisfies Actions;
