@@ -4,16 +4,17 @@
   import { collection, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore';
   import { db, user } from '$lib/firebase';
   import { page } from '$app/stores';
-  import type { Invitation, InvitationProps } from '$lib/models/invitations';
+  import type { Invitation } from '$lib/models/invitations';
   import { getRoleName } from '$lib/models/roles';
   import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
-  import type { Profile, ProfileProps } from '$lib/models/profiles';
+  import type { Profile } from '$lib/models/profiles';
   import { enhance } from '$app/forms';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import { INVITATIONS, ORGANIZATIONS } from '$lib/models/firestore';
   import { working } from '$lib/stores/working';
   import PageView from '$lib/components/PageView.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import { makeDocument } from '$lib/models/utils';
 
   export let data: PageData;
 
@@ -32,10 +33,7 @@
       where('group_id', '==', $page.params.group_id)
     );
     unsubscribe = onSnapshot(ref, (snapshot) => {
-      invitations = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as InvitationProps)
-      }));
+      invitations = snapshot.docs.map(makeDocument<Invitation>);
     });
     settingUp = false;
   }
@@ -88,10 +86,7 @@
         handleUserId = isHandle ? handleDoc.data()!.uid : null;
         if (isHandle && handleUserId) {
           const profileDoc = await getDoc(doc(db, 'profiles', handleUserId));
-          handleProfile = {
-            id: profileDoc.id,
-            ...(profileDoc.data() as ProfileProps)
-          };
+          handleProfile = makeDocument<Profile>(profileDoc);
         } else {
           handleProfile = null;
         }

@@ -1,3 +1,4 @@
+import type { SubmitFunction } from '@sveltejs/kit';
 import { writable } from 'svelte/store';
 
 export function workingStore() {
@@ -22,3 +23,25 @@ export function workingStore() {
 }
 
 export const working = workingStore();
+
+export const workingCallback = (
+  options: {
+    onStart?: () => void;
+    onEnd?: () => void;
+    reset?: boolean;
+    invalidateAll?: boolean;
+  } = {}
+) => {
+  return (() => {
+    const jobId = working.add();
+    options.onStart && options.onStart();
+    return ({ update }) => {
+      options.onEnd && options.onEnd();
+      working.remove(jobId);
+      update({
+        reset: options.reset ?? false,
+        invalidateAll: options.invalidateAll ?? false
+      });
+    };
+  }) as SubmitFunction;
+};

@@ -4,7 +4,7 @@
   import PageView from '$lib/components/PageView.svelte';
   import ProfilePhotoEditor from '$lib/components/ProfilePhotoEditor.svelte';
   import type { PageData } from './$types';
-  import { working } from '$lib/stores/working';
+  import { workingCallback } from '$lib/stores/working';
   import HandleEditor from '$lib/components/HandleEditor.svelte';
 
   export let data: PageData;
@@ -22,13 +22,7 @@
   <form
     method="POST"
     action="?/updateName"
-    use:enhance={() => {
-      const jobId = working.add();
-      return async ({ update }) => {
-        working.remove(jobId);
-        update({ reset: false });
-      };
-    }}
+    use:enhance={workingCallback()}
     class="flex items-end gap-4 w-full"
   >
     <div class="flex flex-col flex-1 items-start justify-end">
@@ -49,13 +43,7 @@
   <form
     method="POST"
     action="?/updateHandle"
-    use:enhance={() => {
-      const jobId = working.add();
-      return async ({ update }) => {
-        working.remove(jobId);
-        update({ reset: false });
-      };
-    }}
+    use:enhance={workingCallback()}
     class="flex flex-col gap-4 w-full"
   >
     <HandleEditor initialValue={data.profile.handle} />

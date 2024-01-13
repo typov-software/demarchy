@@ -5,7 +5,7 @@
   import CommentCard from '$lib/components/CommentCard.svelte';
   import PageView from '$lib/components/PageView.svelte';
   import { db, user } from '$lib/firebase';
-  import { working } from '$lib/stores/working';
+  import { workingCallback } from '$lib/stores/working';
   import type { PageData } from './$types';
   import { onMount } from 'svelte';
   import {
@@ -172,15 +172,13 @@
       class="max-w-xl w-full flex flex-col gap-4"
       method="post"
       action="?/createFeedback"
-      use:enhance={() => {
-        const jobId = working.add();
-        return async ({ update }) => {
+      use:enhance={workingCallback({
+        onEnd() {
           commentBody = '';
           commentAnon = false;
-          working.remove(jobId);
-          update({ reset: true });
-        };
-      }}
+        },
+        reset: true
+      })}
     >
       <input type="hidden" name="organization_id" value={data.organization?.id} />
       <input type="hidden" name="group_id" value={data.group?.id} />
