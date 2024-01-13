@@ -1,5 +1,12 @@
 import { expect, describe, test } from 'vitest';
-import { checkValidHandle, checkValidSlug } from './string';
+import {
+  checkValidHandle,
+  checkValidSlug,
+  emptyString,
+  pluralize,
+  slugify,
+  titleCase
+} from './string';
 
 describe('string.ts', () => {
   test('checkValidSlug() returns true for a valid slug', () => {
@@ -33,5 +40,33 @@ describe('string.ts', () => {
     // 32 character limit on slug length
     expect(checkValidHandle('012345678901234567890123456789012')).toBe(false);
     expect(checkValidHandle('01')).toBe(false);
+  });
+
+  test('emptyString() checks for an empty string', () => {
+    expect(emptyString()).toBe(true);
+    expect(emptyString('')).toBe(true);
+    expect(emptyString(' ')).toBe(true);
+    expect(emptyString('    ')).toBe(true);
+    expect(emptyString('test')).toBe(false);
+  });
+
+  test('titleCase() converts a string into title case', () => {
+    expect(titleCase('a title to be cased')).toBe('A Title To Be Cased');
+    expect(titleCase('A TITLE')).toBe('A Title');
+    expect(titleCase('a-title')).toBe('A-title');
+  });
+
+  test('slugify() converts a string into a valid slug', () => {
+    expect(slugify('A Name to Slugify')).toBe('a-name-to-slugify');
+    expect(slugify('slugify this')).toBe('slugify-this');
+    expect(slugify('slugify_this')).toBe('slugify-this');
+    expect(slugify('slugify THIS')).toBe('slugify-this');
+  });
+
+  test('pluralize() pluralizes a given word', () => {
+    expect(pluralize('slug', 0)).toBe('slugs');
+    expect(pluralize('slug', 1)).toBe('slug');
+    expect(pluralize('slug', 2)).toBe('slugs');
+    expect(pluralize('sass', 3, 'es')).toBe('sasses');
   });
 });
