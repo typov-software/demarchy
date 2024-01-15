@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
-  import PageView from '$lib/components/PageView.svelte';
   import { auth, db, profile, user } from '$lib/firebase';
   import { SUPPORTED_PROVIDER_IDS, type AuthProvider } from '$lib/models/profiles';
   import { getProviders } from '$lib/utils/client-auth';
@@ -73,5 +72,3 @@
     </div>
   </div>
 </main>
-
-<PageView />

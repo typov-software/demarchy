@@ -1,7 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import BasicSection from '$lib/components/BasicSection.svelte';
-  import PageView from '$lib/components/PageView.svelte';
   import GroupTable from './GroupTable.svelte';
   import type { PageData } from './$types';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
@@ -37,5 +36,3 @@
     groups={data.groups}
   />
 </BasicSection>
-
-<PageView />

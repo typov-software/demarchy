@@ -1,5 +1,4 @@
 <script lang="ts">
-  import PageView from '$lib/components/PageView.svelte';
   import { OAuthProvider, linkWithPopup, unlink } from 'firebase/auth';
   import type { PageData } from './$types';
   import { user } from '$lib/firebase';
@@ -90,5 +89,3 @@
     </div>
   {/if}
 </BasicSection>
-
-<PageView />

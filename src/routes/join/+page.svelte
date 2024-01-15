@@ -1,6 +1,5 @@
 <script lang="ts">
   import { goto, invalidateAll } from '$app/navigation';
-  import PageView from '$lib/components/PageView.svelte';
   import { auth, user } from '$lib/firebase';
   import { SUPPORTED_PROVIDER_IDS, type AuthProvider } from '$lib/models/profiles';
   import { getProviders } from '$lib/utils/client-auth';
@@ -59,5 +58,3 @@
     </div>
   {/if}
 </div>
-
-<PageView />

@@ -1,7 +1,6 @@
 <script lang="ts">
   import BasicSection from '$lib/components/BasicSection.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import PageView from '$lib/components/PageView.svelte';
   import ProposalEditor from '../ProposalEditor.svelte';
   import type { PageData } from './$types';
 
@@ -17,5 +16,3 @@
     proposal={data.proposal}
   />
 </BasicSection>
-
-<PageView />

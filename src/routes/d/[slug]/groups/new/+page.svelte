@@ -1,6 +1,5 @@
 <script lang="ts">
   import BasicSection from '$lib/components/BasicSection.svelte';
-  import PageView from '$lib/components/PageView.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -42,5 +41,3 @@
     </div>
   </form>
 </BasicSection>
-
-<PageView />

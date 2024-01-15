@@ -8,7 +8,6 @@
   import { enhance } from '$app/forms';
   import { workingCallback } from '$lib/stores/working';
   import { user } from '$lib/firebase';
-  import PageView from '$lib/components/PageView.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 
   export let data: PageData;
@@ -118,5 +117,3 @@
     </tbody>
   </table>
 </BasicSection>
-
-<PageView />

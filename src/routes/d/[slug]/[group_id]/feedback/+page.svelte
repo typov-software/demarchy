@@ -3,7 +3,6 @@
   import { enhance } from '$app/forms';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import CommentCard from '$lib/components/CommentCard.svelte';
-  import PageView from '$lib/components/PageView.svelte';
   import { db, user } from '$lib/firebase';
   import { workingCallback } from '$lib/stores/working';
   import type { PageData } from './$types';
@@ -281,5 +280,3 @@
   {/if}
   <div use:inview={{}} on:inview_enter={() => getPage()} />
 </BasicSection>
-
-<PageView />
