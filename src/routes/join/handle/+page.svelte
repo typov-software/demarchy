@@ -2,7 +2,6 @@
   import { enhance } from '$app/forms';
   import AuthCheck from '$lib/components/AuthCheck.svelte';
   import HandleEditor from '$lib/components/HandleEditor.svelte';
-  import PageView from '$lib/components/PageView.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -20,5 +19,4 @@
   >
     <HandleEditor initialValue={data.profile?.handle ?? ''} />
   </form>
-  <PageView />
 </AuthCheck>

@@ -12,7 +12,6 @@
   import BasicSection from '$lib/components/BasicSection.svelte';
   import { INVITATIONS, ORGANIZATIONS } from '$lib/models/firestore';
   import { working } from '$lib/stores/working';
-  import PageView from '$lib/components/PageView.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import { makeDocument } from '$lib/models/utils';
 
@@ -235,5 +234,3 @@
     </form>
   </dialog>
 </BasicSection>
-
-<PageView />

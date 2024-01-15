@@ -1,6 +1,5 @@
 <script lang="ts">
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
-  import PageView from '$lib/components/PageView.svelte';
 </script>
 
 <div class="hero min-h-screen bg-base-100">
@@ -17,5 +16,3 @@
     </div>
   </div>
 </div>
-
-<PageView />

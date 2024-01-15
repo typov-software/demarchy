@@ -1,5 +1,4 @@
 <script>
-  import PageView from '$lib/components/PageView.svelte';
   import { user } from '$lib/firebase';
 </script>
 
@@ -26,5 +25,3 @@
     </div>
   </div>
 </div>
-
-<PageView />

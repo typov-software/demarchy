@@ -2,7 +2,6 @@
   import { page } from '$app/stores';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import PageView from '$lib/components/PageView.svelte';
   import { formatRelative } from 'date-fns';
   import type { PageData } from './$types';
   import { enhance } from '$app/forms';
@@ -123,5 +122,3 @@
     </div>
   {/if}
 </BasicSection>
-
-<PageView />

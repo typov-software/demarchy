@@ -1,7 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import BasicSection from '$lib/components/BasicSection.svelte';
-  import PageView from '$lib/components/PageView.svelte';
   import ProfilePhotoEditor from '$lib/components/ProfilePhotoEditor.svelte';
   import type { PageData } from './$types';
   import { workingCallback } from '$lib/stores/working';
@@ -49,5 +48,3 @@
     <HandleEditor initialValue={data.profile.handle} />
   </form>
 </BasicSection>
-
-<PageView />

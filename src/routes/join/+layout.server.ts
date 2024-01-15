@@ -1,4 +1,5 @@
-import type { Profile, ProfileProps } from '$lib/models/profiles';
+import type { Profile } from '$lib/models/profiles';
+import { makeDocument } from '$lib/models/utils';
 import { adminProfileRef } from '$lib/server/admin';
 import type { LayoutServerLoad } from './$types';
 
@@ -16,10 +17,7 @@ export const load = (async ({ locals }) => {
       profile
     };
   }
-  profile = {
-    id: profileDoc.id,
-    ...(profileDoc.data() as ProfileProps)
-  };
+  profile = makeDocument<Profile>(profileDoc);
   return {
     profile
   };
