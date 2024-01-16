@@ -23,8 +23,12 @@
 
   let cookieAckModal: HTMLDialogElement;
 
-  function acknowledge() {
+  function close() {
     cookieAckModal?.close();
+  }
+
+  function acknowledge() {
+    close();
     sessionStorage.setItem('cookie-ack', JSON.stringify({ ack: true, timestamp: Date.now() }));
   }
 
@@ -50,7 +54,7 @@
     <h2 class="text-xl font-bold p2-4">Disclosure</h2>
     <p class="py-4">Demarchy uses a single cookie and saves simple preferences on your device.</p>
     <div class="flex gap-2">
-      <a href="/privacy" class="btn btn-info" on:click={acknowledge}>See privacy policy</a>
+      <a href="/privacy" class="btn btn-info" on:click={close}>See privacy policy</a>
       <button class="btn btn-success" on:click={acknowledge}>I consent</button>
     </div>
   </div>
