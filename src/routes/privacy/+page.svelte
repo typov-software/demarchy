@@ -1,3 +1,21 @@
+<script lang="ts">
+  import { goto } from '$app/navigation';
+  import { afterUpdate } from 'svelte';
+
+  $: showAck = false;
+
+  afterUpdate(() => {
+    if (!sessionStorage.getItem('cookie-ack')) {
+      showAck = true;
+    }
+  });
+
+  function acknowledge() {
+    sessionStorage.setItem('cookie-ack', JSON.stringify({ ack: true, timestamp: Date.now() }));
+    goto('/');
+  }
+</script>
+
 <div class="hero min-h-screen">
   <div class="hero-content w-full text-center">
     <div class="max-w-2xl flex flex-col">
@@ -98,6 +116,11 @@
           Demarchy is committed to transparency and ethical software design. Share your experience
           with <a href="mailto:support@typov.com" class="link link-info">support</a>.
         </p>
+        {#if showAck}
+          <p class="py-2 mt-4">
+            <button class="btn btn-success" on:click={acknowledge}>I consent to this policy</button>
+          </p>
+        {/if}
       </div>
     </div>
   </div>
