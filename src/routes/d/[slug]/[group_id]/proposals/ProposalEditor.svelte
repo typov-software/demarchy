@@ -247,9 +247,9 @@
   }
 </script>
 
-<div class="card bg-base-200 max-w-3xl w-full rounded-lg">
+<div class="card bg-base-200 max-w-3xl w-full rounded-box">
   <div
-    class="card-title text-xs font-semibold bg-base-300 pl-4 pr-2 py-2 rounded-lg"
+    class="card-title text-xs font-semibold bg-base-300 pl-4 pr-2 py-2 rounded-box"
     style:border-bottom-left-radius="0"
     style:border-bottom-right-radius="0"
   >
@@ -261,13 +261,13 @@
       {formatRelative(proposal.created_at, new Date())}
     </h3>
     {#if editable}
-      <button class="btn btn-square btn-sm btn-ghost rounded-lg">
+      <button class="btn btn-square btn-sm btn-ghost">
         <span class="material-symbols-outlined">draft</span>
       </button>
     {/if}
     {#if ownsProposal && isOpen && !editable}
       <div class="dropdown dropdown-bottom dropdown-end">
-        <button class="btn btn-square btn-sm rounded-lg"
+        <button class="btn btn-square btn-sm"
           ><span class="material-symbols-outlined">more_vert</span></button
         >
         <ul class="dropdown-content w-60 menu z-[1] shadow bg-base-100 rounded-box">
@@ -327,7 +327,7 @@
             role="button"
             tabindex="0"
             bind:this={amendmentsMenu}
-            class="btn btn-sm rounded-lg btn-neutral"
+            class="btn btn-sm btn-neutral"
             style:height="35px"
           >
             <span class="material-symbols-outlined">history_edu</span>
@@ -363,7 +363,7 @@
 
         <form method="post" action="?/openProposal" use:enhance={workingCallback()}>
           <input type="hidden" name="path" value={proposal.path} />
-          <button class="btn btn-success btn-sm rounded-lg h-9">
+          <button class="btn btn-success btn-sm h-9">
             <span class="material-symbols-outlined">present_to_all</span>
             Open Proposal</button
           >

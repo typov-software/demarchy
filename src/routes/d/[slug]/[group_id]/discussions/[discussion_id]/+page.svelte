@@ -12,7 +12,7 @@
     <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="btn btn-sm btn-square btn-primary rounded-xl">
+      <div tabindex="0" role="button" class="btn btn-sm btn-square btn-primary">
         <span class="material-symbols-outlined">more_vert</span>
       </div>
       <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
@@ -27,9 +27,10 @@
       </div>
     </div>
   </div>
+
   <div class="w-full">
     <div class="card bg-base-200">
-      <div class="card-body py-5 px-0">
+      <div class="card-body py-5 px-0 gap-0">
         <BlocksEditor blocks={data.discussion.blocks} />
       </div>
     </div>

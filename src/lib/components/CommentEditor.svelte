@@ -90,7 +90,7 @@
           bind:checked={anon}
         />
       </label>
-      <button class="btn btn-success btn-sm rounded-xl" on:click={onPublish}>Publish</button>
+      <button class="btn btn-success btn-sm" on:click={onPublish}>Publish</button>
     </div>
   </div>
 </div>
