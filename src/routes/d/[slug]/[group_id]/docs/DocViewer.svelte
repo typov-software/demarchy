@@ -15,7 +15,7 @@
     >
     on {format(doc.created_at, 'MMMM d, yyyy')}
   </div>
-  {#each doc.blocks as block (block.id)}
+  {#each doc.blocks as block (block.uid)}
     <BlockViewer {block} />
   {/each}
 </div>

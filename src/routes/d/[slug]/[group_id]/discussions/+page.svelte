@@ -2,9 +2,41 @@
   import { page } from '$app/stores';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import type { DiscussionProps } from '$lib/models/discussions';
+  import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
   import type { PageData } from './$types';
+  import { db } from '$lib/firebase';
+  import { goto } from '$app/navigation';
+  import { working } from '$lib/stores/working';
+  import { formatRelative } from 'date-fns';
 
   export let data: PageData;
+
+  console.log(data.drafts);
+
+  async function draftDiscussion() {
+    const job = working.add();
+    const draftProps: DiscussionProps = {
+      organization_id: data.organization.id,
+      group_id: data.group.id,
+
+      user_id: data.profile.id,
+      user_handle: data.profile.handle,
+
+      content: '',
+      state: 'draft'
+    };
+    const draftRef = doc(
+      collection(db, `/organizations/${data.organization.id}/groups/${data.group.id}/discussions`)
+    );
+    await setDoc(draftRef, {
+      ...draftProps,
+      created_at: serverTimestamp(),
+      updated_at: serverTimestamp()
+    });
+    working.remove(job);
+    goto(`/d/${$page.params.slug}/${$page.params.group_id}/discussions/${draftRef.id}`);
+  }
 </script>
 
 <BasicSection otherClass="!items-start">
@@ -18,13 +50,43 @@
       <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
         <ul class="menu w-60">
           <li>
-            <a href="{$page.url.pathname}/new">
+            <button on:click={() => draftDiscussion()} disabled={$working.length > 0}>
               <span class="material-symbols-outlined">add</span>
-              Start a discussion
-            </a>
+              Draft a discussion
+            </button>
           </li>
         </ul>
       </div>
     </div>
   </div>
+
+  {#if data.drafts.length}
+    <div class="flex flex-col w-full">
+      <table class="table w-full">
+        <thead>
+          <tr>
+            <th>Your Drafts</th>
+            <th class="text-right">Last updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each data.drafts as discussion}
+            <tr>
+              <td class="w-full max-w-[0]">
+                <a
+                  href={$page.url.pathname + '/' + discussion.id}
+                  class="link link-hover block truncate italic"
+                >
+                  {discussion.content}
+                </a>
+              </td>
+              <td class="text-right text-neutral text-nowrap">
+                {formatRelative(discussion.updated_at, new Date())}
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+  {/if}
 </BasicSection>

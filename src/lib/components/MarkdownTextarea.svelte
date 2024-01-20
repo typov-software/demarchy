@@ -54,7 +54,8 @@
         break;
       }
       case 'Backspace': {
-        if ((e.target as HTMLTextAreaElement).value.trim() === '') {
+        // don't trim as we might be deleting spaces
+        if ((e.target as HTMLTextAreaElement).value === '') {
           e.preventDefault();
           dispatch('backspace');
         }

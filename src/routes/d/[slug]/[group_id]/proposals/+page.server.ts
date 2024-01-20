@@ -1,5 +1,5 @@
 import { adminGroupProposalRef, createdTimestamps } from '$lib/server/admin';
-import { error, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import type { Proposal, ProposalProps } from '$lib/models/proposals';
 import { makeDocument } from '$lib/models/utils';
@@ -8,10 +8,7 @@ export const load = (async ({ locals, parent }) => {
   const uid = locals.user_id!;
 
   const data = await parent();
-  const groupId = data.group?.id;
-  if (!groupId) {
-    error(403, 'invalid group id');
-  }
+  const groupId = data.group.id;
 
   // get user draft proposals and open group proposals
   const draftSnap = await adminGroupProposalRef(data.organization.id, groupId)

@@ -69,7 +69,6 @@ export type ReenforcementCounts = {
 export interface ReactionProps {
   context: CommentContext;
   context_id: string;
-  created_at: Date;
   reaction: ReactionType | null;
   reenforcement: ReenforcementType | null;
 }

@@ -81,7 +81,7 @@
           {#each data.open as proposal}
             <tr>
               <td>
-                <a href={$page.url.pathname + '/' + proposal.id} class="link">
+                <a href={$page.url.pathname + '/' + proposal.id} class="link link-hover">
                   <span>{proposal.title}</span>
                 </a>
               </td>

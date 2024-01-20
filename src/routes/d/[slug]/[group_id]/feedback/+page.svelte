@@ -1,10 +1,7 @@
 <script lang="ts">
-  import { autosize } from '$lib/stores/use-autosize';
-  import { enhance } from '$app/forms';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import CommentCard from '$lib/components/CommentCard.svelte';
   import { db, user } from '$lib/firebase';
-  import { workingCallback } from '$lib/stores/working';
   import type { PageData } from './$types';
   import { onMount } from 'svelte';
   import {
@@ -22,17 +19,14 @@
   import type { CommentProps } from '$lib/models/comments';
   import { inview } from 'svelte-inview';
   import { fly } from 'svelte/transition';
-  import SvelteMarkdown from 'svelte-markdown';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import HtmlRenderer from '$lib/components/HtmlRenderer.svelte';
+  import CommentEditor from '$lib/components/CommentEditor.svelte';
+  import { makeDocument } from '$lib/models/utils';
 
   export let data: PageData;
 
-  $: showForm = false;
-  $: commentBody = '';
-  $: commentAnon = false;
-  $: viewRaw = true;
+  $: showForm = true;
 
   $: userId = $user!.uid;
 
@@ -167,90 +161,31 @@
   </div>
 
   {#if showForm}
-    <form
-      class="max-w-xl w-full flex flex-col gap-4"
-      method="post"
-      action="?/createFeedback"
-      use:enhance={workingCallback({
-        onEnd() {
-          commentBody = '';
-          commentAnon = false;
-        },
-        reset: true
-      })}
-    >
-      <input type="hidden" name="organization_id" value={data.organization?.id} />
-      <input type="hidden" name="group_id" value={data.group?.id} />
-      <input type="hidden" name="user_handle" value={data.profile.handle} />
-
-      {#if viewRaw}
-        <!-- this autofocus doesn't occur on page load -->
-        <!-- svelte-ignore a11y-autofocus -->
-        <textarea
-          use:autosize
-          class="textarea bg-base-200 rounded-md"
-          class:textarea-success={commentBody.trim().length > 0}
-          name="body"
-          id="body"
-          placeholder="Submit your feedback to the group"
-          rows={3}
-          autofocus={true}
-          autocomplete="off"
-          bind:value={commentBody}
-        ></textarea>
-      {:else}
-        <div class="markdown-body bg-base-200 p-4">
-          <input type="hidden" name="body" value={commentBody} />
-          <SvelteMarkdown source={commentBody} renderers={{ html: HtmlRenderer }} />
-        </div>
-      {/if}
-      <div class="flex flex-row items-center gap-4">
-        <div class="flex flex-1 gap-2">
-          <button
-            class="btn btn-xs text-xs"
-            class:btn-error={viewRaw}
-            on:click={(e) => {
-              e.preventDefault();
-              viewRaw = true;
-            }}>Raw</button
-          >
-          <button
-            class="btn btn-xs text-xs"
-            class:btn-success={!viewRaw}
-            on:click={(e) => {
-              e.preventDefault();
-              viewRaw = false;
-            }}>Formatted</button
-          >
-        </div>
-        <label for="anonymous" class="flex flex-row items-center gap-2 cursor-pointer">
-          <span
-            class="text-sm"
-            class:text-base-content={commentAnon}
-            class:text-neutral={!commentAnon}>Submit as anonymous</span
-          >
-          <input
-            type="checkbox"
-            id="anonymous"
-            name="anonymous"
-            class="checkbox checkbox-primary"
-            bind:checked={commentAnon}
-          />
-        </label>
-        <button
-          type="submit"
-          class="btn btn-success btn-sm rounded-xl self-end"
-          disabled={commentBody.trim().length === 0}>Create</button
-        >
-      </div>
-    </form>
+    <div class="max-w-xl w-full">
+      <CommentEditor
+        collectionPath={`/organizations/${data.organization.id}/groups/${data.group.id}/feedback`}
+        organizationId={data.organization.id}
+        groupId={data.group.id}
+        userId={data.profile.id}
+        userHandle={data.profile.handle}
+        context="feedback"
+        contextId={null}
+        parent={null}
+        depth={0}
+      />
+    </div>
   {/if}
 
   {#if realtimeComments.length}
     <ul class="w-full flex flex-col-reverse gap-4 items-center">
       {#each realtimeComments as comment}
         <li class="w-full max-w-xl" in:fly={{ x: -50 }}>
-          <CommentCard document={comment} {userId} context="feedback" contextId={comment.id} />
+          <CommentCard
+            comment={makeDocument(comment)}
+            {userId}
+            context="feedback"
+            contextId={comment.id}
+          />
         </li>
       {/each}
     </ul>
@@ -262,7 +197,12 @@
   <ul class="w-full flex flex-col gap-4 items-center">
     {#each comments as comment}
       <li class="w-full max-w-xl" in:fly={{ x: -50 }}>
-        <CommentCard document={comment} {userId} context="feedback" contextId={comment.id} />
+        <CommentCard
+          comment={makeDocument(comment)}
+          {userId}
+          context="feedback"
+          contextId={comment.id}
+        />
       </li>
     {/each}
   </ul>

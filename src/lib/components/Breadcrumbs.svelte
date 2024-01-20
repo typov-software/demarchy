@@ -25,7 +25,6 @@
       symbol: 'timeline'
     },
     discussions: {
-      disabled: true,
       path: root + group?.id + '/discussions',
       symbol: 'forum'
     },

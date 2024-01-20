@@ -117,7 +117,7 @@
       name: `Unnamed ${docRef.id}`,
       blocks: [
         {
-          id: crypto.randomUUID(),
+          uid: crypto.randomUUID(),
           type: 'text',
           content: ''
         }

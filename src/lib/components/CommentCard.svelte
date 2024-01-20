@@ -1,8 +1,7 @@
 <script lang="ts">
-  import SvelteMarkdown from 'svelte-markdown';
   import { inview } from 'svelte-inview';
   import { formatRelative } from 'date-fns';
-  import type { Comment, CommentContext, CommentProps } from '$lib/models/comments';
+  import type { Comment, CommentContext } from '$lib/models/comments';
   import {
     REACTIONS,
     REENFORCEMENTS,
@@ -14,22 +13,20 @@
   } from '$lib/models/reactions';
   import { titleCase } from '$lib/utils/string';
   import {
-    QueryDocumentSnapshot,
     doc,
     getDoc,
     increment,
     onSnapshot,
     writeBatch,
-    type DocumentData,
     serverTimestamp
   } from 'firebase/firestore';
   import { db } from '$lib/firebase';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
-  import HtmlRenderer from './HtmlRenderer.svelte';
   import { makeDocument } from '$lib/models/utils';
+  import BlocksEditor from './BlocksEditor.svelte';
 
-  export let document: QueryDocumentSnapshot<DocumentData, CommentProps>;
+  export let comment: Comment;
   export let context: CommentContext;
   export let contextId: string;
   export let userId: string;
@@ -37,9 +34,8 @@
   const reactionTypes = Object.keys(REACTIONS) as ReactionType[];
   let now = new Date();
 
-  let comment: Comment;
-  $: comment = makeDocument(document);
-  $: liveComment = { ...comment };
+  let liveComment: Comment = { ...comment };
+  $: liveComment;
   $: isAnonymous = liveComment.user_id === null;
   let existingReaction: null | Reaction;
   $: existingReaction = null;
@@ -73,10 +69,7 @@
       unsubscribe();
     }
     unsubscribe = onSnapshot(commentRef, function onNext(snapshot) {
-      liveComment = {
-        ...liveComment,
-        ...makeDocument(snapshot)
-      };
+      liveComment = makeDocument<Comment>(snapshot);
     });
     const reactionDoc = await getDoc(reactionRef);
     if (reactionDoc.exists()) {
@@ -93,7 +86,7 @@
   }
 
   async function markAsSeen() {
-    const reactionProps: Omit<ReactionProps, 'created_at'> = {
+    const reactionProps: ReactionProps = {
       context,
       context_id: contextId,
       reaction: null,
@@ -205,13 +198,13 @@
 </script>
 
 <div
-  class="card card-bordered bg-base-200 rounded-md w-full"
+  class="card bg-base-200 w-full"
   use:inview
   on:inview_enter={() => setup()}
   on:inview_leave={() => teardown()}
 >
-  <div class="card-body p-6">
-    <div class="flex items-center">
+  <div class="card-body py-3 px-0">
+    <div class="flex items-center pr-3 pl-4">
       <small class="text-left text-neutral flex-1">
         {#if isAnonymous}
           anonymous
@@ -221,7 +214,7 @@
           </a>
         {/if}
         said
-        {formatRelative(liveComment.created_at, now)}
+        {liveComment.created_at ? formatRelative(liveComment.created_at, now) : ''}
       </small>
 
       <div class="flex flex-col pl-2">
@@ -245,14 +238,12 @@
       </div>
     </div>
 
-    <p class="markdown-body text-base w-full">
-      {#if liveComment.body}
-        <SvelteMarkdown source={liveComment.body} renderers={{ html: HtmlRenderer }} />
-      {/if}
-    </p>
+    <div class:mb-2={!existingReaction}>
+      <BlocksEditor blocks={liveComment.blocks ?? []} editable={false} />
+    </div>
 
     {#if existingReaction}
-      <div class="flex flex-col items-end gap-2 pt-2">
+      <div class="flex flex-col items-end gap-2 px-3">
         <div class="flex flex-row-reverse flex-wrap" in:fade={{ duration: 300 }}>
           {#each reactionTypes as reactionType}
             {#if thisReaction && liveComment[reactionType] > 0}

@@ -7,7 +7,7 @@
 </script>
 
 <div
-  id={block.id}
+  id={block.uid}
   role="listitem"
   class="flex items-center focus-within:z-10 px-2 hover:bg-base-300"
   style:padding-top="0.4rem"
