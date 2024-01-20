@@ -23,7 +23,7 @@
       user_id: data.profile.id,
       user_handle: data.profile.handle,
 
-      content: '',
+      blocks: [{ uid: crypto.randomUUID(), content: '', type: 'text' }],
       state: 'draft'
     };
     const draftRef = doc(
@@ -77,7 +77,7 @@
                   href={$page.url.pathname + '/' + discussion.id}
                   class="link link-hover block truncate italic"
                 >
-                  {discussion.content}
+                  {discussion.blocks[0].content}
                 </a>
               </td>
               <td class="text-right text-neutral text-nowrap">

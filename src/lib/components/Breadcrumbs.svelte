@@ -80,7 +80,7 @@
     {#if group}
       <li class="dropdown dropdown-start dropdown-bottom dropdown-hover">
         {#if matchedRoute}
-          <!-- <a
+          <a
             role="button"
             tabindex="0"
             class="btn btn-sm btn-ghost rounded-xl px-2"
@@ -88,11 +88,11 @@
           >
             <span class="material-symbols-outlined">{config[matchedRoute].symbol}</span>
             {titleCase(matchedRoute)}
-          </a> -->
-          <div role="button" tabindex="0" class="btn btn-sm btn-ghost rounded-xl">
+          </a>
+          <!-- <div role="button" tabindex="0" class="btn btn-sm btn-ghost rounded-xl">
             <span class="material-symbols-outlined">{config[matchedRoute].symbol}</span>
             {titleCase(matchedRoute)}
-          </div>
+          </div> -->
         {:else}
           <div role="button" tabindex="0" class="btn btn-sm btn-warning rounded-xl">Go to</div>
         {/if}
@@ -114,11 +114,14 @@
         </ul>
       </li>
       {#if parts.at(5)}
-        <!-- <li>
-          <a class="btn btn-sm btn-ghost rounded-xl" href={`${parts.slice(0, 6).join('/')}`}>
+        <li>
+          <a
+            class="btn btn-sm btn-ghost text-neutral rounded-xl"
+            href={`${parts.slice(0, 6).join('/')}`}
+          >
             {titleCase(parts[5])}
           </a>
-        </li> -->
+        </li>
       {/if}
     {/if}
   </ul>
