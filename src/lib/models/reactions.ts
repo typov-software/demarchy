@@ -16,9 +16,9 @@ export type ReactionType =
   | 'gratitude'
   | 'sarcasm';
 
-export type ReenforcementType = 'endorse' | 'promote' | 'demote' | 'shun';
-export const REENFORCEMENT_TYPES: ReenforcementType[] = ['endorse', 'promote', 'demote', 'shun'];
-export const REENFORCEMENTS: Record<ReenforcementType, string> = Object.freeze({
+export type ReinforcementType = 'endorse' | 'promote' | 'demote' | 'shun';
+export const REINFORCEMENT_TYPES: ReinforcementType[] = ['endorse', 'promote', 'demote', 'shun'];
+export const REINFORCEMENTS: Record<ReinforcementType, string> = Object.freeze({
   endorse: 'stars',
   promote: 'thumb_up',
   demote: 'thumb_down',
@@ -50,29 +50,30 @@ export function createEmptyReactions() {
   return out as Record<ReactionType, number>;
 }
 
-export function createEmptyReenforcements() {
+export function createEmptyReinforcements() {
   const out: Record<string, number> = {};
-  for (const key of REENFORCEMENT_TYPES) {
+  for (const key of REINFORCEMENT_TYPES) {
     out[key] = 0;
   }
-  return out as Record<ReenforcementType, number>;
+  return out as Record<ReinforcementType, number>;
 }
 
 export type ReactionCounts = {
   [key in ReactionType]: number;
 };
 
-export type ReenforcementCounts = {
-  [key in ReenforcementType]: number;
+export type ReinforcementCounts = {
+  [key in ReinforcementType]: number;
 };
 
 export interface ReactionProps {
   context: CommentContext;
   context_id: string;
   reaction: ReactionType | null;
-  reenforcement: ReenforcementType | null;
+  reinforcement: ReinforcementType | null;
 }
 
 export type Reaction = ReactionProps & DocumentMeta;
 
-export type ReactionTally = ReactionCounts & ReenforcementCounts;
+export type ReactionTallyProps = { seen: number } & ReactionCounts & ReinforcementCounts;
+export type ReactionTally = ReactionTallyProps & DocumentMeta;

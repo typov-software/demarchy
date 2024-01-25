@@ -2,7 +2,6 @@
   import type { Doc } from '$lib/models/docs';
   import { fade } from 'svelte/transition';
   import { format } from 'date-fns';
-  import './editor.scss';
   import BlockViewer from './BlockViewer.svelte';
 
   export let doc: Doc;

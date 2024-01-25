@@ -1,10 +1,14 @@
 <script lang="ts">
   import type { Block } from '$lib/models/blocks';
-  import { doc, collection, setDoc, serverTimestamp } from 'firebase/firestore';
+  import { doc, collection, serverTimestamp, writeBatch } from 'firebase/firestore';
   import BlocksEditor from './BlocksEditor.svelte';
   import { db } from '$lib/firebase';
   import type { CommentContext, CommentProps } from '$lib/models/comments';
-  import { createEmptyReactions, createEmptyReenforcements } from '$lib/models/reactions';
+  import {
+    createEmptyReactions,
+    createEmptyReinforcements,
+    type ReactionTallyProps
+  } from '$lib/models/reactions';
   import { working } from '$lib/stores/working';
 
   export let organizationId: string;
@@ -35,7 +39,6 @@
 
   async function onPublish() {
     const job = working.add();
-    const ref = doc(collection(db, collectionPath));
     const commentProps: CommentProps = {
       organization_id: organizationId,
       group_id: groupId,
@@ -45,16 +48,27 @@
       context,
       parent,
       depth,
-      blocks,
-      seen: 0,
-      ...createEmptyReactions(),
-      ...createEmptyReenforcements()
+      blocks
     };
-    await setDoc(ref, {
+    const tallyProps: ReactionTallyProps = {
+      ...createEmptyReactions(),
+      ...createEmptyReinforcements(),
+      seen: 0
+    };
+    const commentRef = doc(collection(db, collectionPath));
+    const tallyRef = doc(db, collectionPath, commentRef.id, 'tallies', 'reactions');
+    const batch = writeBatch(db);
+    batch.set(commentRef, {
       ...commentProps,
       created_at: serverTimestamp(),
       updated_at: serverTimestamp()
     });
+    batch.set(tallyRef, {
+      ...tallyProps,
+      created_at: serverTimestamp(),
+      updated_at: serverTimestamp()
+    });
+    await batch.commit();
     blocks = [
       {
         uid: crypto.randomUUID(),
@@ -76,7 +90,7 @@
         editable={$working.length === 0}
       />
     </div>
-    <div class="card-actions items-center px-4">
+    <div class="card-actions items-center px-3">
       <div class="flex-1" />
       <label for="anonymous" class="flex flex-row items-center gap-2 cursor-pointer">
         <span class="text-sm" class:text-base-content={anon} class:text-neutral={!anon}>

@@ -1,7 +1,8 @@
 <script lang="ts">
   import BasicSection from '$lib/components/BasicSection.svelte';
-  import BlocksEditor from '$lib/components/BlocksEditor.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import DiscussionEditor from '../DiscussionEditor.svelte';
+  import DiscussionViewer from '../DiscussionViewer.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -29,10 +30,10 @@
   </div>
 
   <div class="w-full">
-    <div class="card bg-base-200">
-      <div class="card-body py-5 px-0 gap-0">
-        <BlocksEditor blocks={data.discussion.blocks} />
-      </div>
-    </div>
+    {#if data.discussion.state === 'draft'}
+      <DiscussionEditor discussion={data.discussion} />
+    {:else}
+      <DiscussionViewer discussion={data.discussion} />
+    {/if}
   </div>
 </BasicSection>

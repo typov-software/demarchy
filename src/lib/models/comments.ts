@@ -1,11 +1,10 @@
 import type { Block } from './blocks';
-import type { ReactionTally } from './reactions';
 import type { DocumentMeta } from './utils';
 
-export type CommentContext = 'feedback' | 'proposals' | 'polls';
+export type CommentContext = 'feedback' | 'proposals' | 'polls' | 'discussions';
 
 // https://fireship.io/courses/firestore-data-modeling/models-tree/
-export interface CommentProps extends ReactionTally {
+export interface CommentProps {
   organization_id: string;
   group_id: string;
   context: CommentContext;
@@ -18,10 +17,7 @@ export interface CommentProps extends ReactionTally {
   depth: number;
   user_id: string | null; // allow anonymous comments
   user_handle: string | null; // allow anonymous comments
-  // body: string;
   blocks: Block[];
-
-  seen: number;
 }
 
 export type Comment = CommentProps & DocumentMeta;

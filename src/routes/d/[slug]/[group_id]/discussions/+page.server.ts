@@ -14,7 +14,15 @@ export const load = (async ({ locals, parent }) => {
 
   const drafts: Discussion[] = snapshotUserDrafts.docs.map((doc) => makeDocument(doc));
 
+  const snapshotOpenDiscussions = await adminGroupDiscussionRef(data.organization.id, data.group.id)
+    .where('state', '==', 'open')
+    .orderBy('updated_at', 'desc')
+    .get();
+
+  const open: Discussion[] = snapshotOpenDiscussions.docs.map((doc) => makeDocument(doc));
+
   return {
-    drafts
+    drafts,
+    open
   };
 }) satisfies PageServerLoad;

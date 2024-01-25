@@ -1,34 +1,42 @@
 <script lang="ts">
-  import { doc as fdoc, updateDoc } from 'firebase/firestore';
+  import { doc as fdoc } from 'firebase/firestore';
   import BlocksEditor from '$lib/components/BlocksEditor.svelte';
   import { db, docStore, user } from '$lib/firebase';
-  import type { Block } from '$lib/models/blocks';
   import type { Discussion } from '$lib/models/discussions';
   import { formatRelative } from 'date-fns';
   import { workingCallback } from '$lib/stores/working';
   import { enhance } from '$app/forms';
+  import { type Reaction, type ReactionTally } from '$lib/models/reactions';
+  import SeenCounter from '$lib/components/SeenCounter.svelte';
+  import { fade } from 'svelte/transition';
+  import ReactionSelector from '$lib/components/ReactionSelector.svelte';
+  import ReinforcementSelector from '$lib/components/ReinforcementSelector.svelte';
 
   export let discussion: Discussion;
-  let doc = docStore<Discussion>(discussion.path);
 
-  $: blocks = [...($doc?.blocks ?? discussion.blocks)];
+  $: editable = discussion.state === 'draft';
+  $: isOpen = discussion.state === 'open';
+  $: ownsDiscussion = $user!.uid === discussion.user_id;
 
-  $: state = $doc ? $doc.state : discussion.state;
-  $: ownerId = discussion.user_id;
+  // Sub doc refs
+  let reactionPath = `/organizations/${discussion.organization_id}/groups/${
+    discussion.group_id
+  }/discussions/${discussion.id}/reactions/${$user!.uid}`;
 
-  $: editable = state === 'draft';
-  $: isOpen = state === 'open';
-  $: ownsDiscussion = $user!.uid === ownerId;
+  let reactionRef = fdoc(db, reactionPath);
+  let tallyRef = fdoc(
+    db,
+    `/organizations/${discussion.organization_id}/groups/${discussion.group_id}/discussions/${discussion.id}/tallies/reactions`
+  );
 
+  let reactionDoc = docStore<Reaction>(reactionRef.path);
+  $: reaction = $reactionDoc;
+
+  let tallyDoc = docStore<ReactionTally>(tallyRef.path);
+  $: tally = $tallyDoc;
+
+  // Modal refs
   let dropModal: HTMLDialogElement;
-
-  async function saveBlocks(blocks: Block[]) {
-    let nextBlocks = blocks.slice();
-    if (!nextBlocks.length) {
-      nextBlocks = [{ uid: crypto.randomUUID(), content: '', type: 'text' }];
-    }
-    await updateDoc(fdoc(db, discussion.path), { blocks: nextBlocks });
-  }
 </script>
 
 <div class="flex flex-col items-center">
@@ -38,7 +46,7 @@
       style:border-bottom-left-radius="0"
       style:border-bottom-right-radius="0"
     >
-      <h3 class="flex-1">
+      <h3 class="flex-1 w-full">
         Created by
         <a class="link link-success" href={`/d/profiles/${discussion.user_handle}`}
           >@{discussion.user_handle}</a
@@ -47,13 +55,22 @@
       </h3>
       <span
         class="text-xs rounded-full py-1 px-2"
-        class:bg-info={state === 'draft'}
-        class:bg-success={state === 'open'}
-        class:bg-warning={state === 'dropped'}
-        class:bg-error={state === 'archived'}
+        class:bg-info={discussion.state === 'draft'}
+        class:bg-success={discussion.state === 'open'}
+        class:bg-warning={discussion.state === 'dropped'}
+        class:bg-error={discussion.state === 'archived'}
       >
-        {state}
+        {discussion.state}
       </span>
+      {#if isOpen && tally}
+        <SeenCounter
+          context="discussions"
+          contextId={discussion.id}
+          {reactionPath}
+          {reaction}
+          {tally}
+        />
+      {/if}
       {#if editable}
         <button class="btn btn-square btn-sm btn-ghost">
           <span class="material-symbols-outlined">draft</span>
@@ -79,7 +96,7 @@
       {/if}
     </div>
     <div class="card-body px-0 py-2 gap-0">
-      <BlocksEditor {editable} {blocks} {saveBlocks} />
+      <BlocksEditor editable={false} blocks={discussion.blocks} />
 
       {#if editable && ownsDiscussion}
         <div class="card-actions pt-4 pb-2 px-4">
@@ -91,6 +108,13 @@
               Open Discussion
             </button>
           </form>
+        </div>
+      {/if}
+
+      {#if reaction && tally}
+        <div class="flex flex-col items-end gap-2 p-3" in:fade={{ duration: 300 }}>
+          <ReactionSelector {reaction} {tally} />
+          <ReinforcementSelector {reaction} {tally} />
         </div>
       {/if}
     </div>

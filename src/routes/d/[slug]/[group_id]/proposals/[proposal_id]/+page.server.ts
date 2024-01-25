@@ -9,7 +9,7 @@ import {
 import type { Actions, PageServerLoad } from './$types';
 import { makeDocument } from '$lib/models/utils';
 import { error } from '@sveltejs/kit';
-import { isGroupMemberOrHigher } from '$lib/server/access';
+import { isGroupMemberOrHigher, verifyDocument } from '$lib/server/access';
 import type { Library, LibraryProps } from '$lib/models/libraries';
 
 export const load = (async ({ params, parent }) => {
@@ -23,30 +23,12 @@ export const load = (async ({ params, parent }) => {
   };
 }) satisfies PageServerLoad;
 
-async function verifyProposalDocument(proposalPath: string) {
-  if (!proposalPath) {
-    // ensure form has not been tampered with
-    return error(403, 'unauthorized');
-  }
-  const proposalDoc = await adminDB.doc(proposalPath).get();
-  if (!proposalDoc.exists) {
-    // proposal must exist, sanity check
-    return error(403, 'unauthorized');
-  }
-  return proposalDoc;
-}
-
 async function updateProposalState(
   proposalPath: string,
   userId: string,
   state: ProposalProps['state']
 ) {
-  const proposalDoc = await verifyProposalDocument(proposalPath);
-  const proposalData = proposalDoc.data() ?? {};
-  if (proposalData.user_id !== userId) {
-    // only the author can open their proposal drafts
-    return error(403, 'unauthorized');
-  }
+  const proposalDoc = await verifyDocument(proposalPath, userId);
   const batch = adminDB.batch();
   // update proposal state
   batch.update(proposalDoc.ref, {
@@ -86,7 +68,7 @@ export const actions = {
     if (!allowed) {
       return error(403, 'unauthorized');
     }
-    const proposalDoc = await verifyProposalDocument(proposalPath);
+    const proposalDoc = await verifyDocument(proposalPath);
     const proposal: Proposal = makeDocument(proposalDoc);
     const docsSnapshot = await proposalDoc.ref.collection('docs').get();
     const proposalDocs: Doc[] = docsSnapshot.docs.map((doc) => makeDocument(doc));

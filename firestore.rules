@@ -193,12 +193,15 @@ service cloud.firestore {
         match /feedback/{commentId} {
           allow read: if isGroupObsOrHigher(groupId);
           allow create: if isGroupMemberOrHigher(groupId);
+          // There's currently no UI supporting feedback updates
           // allow update: if isGroupMemberOrHigher(groupId) && ownsResource(resource.data.user_id);
-          // we let members update comment reaction counts directly
-          allow update: if isGroupMemberOrHigher(groupId);
 
           match /reactions/{reactionId} {
             allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+          }
+
+          match /tallies/{tallyId} {
+            allow read, create, update: if isGroupMemberOrHigher(groupId);
           }
         }
         
@@ -210,6 +213,10 @@ service cloud.firestore {
 
           match /tallies/{tallyId} {
             allow read, create, update: if isGroupMemberOrHigher(groupId);
+          }
+
+          match /reactions/{reactionId} {
+            allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
           }
 
           match /comments/{commentId} {

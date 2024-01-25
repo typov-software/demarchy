@@ -47,8 +47,9 @@
   $: amendments = Object.values($liveProposal?.amendments ?? {});
   $: nAmendments = amendments.length;
 
-  $: isOpen = $liveProposal?.state === 'open';
-  $: editable = $liveProposal?.state === 'draft';
+  $: state = $liveProposal ? $liveProposal.state : proposal.state;
+  $: isOpen = state === 'open';
+  $: editable = state === 'draft';
   $: ownsProposal = $liveProposal && $liveProposal.user_id === $user?.uid;
   $: hasChanges =
     $liveProposal && (title !== $liveProposal.title || description !== $liveProposal.description);
@@ -260,6 +261,17 @@
       >
       {formatRelative(proposal.created_at, new Date())}
     </h3>
+
+    <div class="flex-1" />
+    <span
+      class="text-xs rounded-full py-1 px-2"
+      class:bg-info={state === 'draft'}
+      class:bg-success={state === 'open'}
+      class:bg-warning={state === 'dropped'}
+      class:bg-error={state === 'archived'}
+    >
+      {state}
+    </span>
     {#if editable}
       <button class="btn btn-square btn-sm btn-ghost">
         <span class="material-symbols-outlined">draft</span>

@@ -9,7 +9,7 @@ export interface DiscussionProps {
   user_handle: string;
 
   blocks: Block[];
-  state: 'draft' | 'open' | 'closed' | 'archived';
+  state: 'draft' | 'open' | 'dropped' | 'archived';
 }
 
 export type Discussion = DiscussionProps & DocumentMeta;

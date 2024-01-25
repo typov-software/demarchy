@@ -1,6 +1,7 @@
 import type { MembershipProps } from '$lib/models/memberships';
 import type { RoleAccess } from '$lib/models/roles';
-import { adminMembershipRef } from './admin';
+import { error } from '@sveltejs/kit';
+import { adminDB, adminMembershipRef } from './admin';
 
 export interface MembershipInfo {
   standing: MembershipProps['standing'];
@@ -103,4 +104,29 @@ export async function isGroupAdmin(oid: string, gid: string, uid: string, info?:
   const org = verifyRoles(oid, ['mem', 'mod', 'adm'], info);
   const group = verifyRoles(gid, ['adm'], info);
   return org && group;
+}
+
+/**
+ * Ensures a document exists at a path and optionally is owned by a given user.
+ * @param path Firestore document path
+ * @param userId Optional owner id
+ * @returns The verified document
+ */
+export async function verifyDocument(path: string, userId?: string) {
+  if (!path) {
+    // ensure form has not been tampered with
+    error(403, 'unauthorized');
+  }
+  const doc = await adminDB.doc(path).get();
+  if (!doc.exists) {
+    // proposal must exist, sanity check
+    error(403, 'unauthorized');
+  }
+  if (userId) {
+    const data = doc.data() ?? {};
+    if (!data.user_id || data.user_id !== userId) {
+      error(403, 'unauthorized');
+    }
+  }
+  return doc;
 }

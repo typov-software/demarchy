@@ -1,7 +1,7 @@
 <script lang="ts">
   import BasicSection from '$lib/components/BasicSection.svelte';
   import CommentCard from '$lib/components/CommentCard.svelte';
-  import { db, user } from '$lib/firebase';
+  import { db } from '$lib/firebase';
   import type { PageData } from './$types';
   import { onMount } from 'svelte';
   import {
@@ -27,8 +27,6 @@
   export let data: PageData;
 
   $: showForm = true;
-
-  $: userId = $user!.uid;
 
   $: comments = [] as QueryDocumentSnapshot<DocumentData, CommentProps>[];
   $: realtimeComments = [] as QueryDocumentSnapshot<DocumentData, CommentProps>[];
@@ -180,12 +178,7 @@
     <ul class="w-full flex flex-col-reverse gap-4 items-center">
       {#each realtimeComments as comment}
         <li class="w-full max-w-xl" in:fly={{ x: -50 }}>
-          <CommentCard
-            comment={makeDocument(comment)}
-            {userId}
-            context="feedback"
-            contextId={comment.id}
-          />
+          <CommentCard comment={makeDocument(comment)} context="feedback" contextId={comment.id} />
         </li>
       {/each}
     </ul>
@@ -197,12 +190,7 @@
   <ul class="w-full flex flex-col gap-4 items-center">
     {#each comments as comment}
       <li class="w-full max-w-xl" in:fly={{ x: -50 }}>
-        <CommentCard
-          comment={makeDocument(comment)}
-          {userId}
-          context="feedback"
-          contextId={comment.id}
-        />
+        <CommentCard comment={makeDocument(comment)} context="feedback" contextId={comment.id} />
       </li>
     {/each}
   </ul>

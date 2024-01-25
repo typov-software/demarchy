@@ -94,7 +94,7 @@
         {:else}
           <div role="button" tabindex="0" class="btn btn-sm btn-warning">Go to</div>
         {/if}
-        <ul class="menu w-47 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
+        <ul class="menu w-48 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
           {#each Object.keys(config) as route}
             <li>
               <a

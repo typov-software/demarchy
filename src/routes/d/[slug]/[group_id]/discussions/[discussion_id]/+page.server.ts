@@ -1,7 +1,9 @@
-import type { Discussion } from '$lib/models/discussions';
+import type { Discussion, DiscussionProps } from '$lib/models/discussions';
 import { makeDocument } from '$lib/models/utils';
-import { adminGroupDiscussionRef } from '$lib/server/admin';
+import { adminDB, adminGroupDiscussionRef, updatedTimestamps } from '$lib/server/admin';
+import { type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { verifyDocument } from '$lib/server/access';
 
 export const load = (async ({ params, parent }) => {
   const data = await parent();
@@ -15,3 +17,33 @@ export const load = (async ({ params, parent }) => {
     discussion
   };
 }) satisfies PageServerLoad;
+
+async function updateDiscussionState(
+  discussionPath: string,
+  userId: string,
+  state: DiscussionProps['state']
+) {
+  const discussionDoc = await verifyDocument(discussionPath, userId);
+  const batch = adminDB.batch();
+  // update proposal state
+  batch.update(discussionDoc.ref, {
+    ...updatedTimestamps(),
+    state
+  });
+  await batch.commit();
+}
+
+export const actions = {
+  openDiscussion: async ({ request, locals }) => {
+    const formData = await request.formData();
+    const userId = locals.user_id!;
+    const discussionPath = formData.get('path') as string;
+    await updateDiscussionState(discussionPath, userId, 'open');
+  },
+  dropDiscussion: async ({ request, locals }) => {
+    const formData = await request.formData();
+    const userId = locals.user_id!;
+    const discussionPath = formData.get('path') as string;
+    await updateDiscussionState(discussionPath, userId, 'dropped');
+  }
+} satisfies Actions;

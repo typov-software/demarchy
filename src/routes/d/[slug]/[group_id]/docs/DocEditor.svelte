@@ -5,7 +5,6 @@
   import { doc as fdoc, updateDoc } from 'firebase/firestore';
   import { db, docStore } from '$lib/firebase';
   import { format } from 'date-fns';
-  import './editor.scss';
   import BlocksEditor from '$lib/components/BlocksEditor.svelte';
 
   export let path: string;

@@ -3,16 +3,15 @@
   import BasicSection from '$lib/components/BasicSection.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import type { DiscussionProps } from '$lib/models/discussions';
-  import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
+  import { collection, doc, serverTimestamp, writeBatch } from 'firebase/firestore';
   import type { PageData } from './$types';
   import { db } from '$lib/firebase';
   import { goto } from '$app/navigation';
   import { working } from '$lib/stores/working';
   import { formatRelative } from 'date-fns';
+  import { createEmptyReactions, createEmptyReinforcements } from '$lib/models/reactions';
 
   export let data: PageData;
-
-  console.log(data.drafts);
 
   async function draftDiscussion() {
     const job = working.add();
@@ -23,17 +22,30 @@
       user_id: data.profile.id,
       user_handle: data.profile.handle,
 
-      blocks: [{ uid: crypto.randomUUID(), content: '', type: 'text' }],
+      blocks: [{ uid: crypto.randomUUID(), content: 'New discussion', type: 'text' }],
       state: 'draft'
     };
     const draftRef = doc(
       collection(db, `/organizations/${data.organization.id}/groups/${data.group.id}/discussions`)
     );
-    await setDoc(draftRef, {
+    const tallyRef = doc(
+      db,
+      `/organizations/${data.organization.id}/groups/${data.group.id}/discussions/${draftRef.id}/tallies/reactions`
+    );
+    const batch = writeBatch(db);
+    batch.set(draftRef, {
       ...draftProps,
       created_at: serverTimestamp(),
       updated_at: serverTimestamp()
     });
+    batch.set(tallyRef, {
+      ...createEmptyReactions(),
+      ...createEmptyReinforcements(),
+      seen: 0,
+      created_at: serverTimestamp(),
+      updated_at: serverTimestamp()
+    });
+    await batch.commit();
     working.remove(job);
     goto(`/d/${$page.params.slug}/${$page.params.group_id}/discussions/${draftRef.id}`);
   }
@@ -71,6 +83,36 @@
         </thead>
         <tbody>
           {#each data.drafts as discussion}
+            <tr>
+              <td class="w-full max-w-[0]">
+                <a
+                  href={$page.url.pathname + '/' + discussion.id}
+                  class="link link-hover block truncate italic"
+                >
+                  {discussion.blocks[0].content}
+                </a>
+              </td>
+              <td class="text-right text-neutral text-nowrap">
+                {formatRelative(discussion.updated_at, new Date())}
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+  {/if}
+
+  {#if data.open.length}
+    <div class="flex flex-col w-full">
+      <table class="table w-full">
+        <thead>
+          <tr>
+            <th>Open Discussions</th>
+            <th class="text-right">Last updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each data.open as discussion}
             <tr>
               <td class="w-full max-w-[0]">
                 <a
