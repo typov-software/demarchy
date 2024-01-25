@@ -22,17 +22,18 @@
 
   let tally: null | ReactionTally = null;
   $: tally;
-  $: tallyPath = `/organizations/${comment.organization_id}/groups/${comment.group_id}/${context}/${contextId}/tallies/reactions`;
+  $: tallyPath = `${comment.path}/tallies/reactions`;
   $: tallyRef = fdoc(db, tallyPath);
 
   $: isAnonymous = comment.user_id === null;
 
   let reaction: null | Reaction = null;
   $: reaction;
-  $: reactionPath = `/organizations/${comment.organization_id}/groups/${comment.group_id}/${context}/${contextId}/reactions/${userId}`;
+  $: reactionPath = `${comment.path}/reactions/${userId}`;
   $: reactionRef = fdoc(db, reactionPath);
 
   let disposers: Array<() => void> = [];
+  $: disposers;
 
   onMount(() => {
     return () => teardown();

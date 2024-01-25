@@ -1,6 +1,5 @@
 <script lang="ts">
   import BasicSection from '$lib/components/BasicSection.svelte';
-  import CommentCard from '$lib/components/CommentCard.svelte';
   import { db } from '$lib/firebase';
   import type { PageData } from './$types';
   import { onMount } from 'svelte';
@@ -17,16 +16,11 @@
     Query
   } from 'firebase/firestore';
   import type { CommentProps } from '$lib/models/comments';
-  import { inview } from 'svelte-inview';
-  import { fly } from 'svelte/transition';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import CommentEditor from '$lib/components/CommentEditor.svelte';
-  import { makeDocument } from '$lib/models/utils';
+  import Replies from '$lib/components/Replies.svelte';
 
   export let data: PageData;
-
-  $: showForm = true;
 
   $: comments = [] as QueryDocumentSnapshot<DocumentData, CommentProps>[];
   $: realtimeComments = [] as QueryDocumentSnapshot<DocumentData, CommentProps>[];
@@ -143,14 +137,9 @@
       <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
         <ul class="menu w-60">
           <li>
-            <button
-              on:click={(e) => {
-                showForm = true;
-                e.currentTarget.blur();
-              }}
-            >
-              <span class="material-symbols-outlined">add_comment</span>
-              Add feedback
+            <button>
+              <span class="material-symbols-outlined">add</span>
+              TODO
             </button>
           </li>
         </ul>
@@ -158,53 +147,12 @@
     </div>
   </div>
 
-  {#if showForm}
-    <div class="max-w-xl w-full">
-      <CommentEditor
-        collectionPath={`/organizations/${data.organization.id}/groups/${data.group.id}/feedback`}
-        organizationId={data.organization.id}
-        groupId={data.group.id}
-        userId={data.profile.id}
-        userHandle={data.profile.handle}
-        context="feedback"
-        contextId={null}
-        parent={null}
-        depth={0}
-      />
-    </div>
-  {/if}
-
-  {#if realtimeComments.length}
-    <ul class="w-full flex flex-col-reverse gap-4 items-center">
-      {#each realtimeComments as comment}
-        <li class="w-full max-w-xl" in:fly={{ x: -50 }}>
-          <CommentCard comment={makeDocument(comment)} context="feedback" contextId={comment.id} />
-        </li>
-      {/each}
-    </ul>
-    <div class="divider divider-primary text-secondary text-sm p-0 m-0">
-      <span class="text-base-content"> New comments </span>
-    </div>
-  {/if}
-
-  <ul class="w-full flex flex-col gap-4 items-center">
-    {#each comments as comment}
-      <li class="w-full max-w-xl" in:fly={{ x: -50 }}>
-        <CommentCard comment={makeDocument(comment)} context="feedback" contextId={comment.id} />
-      </li>
-    {/each}
-  </ul>
-
-  {#if hasMore}
-    <div class="loading" />
-  {:else}
-    <div class="flex items-center gap-4">
-      <p class="text-xs">End of feedback</p>
-      <button class="btn btn-sm" on:click={() => window.scrollTo({ top: 0 })}>
-        <span class="material-symbols-outlined">arrow_upward</span>
-        Jump to top
-      </button>
-    </div>
-  {/if}
-  <div use:inview={{}} on:inview_enter={() => getPage()} />
+  <Replies
+    organizationId={data.organization.id}
+    groupId={data.group.id}
+    context="feedback"
+    contextId={null}
+    parent={null}
+    depth={0}
+  />
 </BasicSection>

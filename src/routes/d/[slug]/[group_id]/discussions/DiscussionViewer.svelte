@@ -11,6 +11,8 @@
   import { fade } from 'svelte/transition';
   import ReactionSelector from '$lib/components/ReactionSelector.svelte';
   import ReinforcementSelector from '$lib/components/ReinforcementSelector.svelte';
+  import type { Comment } from '$lib/models/comments';
+  import Replies from '$lib/components/Replies.svelte';
 
   export let discussion: Discussion;
 
@@ -37,6 +39,9 @@
 
   // Modal refs
   let dropModal: HTMLDialogElement;
+
+  let threadedComments: Comment[] = [];
+  $: threadedComments;
 </script>
 
 <div class="flex flex-col items-center">
@@ -120,6 +125,15 @@
     </div>
   </div>
 </div>
+
+<Replies
+  organizationId={discussion.organization_id}
+  groupId={discussion.group_id}
+  context="discussions"
+  contextId={discussion.id}
+  parent={null}
+  depth={0}
+/>
 
 <dialog id="close-proposal" class="modal" bind:this={dropModal}>
   <div class="modal-box">

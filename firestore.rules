@@ -224,6 +224,14 @@ service cloud.firestore {
             allow create: if isGroupMemberOrHigher(groupId);
             // we let members update comment reaction counts directly
             allow update: if isGroupMemberOrHigher(groupId);
+
+            match /tallies/{tallyId} {
+              allow read, create, update: if isGroupMemberOrHigher(groupId);
+            }
+
+            match /reactions/{reactionId} {
+              allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+            }
           }
         }
       }

@@ -55,7 +55,9 @@
       ...createEmptyReinforcements(),
       seen: 0
     };
+    // new doc ref at location
     const commentRef = doc(collection(db, collectionPath));
+    // new tally ref on fresh comment
     const tallyRef = doc(db, collectionPath, commentRef.id, 'tallies', 'reactions');
     const batch = writeBatch(db);
     batch.set(commentRef, {
