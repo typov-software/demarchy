@@ -75,5 +75,6 @@ export interface ReactionProps {
 
 export type Reaction = ReactionProps & DocumentMeta;
 
-export type ReactionTallyProps = { seen: number } & ReactionCounts & ReinforcementCounts;
+export type ReactionTallyProps = { seen: number; replies: number } & ReactionCounts &
+  ReinforcementCounts;
 export type ReactionTally = ReactionTallyProps & DocumentMeta;

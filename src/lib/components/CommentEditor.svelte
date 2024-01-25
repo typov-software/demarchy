@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Block } from '$lib/models/blocks';
-  import { doc, collection, serverTimestamp, writeBatch } from 'firebase/firestore';
+  import { doc, collection, serverTimestamp, writeBatch, increment } from 'firebase/firestore';
   import BlocksEditor from './BlocksEditor.svelte';
   import { db } from '$lib/firebase';
   import type { CommentContext, CommentProps } from '$lib/models/comments';
@@ -53,12 +53,17 @@
     const tallyProps: ReactionTallyProps = {
       ...createEmptyReactions(),
       ...createEmptyReinforcements(),
-      seen: 0
+      seen: 0,
+      replies: 0
     };
+
     // new doc ref at location
     const commentRef = doc(collection(db, collectionPath));
     // new tally ref on fresh comment
     const tallyRef = doc(db, collectionPath, commentRef.id, 'tallies', 'reactions');
+    const contextPath = `/organizations/${organizationId}/groups/${groupId}/${context}/${contextId}`;
+    const contextTallyRef = doc(db, contextPath, 'tallies', 'reactions');
+
     const batch = writeBatch(db);
     batch.set(commentRef, {
       ...commentProps,
@@ -70,6 +75,21 @@
       created_at: serverTimestamp(),
       updated_at: serverTimestamp()
     });
+    batch.update(contextTallyRef, {
+      replies: increment(1),
+      updated_at: serverTimestamp()
+    });
+
+    if (parent) {
+      // Get the last id segment
+      const parentId = parent.split('_').pop()!;
+      const parentTalliesRef = doc(db, collectionPath, parentId, 'tallies', 'reactions');
+      batch.update(parentTalliesRef, {
+        replies: increment(1),
+        updated_at: serverTimestamp()
+      });
+    }
+
     await batch.commit();
     blocks = [
       {

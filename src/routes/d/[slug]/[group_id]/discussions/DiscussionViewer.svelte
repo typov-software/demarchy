@@ -42,6 +42,18 @@
 
   let threadedComments: Comment[] = [];
   $: threadedComments;
+  $: highlighted = threadedComments.map((c) => c.id);
+
+  function handleReply(e: CustomEvent<{ comment: Comment }>) {
+    const { comment } = e.detail;
+    if (comment.depth >= threadedComments.length) {
+      threadedComments = [...threadedComments, comment];
+    } else {
+      const next = threadedComments.slice();
+      next.splice(comment.depth, threadedComments.length - comment.depth);
+      threadedComments = [...next, comment];
+    }
+  }
 </script>
 
 <div class="flex flex-col items-center">
@@ -126,14 +138,41 @@
   </div>
 </div>
 
-<Replies
-  organizationId={discussion.organization_id}
-  groupId={discussion.group_id}
-  context="discussions"
-  contextId={discussion.id}
-  parent={null}
-  depth={0}
-/>
+{#if reaction && tally}
+  <div
+    class="flex flex-row gap-4 overflow-y-hidden overflow-x-auto h-full py-4 w-full"
+    style:max-height="100vh"
+    class:justify-center={!threadedComments.length}
+  >
+    <Replies
+      threaded={true}
+      organizationId={discussion.organization_id}
+      groupId={discussion.group_id}
+      context="discussions"
+      contextId={discussion.id}
+      parent={null}
+      depth={0}
+      threadedColumns={threadedComments.length}
+      {highlighted}
+      on:reply={handleReply}
+    />
+
+    {#each threadedComments as threadedComment (threadedComment.id)}
+      <Replies
+        threaded={true}
+        organizationId={discussion.organization_id}
+        groupId={discussion.group_id}
+        context="discussions"
+        contextId={discussion.id}
+        parent={(threadedComment.parent ? threadedComment.parent + '_' : '') + threadedComment.id}
+        depth={threadedComment.depth + 1}
+        threadedColumns={threadedComments.length}
+        {highlighted}
+        on:reply={handleReply}
+      />
+    {/each}
+  </div>
+{/if}
 
 <dialog id="close-proposal" class="modal" bind:this={dropModal}>
   <div class="modal-box">

@@ -5,7 +5,7 @@
   import { type Reaction, type ReactionTally } from '$lib/models/reactions';
   import { doc as fdoc, getDoc, onSnapshot } from 'firebase/firestore';
   import { db, user } from '$lib/firebase';
-  import { onMount } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { makeDocument } from '$lib/models/utils';
   import BlocksEditor from './BlocksEditor.svelte';
@@ -13,9 +13,13 @@
   import ReinforcementSelector from './ReinforcementSelector.svelte';
   import SeenCounter from './SeenCounter.svelte';
 
+  const dispatch = createEventDispatcher();
+
   export let comment: Comment;
   export let context: CommentContext;
   export let contextId: string;
+  export let threaded = false;
+  export let highlighted = false;
 
   let userId = $user!.uid;
   let now = new Date();
@@ -67,6 +71,7 @@
 
 <div
   class="card bg-base-200 w-full"
+  class:bg-base-300={highlighted}
   use:inview
   on:inview_enter={() => setup()}
   on:inview_leave={() => teardown()}
@@ -85,7 +90,7 @@
         {comment.created_at ? formatRelative(comment.created_at, now) : ''}
       </small>
 
-      <div class="flex flex-col pl-2">
+      <div class="flex pl-2">
         {#if tally}
           <SeenCounter
             {context}
@@ -95,6 +100,12 @@
             {tally}
             on:seen={(r) => (reaction = r.detail)}
           />
+          {#if threaded && reaction}
+            <button class="btn btn-xs ml-2" on:click={() => dispatch('reply', { comment })}>
+              {tally.replies || ''}
+              <span class="material-symbols-outlined">reply</span>
+            </button>
+          {/if}
         {/if}
       </div>
     </div>

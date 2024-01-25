@@ -57,6 +57,7 @@
   class:pointer-events-none={reaction}
   on:click={handleClickSeen}
 >
+  {tally.seen || ''}
   {#if looking}
     <div class="loading loading-xs loading-spinner" />
   {:else}
@@ -64,5 +65,4 @@
       {reaction ? 'visibility' : 'visibility_off'}
     </span>
   {/if}
-  {tally.seen}
 </button>

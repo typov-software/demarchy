@@ -1,7 +1,7 @@
 <script lang="ts">
   import CommentCard from '$lib/components/CommentCard.svelte';
   import { db, profile, user } from '$lib/firebase';
-  import { onMount } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import {
     orderBy,
     collection,
@@ -12,14 +12,17 @@
     QueryDocumentSnapshot,
     type DocumentData,
     onSnapshot,
-    Query
+    Query,
+    where
   } from 'firebase/firestore';
-  import type { CommentContext, CommentProps } from '$lib/models/comments';
+  import type { CommentContext, Comment, CommentProps } from '$lib/models/comments';
   import { inview } from 'svelte-inview';
   import { fly } from 'svelte/transition';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import CommentEditor from '$lib/components/CommentEditor.svelte';
   import { makeDocument } from '$lib/models/utils';
+
+  const dispatch = createEventDispatcher();
 
   export let organizationId: string;
   export let groupId: string;
@@ -28,6 +31,12 @@
   export let contextId: string | null;
   export let parent: string | null;
   export let depth: number = 0;
+
+  export let threaded = false;
+  export let highlighted: string[] = [];
+  export let threadedColumns: number = 0;
+
+  let containerEl: HTMLDivElement;
 
   let groupPath = `/organizations/${organizationId}/groups/${groupId}`;
   let collectionPath = groupPath;
@@ -50,6 +59,8 @@
   $: unsubscribe = undefined;
   $: settingUp = false;
 
+  $: baseQuery = query(collection(db, collectionPath), where('parent', '==', parent));
+
   async function getPage() {
     if (!hasMore || loadingMore) {
       return;
@@ -58,15 +69,10 @@
     const after = comments.slice().pop();
     let snapshot;
     if (after) {
-      const q = query(
-        collection(db, collectionPath),
-        orderBy('created_at', 'desc'),
-        startAfter(after),
-        limit(10)
-      );
+      const q = query(baseQuery, startAfter(after), limit(10));
       snapshot = await getDocs(q);
     } else {
-      const q = query(collection(db, collectionPath), orderBy('created_at', 'desc'), limit(10));
+      const q = query(baseQuery, orderBy('created_at', 'desc'), limit(10));
       snapshot = await getDocs(q);
     }
     const moreComments = snapshot.docs.slice() as QueryDocumentSnapshot<
@@ -88,9 +94,9 @@
     const after = comments.slice().shift();
     let q: Query;
     if (after) {
-      q = query(collection(db, collectionPath), orderBy('created_at', 'asc'), startAfter(after));
+      q = query(baseQuery, orderBy('created_at', 'asc'), startAfter(after));
     } else {
-      q = query(collection(db, collectionPath), orderBy('created_at', 'asc'));
+      q = query(baseQuery, orderBy('created_at', 'asc'));
     }
     unsubscribe = await onSnapshot(q, (snapshot) => {
       const newComments = snapshot
@@ -116,6 +122,11 @@
     unsubscribe = undefined;
   }
 
+  // forward comment reply event to parent components
+  function handleReply(e: CustomEvent<{ comment: Comment }>) {
+    dispatch('reply', { comment: e.detail.comment });
+  }
+
   onMount(() => {
     setup();
     return () => teardown();
@@ -134,7 +145,13 @@
   });
 </script>
 
-<div class="flex flex-col items-center gap-4 py-4 w-full">
+<div
+  bind:this={containerEl}
+  class="flex flex-col items-center gap-4 w-full overflow-y-auto"
+  class:max-w-3xl={!threadedColumns}
+  class:max-w-xl={threadedColumns === 2}
+  class:max-w-md={threadedColumns > 2}
+>
   {#if showForm && userHandle}
     <div class="w-full">
       <CommentEditor
@@ -159,6 +176,9 @@
             comment={makeDocument(comment)}
             {context}
             contextId={contextId ?? comment.id}
+            {threaded}
+            highlighted={highlighted.includes(comment.id)}
+            on:reply={handleReply}
           />
         </li>
       {/each}
@@ -175,6 +195,9 @@
           comment={makeDocument(comment)}
           {context}
           contextId={contextId ?? comment.id}
+          {threaded}
+          highlighted={highlighted.includes(comment.id)}
+          on:reply={handleReply}
         />
       </li>
     {/each}
@@ -184,8 +207,14 @@
     <div class="loading" />
   {:else}
     <div class="flex items-center gap-4">
-      <p class="text-xs">End of feedback</p>
-      <button class="btn btn-sm" on:click={() => window.scrollTo({ top: 0 })}>
+      <p class="text-xs">End of replies</p>
+      <button
+        class="btn btn-sm"
+        on:click={() => {
+          containerEl.scrollTo({ top: 0 });
+          window.scrollTo({ top: 0 });
+        }}
+      >
         <span class="material-symbols-outlined">arrow_upward</span>
         Jump to top
       </button>

@@ -9,7 +9,11 @@
   import { goto } from '$app/navigation';
   import { working } from '$lib/stores/working';
   import { formatRelative } from 'date-fns';
-  import { createEmptyReactions, createEmptyReinforcements } from '$lib/models/reactions';
+  import {
+    createEmptyReactions,
+    createEmptyReinforcements,
+    type ReactionTallyProps
+  } from '$lib/models/reactions';
 
   export let data: PageData;
 
@@ -25,6 +29,12 @@
       blocks: [{ uid: crypto.randomUUID(), content: 'New discussion', type: 'text' }],
       state: 'draft'
     };
+    const tallyProps: ReactionTallyProps = {
+      ...createEmptyReactions(),
+      ...createEmptyReinforcements(),
+      seen: 0,
+      replies: 0
+    };
     const draftRef = doc(
       collection(db, `/organizations/${data.organization.id}/groups/${data.group.id}/discussions`)
     );
@@ -39,9 +49,7 @@
       updated_at: serverTimestamp()
     });
     batch.set(tallyRef, {
-      ...createEmptyReactions(),
-      ...createEmptyReinforcements(),
-      seen: 0,
+      ...tallyProps,
       created_at: serverTimestamp(),
       updated_at: serverTimestamp()
     });
