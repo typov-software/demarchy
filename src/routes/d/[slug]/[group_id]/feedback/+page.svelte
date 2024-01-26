@@ -147,12 +147,14 @@
     </div>
   </div>
 
-  <Replies
-    organizationId={data.organization.id}
-    groupId={data.group.id}
-    context="feedback"
-    contextId={null}
-    parent={null}
-    depth={0}
-  />
+  <div class="flex flex-col items-center max-w-2xl w-full">
+    <Replies
+      organizationId={data.organization.id}
+      groupId={data.group.id}
+      context="feedback"
+      contextId={null}
+      parent={null}
+      depth={0}
+    />
+  </div>
 </BasicSection>

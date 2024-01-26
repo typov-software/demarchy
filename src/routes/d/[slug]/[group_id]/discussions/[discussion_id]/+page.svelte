@@ -8,7 +8,7 @@
   export let data: PageData;
 </script>
 
-<BasicSection otherClass="">
+<BasicSection>
   <div class="flex flex-row w-full items-center">
     <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
     <div class="flex flex-1" />

@@ -145,32 +145,54 @@
   });
 </script>
 
-<div
-  bind:this={containerEl}
-  class="flex flex-col items-center gap-4 w-full overflow-y-auto"
-  class:max-w-3xl={!threadedColumns}
-  class:max-w-xl={threadedColumns === 2}
-  class:max-w-md={threadedColumns > 2}
->
-  {#if showForm && userHandle}
-    <div class="w-full">
-      <CommentEditor
-        {collectionPath}
-        {organizationId}
-        {groupId}
-        {userHandle}
-        {userId}
-        {context}
-        {contextId}
-        {parent}
-        {depth}
-      />
-    </div>
-  {/if}
+<div style:min-width={threadedColumns ? '28rem' : 'inherit'} class:w-full={!threadedColumns}>
+  <div
+    bind:this={containerEl}
+    class="flex flex-col items-center gap-4 w-full"
+    class:max-w-xl={threadedColumns >= 2}
+  >
+    {#if showForm && userHandle}
+      <div class="w-full">
+        <CommentEditor
+          {collectionPath}
+          {organizationId}
+          {groupId}
+          {userHandle}
+          {userId}
+          {context}
+          {contextId}
+          {parent}
+          {depth}
+        />
+      </div>
+    {/if}
 
-  {#if latestComments.length}
-    <ul class="w-full flex flex-col-reverse gap-4 items-center">
-      {#each latestComments as comment (comment.id)}
+    {#if latestComments.length}
+      <ul class="w-full flex flex-col-reverse gap-4 items-center">
+        {#each latestComments as comment (comment.id)}
+          <li class="w-full" in:fly={{ x: -50 }}>
+            <CommentCard
+              comment={makeDocument(comment)}
+              {context}
+              contextId={contextId ?? comment.id}
+              {threaded}
+              highlighted={highlighted.includes(comment.id)}
+              on:reply={handleReply}
+            />
+          </li>
+        {/each}
+      </ul>
+      <div class="divider divider-primary text-secondary text-sm p-0 m-0">
+        <span class="text-base-content">
+          <span class="material-symbols-outlined text-base">arrow_upward</span>
+          New replies
+          <span class="material-symbols-outlined text-base">arrow_upward</span>
+        </span>
+      </div>
+    {/if}
+
+    <ul class="w-full flex flex-col gap-4 items-center">
+      {#each comments as comment (comment.id)}
         <li class="w-full" in:fly={{ x: -50 }}>
           <CommentCard
             comment={makeDocument(comment)}
@@ -183,42 +205,24 @@
         </li>
       {/each}
     </ul>
-    <div class="divider divider-primary text-secondary text-sm p-0 m-0">
-      <span class="text-base-content"> New comments </span>
-    </div>
-  {/if}
 
-  <ul class="w-full flex flex-col gap-4 items-center">
-    {#each comments as comment (comment.id)}
-      <li class="w-full" in:fly={{ x: -50 }}>
-        <CommentCard
-          comment={makeDocument(comment)}
-          {context}
-          contextId={contextId ?? comment.id}
-          {threaded}
-          highlighted={highlighted.includes(comment.id)}
-          on:reply={handleReply}
-        />
-      </li>
-    {/each}
-  </ul>
-
-  {#if hasMore}
-    <div class="loading" />
-  {:else}
-    <div class="flex items-center gap-4">
-      <p class="text-xs">End of replies</p>
-      <button
-        class="btn btn-sm"
-        on:click={() => {
-          containerEl.scrollTo({ top: 0 });
-          window.scrollTo({ top: 0 });
-        }}
-      >
-        <span class="material-symbols-outlined">arrow_upward</span>
-        Jump to top
-      </button>
-    </div>
-  {/if}
-  <div use:inview={{}} on:inview_enter={() => getPage()} />
+    {#if hasMore}
+      <div class="loading" />
+    {:else}
+      <div class="flex items-center gap-4">
+        <p class="text-xs">End of replies</p>
+        <button
+          class="btn btn-sm"
+          on:click={() => {
+            containerEl.scrollTo({ top: 0 });
+            window.scrollTo({ top: 0 });
+          }}
+        >
+          <span class="material-symbols-outlined">arrow_upward</span>
+          Jump to top
+        </button>
+      </div>
+    {/if}
+    <div use:inview={{}} on:inview_enter={() => getPage()} />
+  </div>
 </div>

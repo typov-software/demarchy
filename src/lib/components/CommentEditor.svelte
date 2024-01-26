@@ -75,10 +75,13 @@
       created_at: serverTimestamp(),
       updated_at: serverTimestamp()
     });
-    batch.update(contextTallyRef, {
-      replies: increment(1),
-      updated_at: serverTimestamp()
-    });
+
+    if (context !== 'feedback') {
+      batch.update(contextTallyRef, {
+        replies: increment(1),
+        updated_at: serverTimestamp()
+      });
+    }
 
     if (parent) {
       // Get the last id segment
@@ -114,13 +117,13 @@
     </div>
     <div class="card-actions items-center px-3">
       <div class="flex-1" />
-      <label for="anonymous" class="flex flex-row items-center gap-2 cursor-pointer">
+      <label for={`anonymous-${depth}`} class="flex flex-row items-center gap-2 cursor-pointer">
         <span class="text-sm" class:text-base-content={anon} class:text-neutral={!anon}>
           Submit as anonymous
         </span>
         <input
           type="checkbox"
-          id="anonymous"
+          id={`anonymous-${depth}`}
           name="anonymous"
           class="checkbox checkbox-primary"
           bind:checked={anon}
