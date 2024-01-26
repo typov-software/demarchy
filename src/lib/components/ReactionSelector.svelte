@@ -177,7 +177,6 @@
           </div>
           <ul
             class="dropdown-content z-40 shadow bg-base-300 flex flex-row flex-wrap justify-center align-center gap-1 rounded-box p-1"
-            style:left="-5.15rem"
             style:width="10rem"
           >
             {#each REINFORCEMENT_TYPES as reinforcementType}

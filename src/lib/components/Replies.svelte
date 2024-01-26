@@ -1,7 +1,7 @@
 <script lang="ts">
   import CommentCard from '$lib/components/CommentCard.svelte';
   import { db, profile, user } from '$lib/firebase';
-  import { createEventDispatcher, onMount } from 'svelte';
+  import { createEventDispatcher, onMount, tick } from 'svelte';
   import {
     orderBy,
     collection,
@@ -26,7 +26,6 @@
 
   export let organizationId: string;
   export let groupId: string;
-
   export let context: CommentContext;
   export let contextId: string | null;
   export let parent: string | null;
@@ -35,31 +34,28 @@
   export let threaded = false;
   export let highlighted: string[] = [];
   export let threadedColumns: number = 0;
+  export let maxResults = 5;
 
+  let baseQuery: Query;
+  let comments: QueryDocumentSnapshot<DocumentData, CommentProps>[] = [];
+  let latestComments: QueryDocumentSnapshot<DocumentData, CommentProps>[] = [];
+  let collectionPath: string;
   let containerEl: HTMLDivElement;
 
-  let groupPath = `/organizations/${organizationId}/groups/${groupId}`;
-  let collectionPath = groupPath;
-  if (context === 'feedback') {
-    collectionPath = `${groupPath}/feedback`;
-  } else {
-    collectionPath = `${groupPath}/${context}/${contextId}/comments`;
-  }
+  $: collectionPath;
 
   $: userId = $user!.uid;
   $: userHandle = $profile?.handle;
   $: showForm = true;
 
-  $: comments = [] as QueryDocumentSnapshot<DocumentData, CommentProps>[];
-  $: latestComments = [] as QueryDocumentSnapshot<DocumentData, CommentProps>[];
+  $: comments;
+  $: latestComments;
   $: hasMore = true;
   $: loadingMore = false;
 
   let unsubscribe: undefined | (() => void);
   $: unsubscribe = undefined;
   $: settingUp = false;
-
-  $: baseQuery = query(collection(db, collectionPath), where('parent', '==', parent));
 
   async function getPage() {
     if (!hasMore || loadingMore) {
@@ -69,19 +65,25 @@
     const after = comments.slice().pop();
     let snapshot;
     if (after) {
-      const q = query(baseQuery, startAfter(after), limit(10));
+      const q = query(
+        baseQuery,
+        orderBy('created_at', 'desc'),
+        startAfter(after),
+        limit(maxResults)
+      );
       snapshot = await getDocs(q);
     } else {
-      const q = query(baseQuery, orderBy('created_at', 'desc'), limit(10));
+      const q = query(baseQuery, orderBy('created_at', 'desc'), limit(maxResults));
       snapshot = await getDocs(q);
     }
     const moreComments = snapshot.docs.slice() as QueryDocumentSnapshot<
       DocumentData,
       CommentProps
     >[];
-    hasMore = snapshot.size >= 10;
+    hasMore = snapshot.size >= maxResults;
     comments = [...comments, ...moreComments];
     loadingMore = false;
+    await tick();
   }
 
   async function setup() {
@@ -90,9 +92,18 @@
       return;
     }
     settingUp = true;
+    const groupPath = `/organizations/${organizationId}/groups/${groupId}`;
+    let collectionPath = groupPath;
+    if (context === 'feedback') {
+      collectionPath = `${groupPath}/feedback`;
+    } else {
+      collectionPath = `${groupPath}/${context}/${contextId}/comments`;
+    }
+    baseQuery = query(collection(db, collectionPath), where('parent', '==', parent));
     await getPage();
     const after = comments.slice().shift();
     let q: Query;
+    // Build query for new comments that come in, sorted by ascending
     if (after) {
       q = query(baseQuery, orderBy('created_at', 'asc'), startAfter(after));
     } else {
@@ -223,6 +234,8 @@
         </button>
       </div>
     {/if}
-    <div use:inview={{}} on:inview_enter={() => getPage()} />
+    {#if !settingUp}
+      <div use:inview={{}} on:inview_enter={() => getPage()} />
+    {/if}
   </div>
 </div>
