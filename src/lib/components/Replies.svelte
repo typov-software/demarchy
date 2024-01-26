@@ -39,9 +39,9 @@
   let baseQuery: Query;
   let comments: QueryDocumentSnapshot<DocumentData, CommentProps>[] = [];
   let latestComments: QueryDocumentSnapshot<DocumentData, CommentProps>[] = [];
-  let collectionPath: string;
   let containerEl: HTMLDivElement;
 
+  let collectionPath: string = getCollectionPath();
   $: collectionPath;
 
   $: userId = $user!.uid;
@@ -56,6 +56,17 @@
   let unsubscribe: undefined | (() => void);
   $: unsubscribe = undefined;
   $: settingUp = false;
+
+  function getCollectionPath() {
+    const groupPath = `/organizations/${organizationId}/groups/${groupId}`;
+    let path = groupPath;
+    if (context === 'feedback') {
+      path = `${groupPath}/feedback`;
+    } else {
+      path = `${groupPath}/${context}/${contextId}/comments`;
+    }
+    return path;
+  }
 
   async function getPage() {
     if (!hasMore || loadingMore) {
@@ -92,13 +103,7 @@
       return;
     }
     settingUp = true;
-    const groupPath = `/organizations/${organizationId}/groups/${groupId}`;
-    let collectionPath = groupPath;
-    if (context === 'feedback') {
-      collectionPath = `${groupPath}/feedback`;
-    } else {
-      collectionPath = `${groupPath}/${context}/${contextId}/comments`;
-    }
+    collectionPath = getCollectionPath();
     baseQuery = query(collection(db, collectionPath), where('parent', '==', parent));
     await getPage();
     const after = comments.slice().shift();

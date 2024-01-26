@@ -172,7 +172,12 @@
     <div class="flex flex-row gap-1">
       {#if !reaction.reinforcement}
         <div class="dropdown dropdown-bottom dropdown-end">
-          <div role="button" tabindex="0" class="btn btn-circle btn-sm btn-primary text-xl">
+          <div
+            title="Add reinforcement"
+            role="button"
+            tabindex="0"
+            class="btn btn-circle btn-sm btn-primary text-xl"
+          >
             <span class="material-symbols-outlined">thumbs_up_down</span>
           </div>
           <ul
@@ -202,7 +207,12 @@
 
       {#if !reaction.reaction}
         <div class="dropdown dropdown-bottom dropdown-end">
-          <div role="button" tabindex="0" class="btn btn-circle btn-sm btn-secondary text-xl">
+          <div
+            title="Add reaction"
+            role="button"
+            tabindex="0"
+            class="btn btn-circle btn-sm btn-secondary text-xl"
+          >
             <span class="material-symbols-outlined">add_reaction</span>
           </div>
           <ul

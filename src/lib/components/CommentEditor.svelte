@@ -1,15 +1,24 @@
 <script lang="ts">
   import type { Block } from '$lib/models/blocks';
-  import { doc, collection, serverTimestamp, writeBatch, increment } from 'firebase/firestore';
+  import {
+    doc,
+    collection,
+    serverTimestamp,
+    writeBatch,
+    increment,
+    getDoc
+  } from 'firebase/firestore';
   import BlocksEditor from './BlocksEditor.svelte';
   import { db } from '$lib/firebase';
-  import type { CommentContext, CommentProps } from '$lib/models/comments';
+  import type { Comment, CommentContext, CommentProps } from '$lib/models/comments';
   import {
     createEmptyReactions,
     createEmptyReinforcements,
     type ReactionTallyProps
   } from '$lib/models/reactions';
   import { working } from '$lib/stores/working';
+  import { makeDocument } from '$lib/models/utils';
+  import { onMount } from 'svelte';
 
   export let organizationId: string;
   export let groupId: string;
@@ -19,19 +28,42 @@
   export let context: CommentContext;
   export let parent: string | null;
   export let depth: number;
+
   export let collectionPath: string;
 
   let anon: boolean;
   $: anon = false;
 
-  let blocks: Block[];
-  $: blocks = [
+  let blocks: Block[] = [
     {
       uid: crypto.randomUUID(),
       content: '',
       type: 'text'
     }
   ];
+  $: blocks;
+
+  let parentComment: null | Comment = null;
+  $: parentComment;
+
+  onMount(() => {
+    if (parent) {
+      getParentComment();
+    }
+  });
+
+  async function getParentComment() {
+    const parentId = parent?.split('_').pop();
+    if (parentId) {
+      const parentRef = doc(db, collectionPath, parentId);
+      const parentDoc = await getDoc(parentRef);
+      if (parentDoc.exists()) {
+        parentComment = makeDocument<Comment>(parentDoc);
+      } else {
+        parentComment = null;
+      }
+    }
+  }
 
   async function saveBlocks(nextBlocks: Block[]) {
     blocks = nextBlocks.slice();
@@ -106,7 +138,29 @@
 </script>
 
 <div class="card bg-base-200 w-full">
-  <div class="card-body px-0 pt-5 pb-4" class:opacity-60={$working.length !== 0}>
+  <div
+    class="card-body px-0 pt-5 pb-4"
+    class:pt-2={parentComment}
+    class:opacity-60={$working.length !== 0}
+  >
+    {#if parentComment}
+      <div class="rounded-t-box">
+        <small class="text-neutral px-3 italic"
+          >Replying to
+          {#if !parentComment.user_id}
+            anonymous
+          {:else}
+            <a href={`/d/profiles/${parentComment.user_handle}`} class="link text-info">
+              @{parentComment.user_handle}
+            </a>
+          {/if}
+        </small>
+        <div class="bg-base-300 border-l-2 mt-2">
+          <BlocksEditor blocks={parentComment.blocks} editable={false} />
+        </div>
+        <!-- <div class="divider px-2 py-0 m-0" /> -->
+      </div>
+    {/if}
     <div>
       <BlocksEditor
         placeholder="Empty comment block"
