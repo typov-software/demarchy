@@ -64,7 +64,7 @@
           </a>
         {/if}
         <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
-          {#each groups as g}
+          {#each groups as g (g.id)}
             <li>
               <a href={root + g.id + (matchedRoute ? `/${matchedRoute}` : '')} title={g.name}>
                 {g.name}

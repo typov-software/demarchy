@@ -107,7 +107,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each data.members as member}
+      {#each data.members as member (member.id)}
         <tr>
           <td>{member.name}</td>
           <td>@{member.handle}</td>

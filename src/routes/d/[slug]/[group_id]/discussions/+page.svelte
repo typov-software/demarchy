@@ -90,7 +90,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.drafts as discussion}
+          {#each data.drafts as discussion (discussion.id)}
             <tr>
               <td class="w-full max-w-[0]">
                 <a
@@ -120,7 +120,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.open as discussion}
+          {#each data.open as discussion (discussion.id)}
             <tr>
               <td class="w-full max-w-[0]">
                 <a

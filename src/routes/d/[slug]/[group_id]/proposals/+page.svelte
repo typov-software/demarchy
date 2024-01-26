@@ -51,7 +51,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.drafts as proposal}
+          {#each data.drafts as proposal (proposal.id)}
             <tr>
               <td>
                 <a href={$page.url.pathname + '/' + proposal.id} class="link">
@@ -78,7 +78,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.open as proposal}
+          {#each data.open as proposal (proposal.id)}
             <tr>
               <td>
                 <a href={$page.url.pathname + '/' + proposal.id} class="link link-hover">
@@ -105,7 +105,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.adopted as proposal}
+          {#each data.adopted as proposal (proposal.id)}
             <tr>
               <td>
                 <a href={$page.url.pathname + '/' + proposal.id} class="link">

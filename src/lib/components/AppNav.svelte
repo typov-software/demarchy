@@ -85,7 +85,7 @@
 
       <div class="divider" />
       <ul class="menu p-0">
-        {#each organizations as organization}
+        {#each organizations as organization (organization.id)}
           <li>
             <a
               href="/d/{organization.slug}"

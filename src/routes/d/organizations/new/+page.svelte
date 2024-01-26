@@ -64,7 +64,7 @@
             bind:value={voucher_id}
           >
             <option disabled selected value="">Choose an unused voucher</option>
-            {#each data.vouchers as voucher}
+            {#each data.vouchers as voucher (voucher.id)}
               <option value={voucher.id} class="text-sm">
                 {voucher.type}
                 ({voucher.id})

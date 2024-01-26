@@ -42,7 +42,7 @@
         {/if}
 
         <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box -left-5">
-          {#each organizations as org}
+          {#each organizations as org (org.id)}
             <li>
               <a href={'/d/' + org.slug} title={org.name}>{org.name}</a>
             </li>

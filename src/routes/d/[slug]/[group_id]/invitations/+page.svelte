@@ -128,7 +128,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each invitations as invitation}
+      {#each invitations as invitation (invitation.id)}
         <tr>
           <td>@{invitation.handle}</td>
           <td>{getRoleName(invitation.role)}</td>
