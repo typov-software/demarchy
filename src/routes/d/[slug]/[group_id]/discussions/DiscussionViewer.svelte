@@ -10,7 +10,6 @@
   import SeenCounter from '$lib/components/SeenCounter.svelte';
   import { fade } from 'svelte/transition';
   import ReactionSelector from '$lib/components/ReactionSelector.svelte';
-  import ReinforcementSelector from '$lib/components/ReinforcementSelector.svelte';
   import ThreadedReplies from '$lib/components/ThreadedReplies.svelte';
 
   export let discussion: Discussion;
@@ -115,7 +114,6 @@
       {#if reaction && tally}
         <div class="flex flex-col items-end gap-2 p-3" in:fade={{ duration: 300 }}>
           <ReactionSelector {reaction} {tally} />
-          <ReinforcementSelector {reaction} {tally} />
         </div>
       {/if}
     </div>

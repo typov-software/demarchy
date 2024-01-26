@@ -10,7 +10,6 @@
   import { makeDocument } from '$lib/models/utils';
   import BlocksEditor from './BlocksEditor.svelte';
   import ReactionSelector from './ReactionSelector.svelte';
-  import ReinforcementSelector from './ReinforcementSelector.svelte';
   import SeenCounter from './SeenCounter.svelte';
 
   const dispatch = createEventDispatcher();
@@ -117,7 +116,6 @@
     {#if reaction && tally}
       <div class="flex flex-col items-end gap-2 px-3" in:fade={{ duration: 300 }}>
         <ReactionSelector {reaction} {tally} />
-        <ReinforcementSelector {reaction} {tally} />
       </div>
     {/if}
   </div>

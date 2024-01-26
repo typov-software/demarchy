@@ -17,7 +17,7 @@ export type ReactionType =
   | 'sarcasm';
 
 export type ReinforcementType = 'endorse' | 'promote' | 'demote' | 'shun';
-export const REINFORCEMENT_TYPES: ReinforcementType[] = ['endorse', 'promote', 'demote', 'shun'];
+export const REINFORCEMENT_TYPES: ReinforcementType[] = ['shun', 'demote', 'promote', 'endorse'];
 export const REINFORCEMENTS: Record<ReinforcementType, string> = Object.freeze({
   endorse: 'stars',
   promote: 'thumb_up',

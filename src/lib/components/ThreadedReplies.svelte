@@ -34,17 +34,14 @@
       parent = parents.length ? `${parents.at(-1)}_${id}` : id;
       if (parents.length) {
         parents = [...parents, parent];
-        console.log('appending', parents);
       } else {
         parents = [parent];
-        console.log('first', parents);
       }
     } else {
       const next = parents.slice();
       next.splice(comment.depth, parents.length - comment.depth);
       parent = next.length ? `${next.at(-1)}_${id}` : id;
       parents = [...next, parent];
-      console.log('splicing', parents);
     }
 
     goto(`?thread=${parent}`, {
@@ -60,8 +57,9 @@
 
 <div
   bind:this={scrollingEl}
-  class="pt-4 gap-4 flex overflow-x-auto h-full"
+  class="pt-4 gap-4 flex h-full"
   style:min-height="50vh"
+  class:overflow-x-auto={parents.length}
   class:max-w-3xl={!parents.length}
   class:mx-auto={!parents.length}
 >
