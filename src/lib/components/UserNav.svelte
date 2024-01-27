@@ -59,7 +59,7 @@
       {/if}
     </label>
   </div>
-  <div class="drawer-side">
+  <div class="drawer-side overflow-hidden">
     <label for="user-nav" aria-label="close sidebar" class="drawer-overlay" />
 
     <div class="min-h-full bg-base-100 text-base-content flex flex-col">
