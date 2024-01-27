@@ -89,7 +89,7 @@
 
       <ul class="menu">
         <li>
-          <a href="/d/inbox" title="Your Inbox" on:click={closeDrawer}>
+          <a href="/d/inbox" title="Your Inbox" class="rounded-none" on:click={closeDrawer}>
             <span class="material-symbols-outlined relative">
               inbox
               {#if inbox?.unread}
@@ -111,14 +111,19 @@
         </li>
 
         <li>
-          <a href="/d/discussions" title="Your Discussions" on:click={closeDrawer}>
+          <a
+            href="/d/discussions"
+            title="Your Discussions"
+            class="rounded-none"
+            on:click={closeDrawer}
+          >
             <span class="material-symbols-outlined">forum</span>
             Your Discussions
           </a>
         </li>
 
         <li>
-          <a href="/d/proposals" title="Your Proposals" on:click={closeDrawer}>
+          <a href="/d/proposals" title="Your Proposals" class="rounded-none" on:click={closeDrawer}>
             <span class="material-symbols-outlined">history_edu</span>
             Your Proposals
           </a>

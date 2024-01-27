@@ -71,8 +71,8 @@ export const actions = {
     // Create the group associated with this organization
     batch.set(adminGroupRef(orgRef.id).doc(orgRef.id), {
       ...createdTimestamps(),
-      name,
-      description: 'Organization',
+      name: 'Organization',
+      description: name,
       library_id: null,
       organization_id: orgRef.id,
       created_by: uid

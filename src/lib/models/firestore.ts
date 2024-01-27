@@ -2,6 +2,7 @@
 export const ACTIVITIES = 'activities';
 export const BALLOTS = 'ballots';
 export const CONFIGS = 'configs';
+export const DISCUSSIONS = 'discussions';
 export const DOCS = 'docs';
 export const FEEDBACK = 'feedback';
 export const HANDLES = 'handles';

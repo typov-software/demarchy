@@ -9,6 +9,8 @@
   export let block: Block;
   export let focus: boolean = false;
   export let editable = true;
+  export let placeholder = '';
+  $: placeholderText = placeholder;
 
   // export let onSaveBlock: (index: number, block: Block) => Promise<void>;
   export let onDeleteBlock: (index: number) => Promise<void>;
@@ -66,7 +68,7 @@
 
 <div
   bind:this={dragSrcEl}
-  id={block.id}
+  id={block.uid}
   role="listitem"
   class="flex items-center focus-within:z-10 px-2 hover:bg-base-300"
   class:opacity-40={dragging}
@@ -87,12 +89,14 @@
       bind:value={content}
       requestFocus={focus}
       name="content"
-      placeholder={focused ? `Empty ${block.type} block` : ''}
+      placeholder={placeholderText}
       {editable}
       on:blur={() => {
+        placeholderText = placeholder;
         dispatch('blur', { index, content });
       }}
       on:focus={() => {
+        placeholderText = `Empty ${block.type} block`;
         dispatch('focus', index);
       }}
       on:enter={() => {

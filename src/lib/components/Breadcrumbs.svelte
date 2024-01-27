@@ -25,7 +25,6 @@
       symbol: 'timeline'
     },
     discussions: {
-      disabled: true,
       path: root + group?.id + '/discussions',
       symbol: 'forum'
     },
@@ -58,16 +57,14 @@
     {#if groups}
       <li class="dropdown dropdown-start dropdown-bottom dropdown-hover">
         {#if !group}
-          <div role="button" tabindex="0" class="btn btn-sm btn-warning rounded-xl">
-            Select group
-          </div>
+          <div role="button" tabindex="0" class="btn btn-sm btn-warning">Select group</div>
         {:else}
-          <a role="button" tabindex="0" class="btn btn-sm btn-success rounded-xl" href={root}>
+          <a role="button" tabindex="0" class="btn btn-sm btn-success" href={root}>
             {group.name}
           </a>
         {/if}
         <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
-          {#each groups as g}
+          {#each groups as g (g.id)}
             <li>
               <a href={root + g.id + (matchedRoute ? `/${matchedRoute}` : '')} title={g.name}>
                 {g.name}
@@ -81,23 +78,23 @@
     {#if group}
       <li class="dropdown dropdown-start dropdown-bottom dropdown-hover">
         {#if matchedRoute}
-          <!-- <a
+          <a
             role="button"
             tabindex="0"
-            class="btn btn-sm btn-ghost rounded-xl px-2"
+            class="btn btn-sm btn-ghost px-2"
             href={`${parts.slice(0, 5).join('/')}`}
           >
             <span class="material-symbols-outlined">{config[matchedRoute].symbol}</span>
             {titleCase(matchedRoute)}
-          </a> -->
-          <div role="button" tabindex="0" class="btn btn-sm btn-ghost rounded-xl">
+          </a>
+          <!-- <div role="button" tabindex="0" class="btn btn-sm btn-ghost">
             <span class="material-symbols-outlined">{config[matchedRoute].symbol}</span>
             {titleCase(matchedRoute)}
-          </div>
+          </div> -->
         {:else}
-          <div role="button" tabindex="0" class="btn btn-sm btn-warning rounded-xl">Go to</div>
+          <div role="button" tabindex="0" class="btn btn-sm btn-warning">Go to</div>
         {/if}
-        <ul class="menu w-47 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
+        <ul class="menu w-48 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
           {#each Object.keys(config) as route}
             <li>
               <a
@@ -115,11 +112,11 @@
         </ul>
       </li>
       {#if parts.at(5)}
-        <!-- <li>
-          <a class="btn btn-sm btn-ghost rounded-xl" href={`${parts.slice(0, 6).join('/')}`}>
+        <li>
+          <a class="btn btn-sm btn-ghost text-neutral" href={`${parts.slice(0, 6).join('/')}`}>
             {titleCase(parts[5])}
           </a>
-        </li> -->
+        </li>
       {/if}
     {/if}
   </ul>

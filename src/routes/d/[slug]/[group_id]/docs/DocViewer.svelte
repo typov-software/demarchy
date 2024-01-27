@@ -2,7 +2,6 @@
   import type { Doc } from '$lib/models/docs';
   import { fade } from 'svelte/transition';
   import { format } from 'date-fns';
-  import './editor.scss';
   import BlockViewer from './BlockViewer.svelte';
 
   export let doc: Doc;
@@ -15,7 +14,7 @@
     >
     on {format(doc.created_at, 'MMMM d, yyyy')}
   </div>
-  {#each doc.blocks as block (block.id)}
+  {#each doc.blocks as block (block.uid)}
     <BlockViewer {block} />
   {/each}
 </div>

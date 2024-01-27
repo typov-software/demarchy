@@ -27,7 +27,7 @@
   </td>
   <td>
     <div class="dropdown dropdown-end">
-      <button tabindex="0" class="btn btn-sm btn-square btn-ghost rounded-xl" disabled={!allowed}>
+      <button tabindex="0" class="btn btn-sm btn-square btn-ghost" disabled={!allowed}>
         <span class="material-symbols-outlined">more_vert</span>
       </button>
       <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">

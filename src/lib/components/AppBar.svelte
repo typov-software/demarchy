@@ -5,8 +5,9 @@
   import UserNav from './UserNav.svelte';
   import { doc, onSnapshot } from 'firebase/firestore';
   import { db, user } from '$lib/firebase';
-  import type { Inbox, InboxProps } from '$lib/models/inboxes';
+  import type { Inbox } from '$lib/models/inboxes';
   import DemarchyDLoader from './DemarchyDLoader.svelte';
+  import { makeDocument } from '$lib/models/utils';
 
   export let organization: Organization | undefined;
   export let organizations: Organization[];
@@ -18,10 +19,7 @@
   onMount(() => {
     const inboxRef = doc(db, 'inboxes', $user!.uid);
     const unsubscribe = onSnapshot(inboxRef, (snapshot) => {
-      inbox = {
-        id: snapshot.id,
-        ...(snapshot.data() as InboxProps)
-      };
+      inbox = makeDocument<Inbox>(snapshot);
     });
     return () => unsubscribe();
   });
@@ -36,17 +34,15 @@
     {#if organizations.length}
       <div class="org-select dropdown dropdown-bottom">
         {#if organization}
-          <div tabindex="0" role="button" class="btn btn-sm btn-primary rounded-xl">
+          <div tabindex="0" role="button" class="btn btn-sm btn-primary">
             {organization.name}
           </div>
         {:else}
-          <div tabindex="0" role="button" class="btn-warning btn-sm btn rounded-xl">
-            Select organization
-          </div>
+          <div tabindex="0" role="button" class="btn-warning btn-sm btn">Select organization</div>
         {/if}
 
-        <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box -left-4">
-          {#each organizations as org}
+        <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box -left-5">
+          {#each organizations as org (org.id)}
             <li>
               <a href={'/d/' + org.slug} title={org.name}>{org.name}</a>
             </li>
@@ -54,9 +50,7 @@
         </ul>
       </div>
     {:else}
-      <a href="/d/organizations/new" class="btn btn-primary btn-sm rounded-xl"
-        >Create organization</a
-      >
+      <a href="/d/organizations/new" class="btn btn-primary btn-sm">Create organization</a>
     {/if}
   </div>
 

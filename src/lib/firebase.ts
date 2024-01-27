@@ -84,13 +84,17 @@ export function docStore<T extends DocumentMeta>(path: string) {
 
   const docRef = doc(db, path);
 
-  const { subscribe } = writable<T | null>(null, (set) => {
+  const { subscribe, set, update } = writable<T | null>(null, (set) => {
     unsubscribe = onSnapshot(docRef, (snapshot) => {
-      const data = makeDocument<T>(snapshot);
-      if (import.meta.env.DEV) {
-        console.debug(`[${path}]`, { data });
+      if (snapshot.exists()) {
+        const data = makeDocument<T>(snapshot);
+        if (import.meta.env.DEV) {
+          console.debug(`[${path}]`, { data });
+        }
+        set(data);
+      } else {
+        set(null);
       }
-      set(data);
     });
 
     return () => {
@@ -100,6 +104,8 @@ export function docStore<T extends DocumentMeta>(path: string) {
 
   return {
     subscribe,
+    set,
+    update,
     ref: docRef,
     id: docRef.id
   };

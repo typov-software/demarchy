@@ -8,7 +8,7 @@
 
 <BasicSection>
   <ul class="w-full max-w-xl">
-    {#each data.notifications as notification}
+    {#each data.notifications as notification (notification.id)}
       <NotificationCard {notification} />
     {/each}
   </ul>

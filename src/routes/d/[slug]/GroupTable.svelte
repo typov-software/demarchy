@@ -30,7 +30,7 @@
       <GroupRow slug={organization.slug} group={orgGroup} role={getMembershipRole(orgGroup.id)} />
     {/if}
     {#if groupSpaces.length}
-      {#each groupSpaces as group}
+      {#each groupSpaces as group (group.id)}
         <GroupRow slug={organization.slug} {group} role={getMembershipRole(group.id)} />
       {/each}
     {/if}

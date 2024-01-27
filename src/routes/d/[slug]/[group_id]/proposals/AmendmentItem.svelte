@@ -50,7 +50,7 @@
   }
 </script>
 
-<div class="card bg-base-200 max-w-3xl w-full rounded-lg">
+<div class="card bg-base-200 max-w-3xl w-full">
   <div class="card-body gap-0 p-0" class:pb-4={expanded}>
     <h3 class="card-title text-sm w-full items-center flex pl-4 gap-0">
       {#if amendment}
@@ -99,7 +99,7 @@
         </span>
       {/if}
       <button
-        class="expand-button btn btn-square shadow-none bg-base-200 rounded-lg flex ml-2"
+        class="expand-button btn btn-square shadow-none bg-base-200 flex ml-2"
         class:rounded-none={expanded}
         on:click={() => (expanded = !expanded)}
       >
@@ -110,7 +110,7 @@
       {#if expanded}
         <div class="dropdown dropdown-end">
           <button
-            class="expand-button btn btn-square shadow-none bg-base-200 rounded-lg flex"
+            class="expand-button btn btn-square shadow-none bg-base-200 flex"
             class:expanded-more={expanded}
           >
             <span class="material-symbols-outlined"> more_vert </span>

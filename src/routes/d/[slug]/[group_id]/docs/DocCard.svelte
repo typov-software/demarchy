@@ -5,7 +5,7 @@
   export let doc: Doc;
 </script>
 
-<div class="card bg-base-200 max-w-3xl w-full rounded-lg">
+<div class="card bg-base-200 max-w-3xl w-full">
   <div class="card-body gap-0 p-0 pb-4">
     <h3 class="card-title text-sm w-full items-center flex pl-4">
       <span class="material-symbols-outlined">article</span>
@@ -13,7 +13,7 @@
         {doc.name}
       </span>
       <div class="flex-1" />
-      <button class="more-button btn btn-square shadow-none bg-base-200 rounded-lg flex">
+      <button class="more-button btn btn-square shadow-none bg-base-200 flex">
         <span class="material-symbols-outlined"> more_vert </span>
       </button>
     </h3>
