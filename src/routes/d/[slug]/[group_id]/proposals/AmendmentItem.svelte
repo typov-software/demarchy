@@ -1,7 +1,7 @@
 <script lang="ts">
   import { db } from '$lib/firebase';
-  import type { Amendment, Proposal } from '$lib/models/proposals';
-  import { doc as fdoc, writeBatch } from 'firebase/firestore';
+  import type { Amendment, Proposal, ProposalProps } from '$lib/models/proposals';
+  import { doc as fdoc, serverTimestamp, writeBatch } from 'firebase/firestore';
   import DocEditor from '../docs/DocEditor.svelte';
   import { createEventDispatcher } from 'svelte';
 
@@ -29,19 +29,23 @@
     batch.update(fdoc(db, amendment.doc.path), {
       name: docName
     });
+    const proposalProps: Partial<ProposalProps> = {
+      amendments: {
+        ...proposal.amendments,
+        [amendment.doc.id]: {
+          ...amendment,
+          doc: {
+            ...amendment.doc,
+            name: docName
+          }
+        }
+      }
+    };
     batch.set(
       fdoc(db, proposal.path),
       {
-        amendments: {
-          ...proposal.amendments,
-          [amendment.doc.id]: {
-            ...amendment,
-            doc: {
-              ...amendment.doc,
-              name: docName
-            }
-          }
-        }
+        ...proposalProps,
+        updated_at: serverTimestamp()
       },
       { merge: true }
     );

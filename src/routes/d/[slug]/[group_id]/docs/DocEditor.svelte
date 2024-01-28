@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { Doc } from '$lib/models/docs';
+  import type { Doc, DocProps } from '$lib/models/docs';
   import { fade } from 'svelte/transition';
   import type { Block } from '$lib/models/blocks';
-  import { doc as fdoc, updateDoc } from 'firebase/firestore';
+  import { doc as fdoc, serverTimestamp, updateDoc } from 'firebase/firestore';
   import { db, docStore } from '$lib/firebase';
   import { format } from 'date-fns';
   import BlocksEditor from '$lib/components/BlocksEditor.svelte';
@@ -26,7 +26,11 @@
     if (!nextBlocks.length) {
       nextBlocks = [{ uid: crypto.randomUUID(), content: '', type: 'text' }];
     }
-    await updateDoc(fdoc(db, path), { blocks: nextBlocks });
+    const docProps: Partial<DocProps> = { blocks: nextBlocks };
+    await updateDoc(fdoc(db, path), {
+      ...docProps,
+      updated_at: serverTimestamp()
+    });
   }
 </script>
 

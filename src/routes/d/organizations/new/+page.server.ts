@@ -12,8 +12,12 @@ import {
   createdTimestamps,
   updatedTimestamps
 } from '$lib/server/admin';
-import type { Voucher } from '$lib/models/vouchers';
+import type { Voucher, VoucherProps } from '$lib/models/vouchers';
 import { makeDocument } from '$lib/models/utils';
+import type { OrganizationProps } from '$lib/models/organizations';
+import type { MembershipProps } from '$lib/models/memberships';
+import type { GroupProps } from '$lib/models/groups';
+import type { MemberProps } from '$lib/models/members';
 
 export const load = (async ({ locals }) => {
   const user_id = locals.user_id;
@@ -49,49 +53,65 @@ export const actions = {
 
     const batch = adminDB.batch();
     // Update the vouchers document so it can't be used again
+    const voucherProps: Partial<VoucherProps> = {
+      redeemed: true
+    };
     batch.update(adminDB.doc(`vouchers/${voucher_id}`), {
       ...updatedTimestamps(),
-      redeemed: true
+      ...voucherProps
     });
     // Create the slug document
     batch.set(adminSlugRef().doc(slug), { organization_id: orgRef.id });
     // Create the organization document
-    batch.set(orgRef, {
-      ...createdTimestamps(),
+    const organizationProps: OrganizationProps = {
       name,
       slug,
       user_id,
       profile_handle
+    };
+    batch.set(orgRef, {
+      ...createdTimestamps(),
+      ...organizationProps
     });
     // Create the membership document for this user with member access to this organization
-    batch.set(adminMembershipRef(orgRef.id).doc(user_id), {
-      ...createdTimestamps(),
+    const membershipProps: MembershipProps = {
       user_id,
       organization_id: orgRef.id,
       roles: {
         [orgRef.id]: 'mem'
       },
       standing: 'ok'
+    };
+    batch.set(adminMembershipRef(orgRef.id).doc(user_id), {
+      ...createdTimestamps(),
+      ...membershipProps
     });
     // Create the group associated with this organization
-    batch.set(adminGroupRef(orgRef.id).doc(orgRef.id), {
-      ...createdTimestamps(),
+    const groupProps: GroupProps = {
       name: 'Organization',
       description: `Main group from ${name}`,
       library_id: null,
       organization_id: orgRef.id,
       user_id,
-      profile_handle
+      profile_handle,
+      member_count: 1
+    };
+    batch.set(adminGroupRef(orgRef.id).doc(orgRef.id), {
+      ...createdTimestamps(),
+      ...groupProps
     });
     // Create the member document within the new group to record this user as member for all to see
-    batch.set(adminMemberRef(orgRef.id, orgRef.id).doc(user_id), {
-      ...createdTimestamps(),
+    const memberProps: MemberProps = {
       user_id,
       group_id: orgRef.id,
       organization_id: orgRef.id,
       role: 'mem',
       name: profile.data()!.name,
       handle: profile_handle
+    };
+    batch.set(adminMemberRef(orgRef.id, orgRef.id).doc(user_id), {
+      ...createdTimestamps(),
+      ...memberProps
     });
     await batch.commit();
 

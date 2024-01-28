@@ -67,6 +67,7 @@ export const actions = {
     const profileDoc = await adminProfileRef().doc(user_id).get();
     const profile: Profile = makeDocument(profileDoc);
 
+    const batch = adminDB.batch();
     const membershipProps: MembershipProps = {
       organization_id,
       user_id: profile.id,
@@ -75,6 +76,13 @@ export const actions = {
         [invitation.group_id]: invitation.role
       }
     };
+    batch.set(
+      adminMembershipRef(organization_id).doc(invitation.invited_user_id),
+      membershipProps,
+      {
+        merge: true
+      }
+    );
     const memberProps: MemberProps = {
       user_id: profile.id,
       name: profile.name,
@@ -83,15 +91,6 @@ export const actions = {
       group_id: invitation.group_id,
       organization_id: invitation.organization_id
     };
-
-    const batch = adminDB.batch();
-    batch.set(
-      adminMembershipRef(organization_id).doc(invitation.invited_user_id),
-      membershipProps,
-      {
-        merge: true
-      }
-    );
     batch.set(
       adminMemberRef(organization_id, invitation.group_id).doc(invitation.invited_user_id),
       {

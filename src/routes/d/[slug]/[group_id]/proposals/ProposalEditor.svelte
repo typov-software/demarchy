@@ -3,7 +3,7 @@
   import type { Group } from '$lib/models/groups';
   import type { Organization } from '$lib/models/organizations';
   import type { Profile } from '$lib/models/profiles';
-  import type { Amendment, Proposal } from '$lib/models/proposals';
+  import type { Amendment, Proposal, ProposalProps } from '$lib/models/proposals';
   import { working, workingCallback } from '$lib/stores/working';
   import { pluralize } from '$lib/utils/string';
   import {
@@ -140,6 +140,9 @@
       },
       type: 'create'
     };
+    const proposalProps: Partial<ProposalProps> = {
+      amendments: { [docRef.id]: amendment }
+    };
     const batch = writeBatch(db);
     batch.set(docRef, {
       ...docProps,
@@ -149,7 +152,7 @@
     batch.set(
       ref,
       {
-        amendments: { [docRef.id]: amendment },
+        ...proposalProps,
         updated_at: serverTimestamp()
       },
       { merge: true }
@@ -172,12 +175,16 @@
       doc: e.detail,
       type: 'destroy'
     };
+    const proposalProps: Partial<ProposalProps> = {
+      amendments: { [e.detail.id]: amendment }
+    };
     const ref = doc(db, proposal.path);
     try {
       await setDoc(
         ref,
         {
-          amendments: { [e.detail.id]: amendment }
+          ...proposalProps,
+          updated_at: serverTimestamp()
         },
         { merge: true }
       );
@@ -223,6 +230,9 @@
         doc: e.detail
       }
     };
+    const proposalProps: Partial<ProposalProps> = {
+      amendments: { [docRef.id]: amendment }
+    };
 
     const batch = writeBatch(db);
     batch.set(docRef, {
@@ -234,7 +244,7 @@
     batch.set(
       ref,
       {
-        amendments: { [docRef.id]: amendment },
+        ...proposalProps,
         updated_at: serverTimestamp()
       },
       { merge: true }

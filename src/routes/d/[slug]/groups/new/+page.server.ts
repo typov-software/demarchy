@@ -1,4 +1,6 @@
 import type { GroupProps } from '$lib/models/groups';
+import type { MemberProps } from '$lib/models/members';
+import type { MembershipProps } from '$lib/models/memberships';
 import {
   adminDB,
   adminMemberRef,
@@ -20,6 +22,11 @@ export const actions = {
     const profileName = formData.get('profileName') as string;
     const profileHandle = formData.get('profileHandle') as string;
 
+    const groupRef = adminGroupRef(organization_id).doc();
+    const membershipRef = adminMembershipRef(organization_id).doc(user_id);
+    const memberRef = adminMemberRef(organization_id, groupRef.id).doc(user_id);
+
+    const batch = adminDB.batch();
     const groupProps: GroupProps = {
       name,
       description,
@@ -29,41 +36,41 @@ export const actions = {
       profile_handle: profileHandle,
       member_count: 1
     };
-
-    const groupRef = adminGroupRef(organization_id).doc();
-    const membershipRef = adminMembershipRef(organization_id).doc(user_id);
-    const memberRef = adminMemberRef(organization_id, groupRef.id).doc(user_id);
-
-    const batch = adminDB.batch();
     batch.create(groupRef, {
       ...createdTimestamps(),
       ...groupProps
     });
+    const membershipProps: MembershipProps = {
+      user_id,
+      organization_id,
+      roles: {
+        [groupRef.id]: 'mem'
+      },
+      standing: 'ok'
+    };
     batch.set(
       membershipRef,
       {
         ...updatedTimestamps(),
-        user_id,
-        organization_id,
-        roles: {
-          [groupRef.id]: 'mem'
-        },
-        standing: 'ok'
+        ...membershipProps
       },
       {
         merge: true
       }
     );
+    const memberProps: MemberProps = {
+      user_id,
+      group_id: groupRef.id,
+      organization_id,
+      role: 'mem',
+      name: profileName,
+      handle: profileHandle
+    };
     batch.set(
       memberRef,
       {
         ...createdTimestamps(),
-        user_id,
-        group_id: groupRef.id,
-        organization_id,
-        role: 'mem',
-        name: profileName,
-        handle: profileHandle
+        ...memberProps
       },
       {
         merge: true
