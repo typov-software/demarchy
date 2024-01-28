@@ -1,6 +1,7 @@
 import type { Notification } from '$lib/models/notifications';
 import {
   adminDB,
+  adminGroupRef,
   adminInboxRef,
   adminInvitationRef,
   adminMemberRef,
@@ -52,19 +53,20 @@ export const actions = {
     const formData = await request.formData();
     const invitation_id = formData.get('invitation_id') as string;
     const organization_id = formData.get('organization_id') as string;
+    const group_id = formData.get('group_id') as string;
     const notification_id = formData.get('notification_id') as string;
 
     const invitationDoc = await adminInvitationRef(organization_id).doc(invitation_id).get();
-    if (!invitationDoc.exists) {
+    const profileDoc = await adminProfileRef().doc(user_id).get();
+    if (!invitationDoc.exists || !profileDoc.exists) {
       error(401, 'unauthorized');
     }
 
-    const invitation: Invitation = makeDocument(invitationDoc);
-
     const inboxRef = adminInboxRef().doc(user_id);
     const notificationRef = adminNotificationRef(user_id).doc(notification_id);
+    const groupRef = adminGroupRef(organization_id).doc(group_id);
 
-    const profileDoc = await adminProfileRef().doc(user_id).get();
+    const invitation: Invitation = makeDocument(invitationDoc);
     const profile: Profile = makeDocument(profileDoc);
 
     const batch = adminDB.batch();
@@ -101,6 +103,7 @@ export const actions = {
       { merge: true }
     );
     batch.update(inboxRef, { unread: FieldValue.increment(-1) });
+    batch.update(groupRef, { member_count: FieldValue.increment(1) });
     batch.delete(notificationRef);
     batch.delete(invitationDoc.ref);
     await batch.commit();

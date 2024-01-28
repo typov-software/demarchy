@@ -33,12 +33,14 @@
       <div class="flex-1" />
       <form method="POST" action="?/rejectInvitation" use:enhance>
         <input type="hidden" name="organization_id" value={notification.data.organization_id} />
+        <input type="hidden" name="group_id" value={notification.data.group_id} />
         <input type="hidden" name="invitation_id" value={notification.data.invitation_id} />
         <input type="hidden" name="notification_id" value={notification.id} />
         <button class="btn btn-error btn-outline">Reject</button>
       </form>
       <form method="POST" action="?/acceptInvitation" use:enhance>
         <input type="hidden" name="organization_id" value={notification.data.organization_id} />
+        <input type="hidden" name="group_id" value={notification.data.group_id} />
         <input type="hidden" name="invitation_id" value={notification.data.invitation_id} />
         <input type="hidden" name="notification_id" value={notification.id} />
         <button class="btn btn-success">Accept</button>

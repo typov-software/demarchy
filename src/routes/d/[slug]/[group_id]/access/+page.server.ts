@@ -1,8 +1,8 @@
 import type { Actions, PageServerLoad } from './$types';
-import { adminDB, adminMemberRef, adminMembershipRef } from '$lib/server/admin';
+import { adminDB, adminGroupRef, adminMemberRef, adminMembershipRef } from '$lib/server/admin';
 import type { Member } from '$lib/models/members';
 import { error, redirect } from '@sveltejs/kit';
-import type { OrderByDirection } from 'firebase-admin/firestore';
+import { FieldValue, type OrderByDirection } from 'firebase-admin/firestore';
 import { makeDocument } from '$lib/models/utils';
 
 export const load = (async ({ params, url, parent }) => {
@@ -64,6 +64,9 @@ export const actions = {
       // Remove full membership document as is no longer needed
       batch.delete(membershipRef);
     }
+
+    const groupRef = adminGroupRef(organizationId).doc(groupId);
+    batch.update(groupRef, { member_count: FieldValue.increment(-1) });
 
     await batch.commit();
 
