@@ -7,7 +7,8 @@ import {
   adminMemberRef,
   adminMembershipRef,
   adminNotificationRef,
-  adminProfileRef
+  adminProfileRef,
+  createdTimestamps
 } from '$lib/server/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import type { PageServerLoad } from './$types';
@@ -80,7 +81,10 @@ export const actions = {
     };
     batch.set(
       adminMembershipRef(organization_id).doc(invitation.invited_user_id),
-      membershipProps,
+      {
+        ...createdTimestamps(),
+        ...membershipProps
+      },
       {
         merge: true
       }
@@ -96,9 +100,8 @@ export const actions = {
     batch.set(
       adminMemberRef(organization_id, invitation.group_id).doc(invitation.invited_user_id),
       {
-        ...memberProps,
-        created_at: FieldValue.serverTimestamp(),
-        updated_at: FieldValue.serverTimestamp()
+        ...createdTimestamps(),
+        ...memberProps
       },
       { merge: true }
     );
