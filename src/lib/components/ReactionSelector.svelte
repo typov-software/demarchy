@@ -141,7 +141,7 @@
 
       <div class="flex flex-row flex-wrap justify-start items-end gap-1">
         {#each REINFORCEMENT_TYPES as reinforcementType}
-          {#if reaction.reinforcement && tally[reinforcementType] > 0}
+          {#if tally[reinforcementType] > 0}
             <button
               title={titleCase(reinforcementType)}
               class="btn btn-xs rounded-full pl-2 pr-1 gap-2 btn-neutral"
