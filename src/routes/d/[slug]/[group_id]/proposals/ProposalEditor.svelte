@@ -29,6 +29,7 @@
   import BallotCard from '$lib/components/BallotCard.svelte';
   import type { Ballot } from '$lib/models/ballots';
   import SeenCounter from '$lib/components/SeenCounter.svelte';
+  import ProfileLink from '$lib/components/ProfileLink.svelte';
 
   export let profile: Profile;
   export let organization: Organization;
@@ -263,9 +264,7 @@
   >
     <h3 class="flex-1">
       Created by
-      <a class="link link-success" href={`/d/profiles/${proposal.profile_handle}`}
-        >@{proposal.profile_handle}</a
-      >
+      <ProfileLink handle={proposal.profile_handle} />
       {formatRelative(proposal.created_at, new Date())}
     </h3>
 

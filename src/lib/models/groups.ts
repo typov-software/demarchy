@@ -12,6 +12,7 @@ export interface GroupProps {
   library_id: string | null;
   organization_id: string;
   user_id: string;
+  profile_handle: string;
 
   member_count: number;
 }

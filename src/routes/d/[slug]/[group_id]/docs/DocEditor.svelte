@@ -6,6 +6,7 @@
   import { db, docStore } from '$lib/firebase';
   import { format } from 'date-fns';
   import BlocksEditor from '$lib/components/BlocksEditor.svelte';
+  import ProfileLink from '$lib/components/ProfileLink.svelte';
 
   export let path: string;
   export let editable = true;
@@ -32,9 +33,7 @@
 {#if $doc}
   <div class="w-full p-0" in:fade={{ duration: 200 }}>
     <div class="flex items-center text-xs px-4 py-2 mb-2 bg-base-300 gap-2">
-      Created by <a href={`/d/profiles/${$doc.profile_handle}`} class="link link-success"
-        >@{$doc.profile_handle}</a
-      >
+      Created by <ProfileLink handle={$doc.profile_handle} />
       on {format($doc.created_at, 'MMMM d, yyyy')}
     </div>
     <BlocksEditor {saveBlocks} {editable} {blocks} />

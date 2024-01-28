@@ -197,6 +197,7 @@
         <input type="hidden" name="invited_user_id" bind:value={handleUserId} />
         <input type="hidden" name="role" value="mem" />
         <input type="hidden" name="user_id" value={$user?.uid} />
+        <input type="hidden" name="profile_handle" value={data.profile.handle} />
 
         <div class="flex gap-4">
           <input

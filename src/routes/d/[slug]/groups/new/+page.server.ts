@@ -26,6 +26,7 @@ export const actions = {
       library_id: null,
       organization_id,
       user_id,
+      profile_handle: profileHandle,
       member_count: 1
     };
 

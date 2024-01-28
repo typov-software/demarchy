@@ -7,6 +7,7 @@
   import { formatRelative } from 'date-fns';
   import { workingCallback } from '$lib/stores/working';
   import { enhance } from '$app/forms';
+  import ProfileLink from '$lib/components/ProfileLink.svelte';
 
   export let discussion: Discussion;
   let doc = docStore<Discussion>(discussion.path);
@@ -40,9 +41,7 @@
     >
       <h3 class="flex-1">
         Created by
-        <a class="link link-success" href={`/d/profiles/${discussion.profile_handle}`}
-          >@{discussion.profile_handle}</a
-        >
+        <ProfileLink handle={discussion.profile_handle} />
         {formatRelative(discussion.created_at, new Date())}
       </h3>
       <span

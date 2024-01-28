@@ -3,8 +3,7 @@ import type { DocumentMeta } from './utils';
 export type NotificationType = 'invitation';
 
 export interface NotificationProps<T = unknown> {
-  created_at: Date;
-  seen: boolean;
+  seen: number;
   type: NotificationType;
   data: T;
 }

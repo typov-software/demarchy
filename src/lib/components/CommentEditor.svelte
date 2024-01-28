@@ -19,6 +19,7 @@
   import { working } from '$lib/stores/working';
   import { makeDocument } from '$lib/models/utils';
   import { onMount } from 'svelte';
+  import ProfileLink from './ProfileLink.svelte';
 
   export let organizationId: string;
   export let groupId: string;
@@ -149,16 +150,13 @@
           >Replying to
           {#if !parentComment.user_id}
             anonymous
-          {:else}
-            <a href={`/d/profiles/${parentComment.profile_handle}`} class="link text-info">
-              @{parentComment.profile_handle}
-            </a>
+          {:else if parentComment.profile_handle}
+            <ProfileLink handle={parentComment.profile_handle} />
           {/if}
         </small>
         <div class="bg-base-300 border-l-2 mt-2">
           <BlocksEditor blocks={parentComment.blocks} editable={false} />
         </div>
-        <!-- <div class="divider px-2 py-0 m-0" /> -->
       </div>
     {/if}
     <div>
