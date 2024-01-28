@@ -16,4 +16,6 @@ export interface NotificationInvitationData {
   organization_name: string;
   group_id: string;
   group_name: string;
+  invited_by_id: string;
+  invited_by_handle: string;
 }

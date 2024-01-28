@@ -20,21 +20,21 @@ export const actions = {
     const organization_name = formData.get('organization_name') as string;
     const group_id = formData.get('group_id') as string;
     const group_name = formData.get('group_name') as string;
-    const user_id = formData.get('user_id') as string;
+    const invited_user_id = formData.get('invited_user_id') as string;
+    const invited_profile_handle = formData.get('invited_profile_handle') as string;
     const role = (formData.get('role') ?? 'mem') as RoleAccess;
-    const created_by = formData.get('created_by') as string;
-    const handle = formData.get('handle') as string;
+    const user_id = formData.get('user_id') as string;
     const profile_handle = formData.get('profile_handle') as string;
-    if (!organization_id || !group_id || !user_id || !role || !created_by || !handle) {
+    if (!organization_id || !group_id || !invited_user_id || !role || !user_id || !profile_handle) {
       error(401, 'unauthorized');
     }
     const invitationRef = adminInvitationRef(organization_id).doc();
     const batch = adminDB.batch();
     const invitationProps: InvitationProps = {
-      user_id: created_by,
+      user_id,
       profile_handle,
-      invited_profile_handle: handle,
-      invited_user_id: user_id,
+      invited_profile_handle,
+      invited_user_id,
       organization_id,
       group_id,
       role,
@@ -45,7 +45,7 @@ export const actions = {
       ...invitationProps
     });
     batch.set(
-      adminInboxRef().doc(user_id),
+      adminInboxRef().doc(invited_user_id),
       {
         ...updatedTimestamps(),
         unread: FieldValue.increment(1)
@@ -59,14 +59,16 @@ export const actions = {
       organization_id,
       organization_name,
       group_id,
-      group_name
+      group_name,
+      invited_by_id: user_id,
+      invited_by_handle: profile_handle
     };
     const notificationProps: NotificationProps = {
       type: 'invitation',
       seen: 0,
       data: inviteData
     };
-    batch.create(adminNotificationRef(user_id).doc(), {
+    batch.create(adminNotificationRef(invited_user_id).doc(), {
       ...createdTimestamps(),
       ...notificationProps
     });
