@@ -21,6 +21,7 @@
     <tr>
       <th>Name</th>
       <th class="w-full">Description</th>
+      <th>Members</th>
       <th>Access</th>
       <th />
     </tr>

@@ -16,12 +16,12 @@ import type { Voucher } from '$lib/models/vouchers';
 import { makeDocument } from '$lib/models/utils';
 
 export const load = (async ({ locals }) => {
-  const uid = locals.user_id;
-  if (!uid) {
+  const user_id = locals.user_id;
+  if (!user_id) {
     redirect(301, '/login');
   }
   const snapshot = await adminVoucherRef()
-    .where('uid', '==', uid)
+    .where('user_id', '==', user_id)
     .where('type', '==', '/d/organizations/new')
     .where('redeemed', '==', false)
     .get();
@@ -33,8 +33,8 @@ export const load = (async ({ locals }) => {
 
 export const actions = {
   default: async ({ request, locals }) => {
-    const uid = locals.user_id;
-    if (!uid) {
+    const user_id = locals.user_id;
+    if (!user_id) {
       redirect(301, '/login');
     }
     const formData = await request.formData();
@@ -42,8 +42,11 @@ export const actions = {
     const name = formData.get('name') as string;
     const slug = formData.get('slug') as string;
 
-    const profile = await adminProfileRef().doc(uid).get();
+    const profile = await adminProfileRef().doc(user_id).get();
     const orgRef = adminOrganizationRef().doc();
+
+    const profile_handle = profile.data()!.handle;
+
     const batch = adminDB.batch();
     // Update the vouchers document so it can't be used again
     batch.update(adminDB.doc(`vouchers/${voucher_id}`), {
@@ -56,12 +59,14 @@ export const actions = {
     batch.set(orgRef, {
       ...createdTimestamps(),
       name,
-      slug
+      slug,
+      user_id,
+      profile_handle
     });
     // Create the membership document for this user with member access to this organization
-    batch.set(adminMembershipRef(orgRef.id).doc(uid), {
+    batch.set(adminMembershipRef(orgRef.id).doc(user_id), {
       ...createdTimestamps(),
-      uid,
+      user_id,
       organization_id: orgRef.id,
       roles: {
         [orgRef.id]: 'mem'
@@ -72,20 +77,21 @@ export const actions = {
     batch.set(adminGroupRef(orgRef.id).doc(orgRef.id), {
       ...createdTimestamps(),
       name: 'Organization',
-      description: name,
+      description: `Main group from ${name}`,
       library_id: null,
       organization_id: orgRef.id,
-      created_by: uid
+      user_id,
+      profile_handle
     });
     // Create the member document within the new group to record this user as member for all to see
-    batch.set(adminMemberRef(orgRef.id, orgRef.id).doc(uid), {
+    batch.set(adminMemberRef(orgRef.id, orgRef.id).doc(user_id), {
       ...createdTimestamps(),
-      uid,
+      user_id,
       group_id: orgRef.id,
       organization_id: orgRef.id,
       role: 'mem',
       name: profile.data()!.name,
-      handle: profile.data()!.handle
+      handle: profile_handle
     });
     await batch.commit();
 

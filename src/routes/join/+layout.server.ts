@@ -5,13 +5,13 @@ import type { LayoutServerLoad } from './$types';
 
 export const load = (async ({ locals }) => {
   let profile: Profile | null = null;
-  const uid = locals.user_id;
-  if (!uid) {
+  const user_id = locals.user_id;
+  if (!user_id) {
     return {
       profile
     };
   }
-  const profileDoc = await adminProfileRef().doc(uid).get();
+  const profileDoc = await adminProfileRef().doc(user_id).get();
   if (!profileDoc.exists) {
     return {
       profile

@@ -81,8 +81,8 @@
         {#if isAnonymous}
           anonymous
         {:else}
-          <a href={`/d/profiles/${comment.user_handle}`} class="link text-success">
-            @{comment.user_handle}
+          <a href={`/d/profiles/${comment.profile_handle}`} class="link text-success">
+            @{comment.profile_handle}
           </a>
         {/if}
         said

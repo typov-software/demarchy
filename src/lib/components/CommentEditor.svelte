@@ -75,7 +75,7 @@
       organization_id: organizationId,
       group_id: groupId,
       user_id: anon ? null : userId,
-      user_handle: anon ? 'anonymous' : userHandle,
+      profile_handle: anon ? 'anonymous' : userHandle,
       context_id: contextId,
       context,
       parent,
@@ -150,8 +150,8 @@
           {#if !parentComment.user_id}
             anonymous
           {:else}
-            <a href={`/d/profiles/${parentComment.user_handle}`} class="link text-info">
-              @{parentComment.user_handle}
+            <a href={`/d/profiles/${parentComment.profile_handle}`} class="link text-info">
+              @{parentComment.profile_handle}
             </a>
           {/if}
         </small>

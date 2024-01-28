@@ -32,8 +32,8 @@
 {#if $doc}
   <div class="w-full p-0" in:fade={{ duration: 200 }}>
     <div class="flex items-center text-xs px-4 py-2 mb-2 bg-base-300 gap-2">
-      Created by <a href={`/d/profiles/${$doc.user_handle}`} class="link link-success"
-        >@{$doc.user_handle}</a
+      Created by <a href={`/d/profiles/${$doc.profile_handle}`} class="link link-success"
+        >@{$doc.profile_handle}</a
       >
       on {format($doc.created_at, 'MMMM d, yyyy')}
     </div>

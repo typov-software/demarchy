@@ -18,7 +18,7 @@
   import { db, docStore, user } from '$lib/firebase';
   import MarkdownTextarea from '$lib/components/MarkdownTextarea.svelte';
   import { formatRelative } from 'date-fns';
-  import type { Reaction } from '$lib/models/reactions';
+  import type { Reaction, ReactionTally } from '$lib/models/reactions';
   import DocSelector from '$lib/components/DocSelector.svelte';
   import type { DocSummary } from '$lib/models/libraries';
   import AmendmentItem from './AmendmentItem.svelte';
@@ -26,14 +26,25 @@
   import { blurActive } from '$lib/utils/dom';
   import { makeDocument } from '$lib/models/utils';
   import uniq from 'lodash/uniq';
+  import BallotCard from '$lib/components/BallotCard.svelte';
+  import type { Ballot } from '$lib/models/ballots';
+  import SeenCounter from '$lib/components/SeenCounter.svelte';
 
   export let profile: Profile;
   export let organization: Organization;
   export let group: Group;
   export let proposal: Proposal;
+  export let ballot: null | Ballot;
 
-  let reaction: null | Reaction;
-  $: reaction = null;
+  let reactionPath = `${proposal.path}/reactions/${$user!.uid}`;
+  let reactionRef = doc(db, reactionPath);
+  let tallyRef = doc(db, `${proposal.path}/tallies/reactions`);
+
+  let reactionDoc = docStore<Reaction>(reactionRef.path);
+  $: reaction = $reactionDoc;
+
+  let tallyDoc = docStore<ReactionTally>(tallyRef.path);
+  $: tally = $tallyDoc;
 
   let title = proposal.title;
   $: title;
@@ -82,10 +93,6 @@
     saving = false;
   }
 
-  function handleClickSeen() {
-    //
-  }
-
   function handleShowDestroyDocModal() {
     destroyDocModal?.showModal();
     mountDestroyDocSelector = true;
@@ -113,7 +120,7 @@
     const docProps: Omit<DocProps, 'created_at' | 'updated_at'> = {
       contributor_ids: [profile.id],
       user_id: profile.id,
-      user_handle: profile.handle,
+      profile_handle: profile.handle,
       group_id: group.id,
       name: `Unnamed ${docRef.id}`,
       blocks: [
@@ -199,7 +206,7 @@
     const docProps: Omit<DocProps, 'created_at' | 'updated_at'> = {
       contributor_ids: uniq([...(sourceDoc.data()?.contributor_ids?.slice() ?? []), profile.id]),
       user_id: profile.id,
-      user_handle: profile.handle,
+      profile_handle: profile.handle,
       group_id: group.id,
       name: sourceData.name,
       blocks: sourceData.blocks.slice()
@@ -256,8 +263,8 @@
   >
     <h3 class="flex-1">
       Created by
-      <a class="link link-success" href={`/d/profiles/${proposal.user_handle}`}
-        >@{proposal.user_handle}</a
+      <a class="link link-success" href={`/d/profiles/${proposal.profile_handle}`}
+        >@{proposal.profile_handle}</a
       >
       {formatRelative(proposal.created_at, new Date())}
     </h3>
@@ -382,10 +389,10 @@
         </form>
       </div>
     {/if}
-    {#if isOpen}
+    {#if isOpen && tally}
       <div class="flex">
         <div class="flex-1" />
-        <button
+        <!-- <button
           class="flex flex-row items-center btn btn-xs"
           class:btn-filled={!reaction}
           class:btn-neutral={!reaction}
@@ -401,14 +408,21 @@
             </span>
           {/if}
           0
-        </button>
+        </button> -->
+        <SeenCounter
+          context="proposals"
+          contextId={proposal.id}
+          {reaction}
+          {reactionPath}
+          {tally}
+        />
       </div>
     {/if}
   </div>
 </div>
 
 {#if nAmendments}
-  <h2 class="divider divider-info w-full text-sm m-0">
+  <h2 class="divider divider-neutral w-full text-sm m-0">
     {nAmendments}
     {pluralize('Amendment', nAmendments)}
   </h2>
@@ -426,12 +440,18 @@
 {/if}
 
 {#if isOpen}
-  <h2 class="divider divider-success w-full text-sm m-0">Consensus</h2>
-  <div class="flex flex-wrap items-center w-full gap-2">
-    <!-- <button class="btn">Add clarifying question or concern</button>
-    <button class="btn">Block proposal</button> -->
+  <h2 class="divider divider-info w-full text-sm m-0">Consensus</h2>
+  <!-- <div class="flex flex-wrap items-center w-full gap-2">
+    <button class="btn">Add clarifying question or concern</button>
+    <button class="btn">Block proposal</button>
     <button class="btn" on:click={() => adoptModal.showModal()}>Adopt proposal</button>
-  </div>
+  </div> -->
+
+  {#if ballot && $user}
+    <div class="w-full max-w-3xl">
+      <BallotCard {ballot} contextPath={proposal.path} voterId={$user.uid} />
+    </div>
+  {/if}
 {/if}
 
 <dialog id="drop-proposal" class="modal" bind:this={dropModal}>

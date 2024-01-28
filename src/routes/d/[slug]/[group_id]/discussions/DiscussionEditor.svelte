@@ -40,8 +40,8 @@
     >
       <h3 class="flex-1">
         Created by
-        <a class="link link-success" href={`/d/profiles/${discussion.user_handle}`}
-          >@{discussion.user_handle}</a
+        <a class="link link-success" href={`/d/profiles/${discussion.profile_handle}`}
+          >@{discussion.profile_handle}</a
         >
         {formatRelative(discussion.created_at, new Date())}
       </h3>

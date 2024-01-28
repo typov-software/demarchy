@@ -112,7 +112,8 @@
         </ul>
       </li>
       {#if parts.at(5)}
-        <li>
+        <!-- breadcrumbs class may have precedence here -->
+        <li class="!hidden sm:!flex">
           <a class="btn btn-sm btn-ghost text-neutral" href={`${parts.slice(0, 6).join('/')}`}>
             {titleCase(parts[5])}
           </a>

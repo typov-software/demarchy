@@ -28,4 +28,10 @@
       </div>
     </div>
   </div>
+
+  <div class="flex flex-col w-full gap-2">
+    <h2 class="text-2xl">{data.group.name}</h2>
+    <small>Created {data.group.created_at.toLocaleDateString()} by </small>
+    <p>{data.group.description}</p>
+  </div>
 </BasicSection>

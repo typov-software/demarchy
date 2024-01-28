@@ -23,6 +23,9 @@
     {group.description}
   </td>
   <td>
+    {group.member_count ?? '-'}
+  </td>
+  <td>
     {getRoleName(role)}
   </td>
   <td>

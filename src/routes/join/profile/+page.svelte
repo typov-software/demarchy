@@ -12,10 +12,10 @@
   $: profileName = data.profile?.name ?? '';
   $: name = profileName ?? '';
   $: disabled = !data.profile || (!emptyString(profileName) && profileName === name);
-  $: uid = $user?.uid;
+  $: user_id = $user?.uid;
 
   async function confirmName() {
-    await setDoc(doc(db, 'profiles', uid!), { name }, { merge: true });
+    await setDoc(doc(db, 'profiles', user_id!), { name }, { merge: true });
     await invalidateAll();
   }
 </script>
@@ -42,8 +42,8 @@
         alt="photo_url"
         class="mx-auto w-full mb-4"
       />
-      {#if uid}
-        <ProfilePhotoEditor {uid} />
+      {#if user_id}
+        <ProfilePhotoEditor profileId={user_id} />
       {/if}
     </div>
   </div>

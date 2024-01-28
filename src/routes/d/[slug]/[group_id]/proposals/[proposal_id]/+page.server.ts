@@ -11,6 +11,10 @@ import { makeDocument } from '$lib/models/utils';
 import { error } from '@sveltejs/kit';
 import { isGroupMemberOrHigher, verifyDocument } from '$lib/server/access';
 import type { Library, LibraryProps } from '$lib/models/libraries';
+import type { Ballot, BallotProps, BallotTallyProps } from '$lib/models/ballots';
+import { type Vote, type VoteAction, type VoteProps } from '$lib/models/votes';
+import { FieldValue } from 'firebase-admin/firestore';
+import { createEmptyReactions, createEmptyReinforcements } from '$lib/models/reactions';
 
 export const load = (async ({ params, parent }) => {
   const data = await parent();
@@ -18,8 +22,16 @@ export const load = (async ({ params, parent }) => {
   const proposalRef = adminGroupProposalRef(data.organization.id, data.group!.id).doc(proposalId);
   const proposalDoc = await proposalRef.get();
   const proposal = makeDocument<Proposal>(proposalDoc);
+  let ballot: null | Ballot = null;
+  if (proposal.state === 'open') {
+    const ballotDoc = await proposalRef.collection('ballots').doc('consensus').get();
+    if (ballotDoc.exists) {
+      ballot = makeDocument<Ballot>(ballotDoc);
+    }
+  }
   return {
-    proposal
+    proposal,
+    ballot
   };
 }) satisfies PageServerLoad;
 
@@ -35,27 +47,54 @@ async function updateProposalState(
     ...updatedTimestamps(),
     state
   });
-  await batch.commit();
+  return batch;
 }
 
 export const actions = {
-  openProposal: async ({ request, locals }) => {
+  openProposal: async ({ request, params, locals }) => {
     const formData = await request.formData();
     const userId = locals.user_id!;
     const proposalPath = formData.get('path') as string;
-    await updateProposalState(proposalPath, userId, 'open');
+    const ballotProps: BallotProps = {
+      context: 'proposals',
+      context_id: params.proposal_id,
+      description: ''
+    };
+    const ballotTallyProps: BallotTallyProps = {
+      accept: 0,
+      reject: 0,
+      abstain: 0,
+      block: 0
+    };
+    const batch = await updateProposalState(proposalPath, userId, 'open');
+    batch.set(adminDB.doc(`${proposalPath}/ballots/consensus`), {
+      ...ballotProps,
+      ...createdTimestamps()
+    });
+    batch.set(adminDB.doc(`${proposalPath}/tallies/reactions`), {
+      ...createEmptyReactions(),
+      ...createEmptyReinforcements(),
+      ...createdTimestamps()
+    });
+    batch.set(adminDB.doc(`${proposalPath}/tallies/consensus`), {
+      ...ballotTallyProps,
+      ...createdTimestamps()
+    });
+    await batch.commit();
   },
   dropProposal: async ({ request, locals }) => {
     const formData = await request.formData();
     const userId = locals.user_id!;
     const proposalPath = formData.get('path') as string;
-    await updateProposalState(proposalPath, userId, 'dropped');
+    const batch = await updateProposalState(proposalPath, userId, 'dropped');
+    await batch.commit();
   },
   revertToDraft: async ({ request, locals }) => {
     const formData = await request.formData();
     const userId = locals.user_id!;
     const proposalPath = formData.get('path') as string;
-    await updateProposalState(proposalPath, userId, 'draft');
+    const batch = await updateProposalState(proposalPath, userId, 'draft');
+    await batch.commit();
   },
   DEV_adoptProposal: async ({ request, locals, params }) => {
     const formData = await request.formData();
@@ -179,6 +218,53 @@ export const actions = {
       state: 'adopted'
     });
 
+    await batch.commit();
+  },
+
+  vote: async ({ request, locals }) => {
+    const formData = await request.formData();
+    const userId = locals.user_id!;
+    const ballotPath = formData.get('path') as string;
+    const contextPath = formData.get('context_path') as string;
+    const action = formData.get('action') as VoteAction;
+
+    const ballotDoc = await verifyDocument(ballotPath);
+    const ballot = makeDocument<Ballot>(ballotDoc);
+    const voteRef = adminDB.doc(`${ballotPath}/votes/${userId}`);
+    const tallyRef = adminDB.doc(`${contextPath}/tallies/consensus`);
+
+    const batch = adminDB.batch();
+    const voteProps: VoteProps = {
+      context: ballot.context,
+      context_id: ballot.context_id,
+      user_id: userId,
+      action
+    };
+    const voteDoc = await voteRef.get();
+    if (voteDoc.exists) {
+      const prevVote = makeDocument<Vote>(voteDoc);
+      if (prevVote.action !== action) {
+        batch.update(voteRef, {
+          ...voteProps,
+          ...updatedTimestamps()
+        });
+        batch.update(tallyRef, {
+          [prevVote.action]: FieldValue.increment(-1),
+          [action]: FieldValue.increment(1),
+          ...updatedTimestamps()
+        });
+      }
+    } else {
+      // Using "create" here will throw an error is the vote already exists, preventing double voting
+      batch.create(voteRef, {
+        ...voteProps,
+        ...createdTimestamps()
+      });
+      batch.update(tallyRef, {
+        [action]: FieldValue.increment(1),
+        ...updatedTimestamps()
+      });
+    }
     await batch.commit();
   }
 } satisfies Actions;

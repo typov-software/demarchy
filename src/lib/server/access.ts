@@ -8,8 +8,11 @@ export interface MembershipInfo {
   roles: MembershipProps['roles'];
 }
 
-export async function getMembershipInfo(oid: string, uid: string): Promise<MembershipInfo> {
-  const doc = await adminMembershipRef(oid).doc(uid).get();
+export async function getMembershipInfo(
+  organization_id: string,
+  user_id: string
+): Promise<MembershipInfo> {
+  const doc = await adminMembershipRef(organization_id).doc(user_id).get();
   return {
     standing: doc.data()?.standing ?? 'pause',
     roles: doc.data()?.roles ?? {}
@@ -18,91 +21,100 @@ export async function getMembershipInfo(oid: string, uid: string): Promise<Membe
 
 /**
  * Checks the access level for a given user and group id
- * @param gid Group ID
+ * @param group_id Group ID
  * @param levels Array of access levels needed for resource
  * @param info Membership access information derived from Membership document
  * @returns Whether the user has proper access
  */
-export function verifyRoles(gid: string, levels: RoleAccess[], info: MembershipInfo) {
-  return info.standing === 'ok' && levels.includes(info.roles[gid]);
+export function verifyRoles(group_id: string, levels: RoleAccess[], info: MembershipInfo) {
+  return info.standing === 'ok' && levels.includes(info.roles[group_id]);
 }
 
 /**
  * Checks if a user can read and organization
- * @param oid Organization ID
- * @param uid User ID
+ * @param organization_id Organization ID
+ * @param user_id User ID
  * @param info Membership access information derived from Membership document
  * @returns Whether the user can read an org
  */
-export async function canReadOrg(oid: string, uid: string, info?: MembershipInfo) {
-  info = info ? info : await getMembershipInfo(oid, uid);
-  return verifyRoles(oid, ['obs', 'mem', 'mod', 'adm'], info);
+export async function canReadOrg(organization_id: string, user_id: string, info?: MembershipInfo) {
+  info = info ? info : await getMembershipInfo(organization_id, user_id);
+  return verifyRoles(organization_id, ['obs', 'mem', 'mod', 'adm'], info);
 }
 
 /**
  * Checks whether a user has access to an organization
- * @param oid Organization ID
- * @param uid User ID
+ * @param organization_id Organization ID
+ * @param user_id User ID
  * @param info Membership access information derived from Membership document
  * @returns Whether the user is a member or higher of an org
  */
-export async function isOrgMemberOrHigher(oid: string, uid: string, info?: MembershipInfo) {
-  info = info ? info : await getMembershipInfo(oid, uid);
-  return verifyRoles(oid, ['mem', 'mod', 'adm'], info);
+export async function isOrgMemberOrHigher(
+  organization_id: string,
+  user_id: string,
+  info?: MembershipInfo
+) {
+  info = info ? info : await getMembershipInfo(organization_id, user_id);
+  return verifyRoles(organization_id, ['mem', 'mod', 'adm'], info);
 }
 
 /**
  * Checks whether a user has access to a group
- * @param oid Organization ID
- * @param gid Group ID
- * @param uid User ID
+ * @param organization_id Organization ID
+ * @param group_id Group ID
+ * @param user_id User ID
  * @param info Membership access information derived from Membership document
  * @returns Whether the user is a observer or higher of a group
  */
 export async function isGroupObserverOrHigher(
-  oid: string,
-  gid: string,
-  uid: string,
+  organization_id: string,
+  group_id: string,
+  user_id: string,
   info?: MembershipInfo
 ) {
-  info = info ? info : await getMembershipInfo(oid, uid);
-  const org = verifyRoles(oid, ['obs', 'mem', 'mod', 'adm'], info);
-  const group = verifyRoles(gid, ['obs', 'mem', 'mod', 'adm'], info);
+  info = info ? info : await getMembershipInfo(organization_id, user_id);
+  const org = verifyRoles(organization_id, ['obs', 'mem', 'mod', 'adm'], info);
+  const group = verifyRoles(group_id, ['obs', 'mem', 'mod', 'adm'], info);
   return org && group;
 }
 
 /**
  * Checks whether a user is a member or higher of a group.
- * @param oid Organization ID
- * @param gid Group ID
- * @param uid User ID
+ * @param organization_id Organization ID
+ * @param group_id Group ID
+ * @param user_id User ID
  * @param info Membership access information derived from Membership document
  * @returns Whether the user is a member or higher of a group
  */
 export async function isGroupMemberOrHigher(
-  oid: string,
-  gid: string,
-  uid: string,
+  organization_id: string,
+  group_id: string,
+  user_id: string,
   info?: MembershipInfo
 ) {
-  info = info ? info : await getMembershipInfo(oid, uid);
-  const org = verifyRoles(oid, ['mem', 'mod', 'adm'], info);
-  const group = verifyRoles(gid, ['mem', 'mod', 'adm'], info);
+  info = info ? info : await getMembershipInfo(organization_id, user_id);
+  const org = verifyRoles(organization_id, ['mem', 'mod', 'adm'], info);
+  const group = verifyRoles(group_id, ['mem', 'mod', 'adm'], info);
   return org && group;
 }
 
 /**
  * Checks whether a user is an admin of a group
- * @param oid Organization ID
- * @param gid Group ID
- * @param uid User ID
+ * @param organization_id Organization ID
+ * @param group_id Group ID
+ * @param user_id User ID
  * @param info Membership access information derived from Membership document
  * @returns Whether the user is an admin of a group
  */
-export async function isGroupAdmin(oid: string, gid: string, uid: string, info?: MembershipInfo) {
-  info = info ? info : await getMembershipInfo(oid, uid);
-  const org = verifyRoles(oid, ['mem', 'mod', 'adm'], info);
-  const group = verifyRoles(gid, ['adm'], info);
+export async function isGroupAdmin(
+  organization_id: string,
+  group_id: string,
+  user_id: string,
+  info?: MembershipInfo
+) {
+  info = info ? info : await getMembershipInfo(organization_id, user_id);
+  const org = verifyRoles(organization_id, ['mem', 'mod', 'adm'], info);
+  const group = verifyRoles(group_id, ['adm'], info);
   return org && group;
 }
 

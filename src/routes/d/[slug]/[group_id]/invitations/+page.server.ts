@@ -28,9 +28,9 @@ export const actions = {
     }
     const invitation: InvitationProps = {
       created_at: new Date(),
-      created_by,
-      handle,
-      user_id,
+      user_id: created_by,
+      invited_profile_handle: handle,
+      invited_user_id: user_id,
       organization_id,
       group_id,
       role,
