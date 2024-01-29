@@ -457,7 +457,12 @@
 
   {#if ballot && $user}
     <div class="w-full max-w-3xl">
-      <BallotCard {ballot} contextPath={proposal.path} voterId={$user.uid} />
+      <BallotCard
+        {ballot}
+        contextPath={proposal.path}
+        voterId={$user.uid}
+        ownsContext={ownsProposal === true}
+      />
     </div>
   {/if}
 {/if}
@@ -527,7 +532,7 @@
       <button class="btn btn-secondary" on:click={() => adoptModal.close()}>No</button>
       <form
         method="post"
-        action="?/DEV_adoptProposal"
+        action="?/adoptProposal"
         use:enhance={workingCallback({
           onStart() {
             adoptModal?.close();
@@ -537,6 +542,7 @@
       >
         <input type="hidden" name="path" value={proposal.path} />
         <input type="hidden" name="organization_id" value={organization.id} />
+        <input type="hidden" name="ballot_id" value={ballot?.id} />
         <button class="btn btn-primary">I'm sure, immediately adopt this</button>
       </form>
     </div>

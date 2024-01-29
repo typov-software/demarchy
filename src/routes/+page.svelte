@@ -10,8 +10,8 @@
       </h1>
       <p class="py-6">A democratic document editor for organizations and communities.</p>
       <div class="flex flex-row gap-4 justify-center">
-        <a href="/join" class="btn btn-primary">Join now</a>
-        <a href="/login" class="btn btn-secondary">Login</a>
+        <a href="/join" class="btn btn-secondary">Join now</a>
+        <a href="/login" class="btn btn-primary">Login</a>
       </div>
     </div>
   </div>

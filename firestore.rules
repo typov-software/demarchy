@@ -136,6 +136,10 @@ service cloud.firestore {
         allow create: if isOrgMemberOrHigher();
         allow update: if isGroupMemberOrHigher(groupId); 
 
+        match /settings/{settingsId} {
+          allow read: if canReadOrg();
+        }
+
         match /members/{memberId} {
           allow read: if canReadOrg();
           // admin only

@@ -2,9 +2,12 @@ import type { DocumentMeta } from './utils';
 import type { VoteContext } from './votes';
 
 export interface BallotProps {
+  organization_id: string;
+  group_id: string;
   context: VoteContext;
   context_id: string;
   description: null | string;
+  state: 'open' | 'closed';
 }
 
 export type Ballot = BallotProps & DocumentMeta;
