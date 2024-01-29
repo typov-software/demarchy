@@ -39,6 +39,7 @@
     position: relative;
     z-index: -1;
     transform: translate(0, 0);
+    transition: all;
 
     &.animate {
       .back {
@@ -50,11 +51,11 @@
       }
       .fore {
         mix-blend-mode: lighten;
-        animation-name: load;
+        animation-name: load-fore;
         animation-duration: 500ms;
         animation-timing-function: ease-in-out;
         animation-iteration-count: infinite;
-        animation-direction: alternate-reverse;
+        animation-direction: alternate;
       }
     }
   }
@@ -62,10 +63,19 @@
   @keyframes load {
     0% {
       transform: translate(0, 0);
+      opacity: 0.6;
     }
     100% {
-      transform: translate(3px, 3px);
-      opacity: 0.7;
+      transform: translate(0px, 3px);
+    }
+  }
+  @keyframes load-fore {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(-6px, 0px);
+      opacity: 0.6;
     }
   }
 </style>
