@@ -163,6 +163,10 @@ service cloud.firestore {
             allow update: if ownsResource(resource.data.user_id);
           }
 
+          match /reactions/{reactionId} {
+            allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+          }
+
           match /tallies/{tallyId} {
             allow read, create, update: if isGroupMemberOrHigher(groupId);
           }

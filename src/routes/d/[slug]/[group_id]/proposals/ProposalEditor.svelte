@@ -278,7 +278,6 @@
       {formatRelative(proposal.created_at, new Date())}
     </h3>
 
-    <div class="flex-1" />
     <span
       class="text-xs rounded-full py-1 px-2"
       class:bg-info={state === 'draft'}

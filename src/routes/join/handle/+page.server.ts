@@ -1,6 +1,13 @@
 import type { Actions } from '@sveltejs/kit';
-import { adminDB, adminHandleRef, adminProfileRef } from '$lib/server/admin';
+import {
+  adminDB,
+  adminHandleRef,
+  adminInboxRef,
+  adminProfileRef,
+  createdTimestamps
+} from '$lib/server/admin';
 import { MEMBERS } from '$lib/models/firestore';
+import type { InboxProps } from '$lib/models/inboxes';
 
 export const actions = {
   updateHandle: async ({ request, locals }) => {
@@ -15,9 +22,24 @@ export const actions = {
 
     const batch = adminDB.batch();
     batch.create(adminHandleRef().doc(handle), { user_id });
-    previousHandles.docs.forEach((doc) => batch.delete(doc.ref));
+
+    if (previousHandles.docs.length) {
+      previousHandles.docs.forEach((doc) => batch.delete(doc.ref));
+    } else {
+      // Brand new user, create their inbox
+      const inboxRef = adminInboxRef().doc(user_id);
+      const inboxProps: InboxProps = {
+        unread: 0
+      };
+      batch.set(inboxRef, {
+        ...createdTimestamps(),
+        ...inboxProps
+      });
+    }
     batch.set(adminProfileRef().doc(user_id), { handle }, { merge: true });
+
     memberDocs.docs.forEach((doc) => batch.update(doc.ref, { handle }));
+
     await batch.commit();
   }
 } satisfies Actions;
