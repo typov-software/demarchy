@@ -2,11 +2,15 @@
   import { enhance } from '$app/forms';
   import { docStore } from '$lib/firebase';
   import { type Ballot, type BallotTally } from '$lib/models/ballots';
+  import type { Group } from '$lib/models/groups';
+  import type { ProposalSettings } from '$lib/models/settings';
   import type { Vote } from '$lib/models/votes';
   import { workingCallback } from '$lib/stores/working';
   import VoteButton from './VoteButton.svelte';
 
   export let ballot: Ballot;
+  export let proposalSettings: ProposalSettings;
+  export let group: Group;
   export let contextPath: string;
   export let voterId: string;
   export let ownsContext: boolean;
@@ -15,6 +19,14 @@
 
   let tally = docStore<BallotTally>(`${contextPath}/tallies/consensus`);
   let vote = docStore<Vote>(`${ballot.path}/votes/${voterId}`);
+
+  $: acceptedRatio = $tally?.accept ? ($tally.accept / group.member_count) * 100 : 0;
+  $: rejectedRatio = $tally?.reject ? ($tally.reject / group.member_count) * 100 : 0;
+  $: abstainedRatio = $tally?.abstain ? ($tally.abstain / group.member_count) * 100 : 0;
+  $: blockedRatio = $tally?.block ? ($tally.block / group.member_count) * 100 : 0;
+
+  $: canAdopt =
+    ($tally?.accept ?? 0) / group.member_count >= proposalSettings.acceptance_threshold_ratio;
 </script>
 
 <div class="card bg-base-200 w-full">
@@ -25,7 +37,6 @@
       </div>
     {/if}
     <p>{ballot.description}</p>
-
     <div class="card-actions flex-col sm:flex-row-reverse items-stretch sm:justify-center">
       <VoteButton
         action="accept"
@@ -56,11 +67,38 @@
         tally={$tally}
       />
     </div>
-    {#if ownsContext}
+    {#if $vote}
+      <div class="w-full h-3 flex bg-base-300 rounded-full overflow-hidden mt-5">
+        <div
+          class="w-full h-full bg-warning transition-all"
+          style:max-width={`${blockedRatio}%`}
+          title={`Blocked by ${blockedRatio}%`}
+        />
+        <div
+          class="w-full h-full bg-neutral transition-all"
+          style:max-width={`${abstainedRatio}%`}
+          title={`Abstained by ${abstainedRatio}%`}
+        />
+        <div
+          class="w-full h-full bg-secondary transition-all"
+          style:max-width={`${rejectedRatio}%`}
+          title={`Rejected by ${rejectedRatio}%`}
+        />
+        <div
+          class="w-full h-full bg-primary transition-all"
+          style:max-width={`${acceptedRatio}%`}
+          title={`Accepted by ${acceptedRatio}%`}
+        />
+      </div>
+    {/if}
+    {#if ownsContext && canAdopt}
       {#if ballot.context === 'proposals'}
-        <button class="btn btn-lg btn-success" on:click={() => adoptModal.showModal()}
-          >Commit accepted changes</button
-        >
+        <div class="flex justify-center mt-5">
+          <button
+            class="btn btn-lg rounded-full btn-success"
+            on:click={() => adoptModal.showModal()}>Adopt amendments</button
+          >
+        </div>
       {/if}
     {/if}
   </div>

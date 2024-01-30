@@ -30,12 +30,15 @@
   import type { Ballot } from '$lib/models/ballots';
   import SeenCounter from '$lib/components/SeenCounter.svelte';
   import ProfileLink from '$lib/components/ProfileLink.svelte';
+  import type { ProposalSettings } from '$lib/models/settings';
+  import ReactionSelector from '$lib/components/ReactionSelector.svelte';
 
   export let profile: Profile;
   export let organization: Organization;
   export let group: Group;
   export let proposal: Proposal;
   export let ballot: null | Ballot;
+  export let proposalSettings: ProposalSettings;
 
   let reactionPath = `${proposal.path}/reactions/${$user!.uid}`;
   let reactionRef = doc(db, reactionPath);
@@ -67,7 +70,6 @@
     $liveProposal && (title !== $liveProposal.title || description !== $liveProposal.description);
 
   let dropModal: HTMLDialogElement;
-  let revertModal: HTMLDialogElement;
   let adoptModal: HTMLDialogElement;
   let amendmentsMenu: HTMLDivElement;
 
@@ -284,6 +286,7 @@
       class:bg-success={state === 'open'}
       class:bg-warning={state === 'dropped'}
       class:bg-error={state === 'archived'}
+      class:bg-accent={state === 'adopted'}
     >
       {state}
     </span>
@@ -292,21 +295,15 @@
         <span class="material-symbols-outlined">draft</span>
       </button>
     {/if}
+    {#if isOpen && tally}
+      <SeenCounter context="proposals" contextId={proposal.id} {reaction} {reactionPath} {tally} />
+    {/if}
     {#if ownsProposal && isOpen && !editable}
       <div class="dropdown dropdown-bottom dropdown-end">
         <button class="btn btn-square btn-sm"
           ><span class="material-symbols-outlined">more_vert</span></button
         >
         <ul class="dropdown-content w-60 menu z-[1] shadow bg-base-100 rounded-box">
-          <li>
-            <button
-              class="flex items-center gap-2 text-warning w-full flex-1"
-              on:click={() => revertModal?.showModal()}
-            >
-              <span class="material-symbols-outlined">undo</span>
-              Revert to draft</button
-            >
-          </li>
           <li>
             <button
               class="flex items-center gap-2 text-error w-full flex-1"
@@ -390,6 +387,8 @@
 
         <form method="post" action="?/openProposal" use:enhance={workingCallback()}>
           <input type="hidden" name="path" value={proposal.path} />
+          <input type="hidden" name="organization_id" value={organization.id} />
+          <input type="hidden" name="group_id" value={group.id} />
           <button class="btn btn-success btn-sm h-9">
             <span class="material-symbols-outlined">present_to_all</span>
             Open Proposal</button
@@ -397,34 +396,8 @@
         </form>
       </div>
     {/if}
-    {#if isOpen && tally}
-      <div class="flex">
-        <div class="flex-1" />
-        <!-- <button
-          class="flex flex-row items-center btn btn-xs"
-          class:btn-filled={!reaction}
-          class:btn-neutral={!reaction}
-          class:btn-primary={reaction}
-          class:pointer-events-none={reaction}
-          on:click={handleClickSeen}
-        >
-          {#if saving}
-            <div class="loading loading-xs loading-spinner" />
-          {:else}
-            <span class="material-symbols-outlined text-base">
-              {reaction ? 'visibility' : 'visibility_off'}
-            </span>
-          {/if}
-          0
-        </button> -->
-        <SeenCounter
-          context="proposals"
-          contextId={proposal.id}
-          {reaction}
-          {reactionPath}
-          {tally}
-        />
-      </div>
+    {#if isOpen && tally && reaction}
+      <ReactionSelector {reaction} {tally} />
     {/if}
   </div>
 </div>
@@ -449,16 +422,13 @@
 
 {#if isOpen}
   <h2 class="divider divider-info w-full text-sm m-0">Consensus</h2>
-  <!-- <div class="flex flex-wrap items-center w-full gap-2">
-    <button class="btn">Add clarifying question or concern</button>
-    <button class="btn">Block proposal</button>
-    <button class="btn" on:click={() => adoptModal.showModal()}>Adopt proposal</button>
-  </div> -->
 
   {#if ballot && $user}
     <div class="w-full max-w-3xl">
       <BallotCard
         {ballot}
+        {proposalSettings}
+        {group}
         contextPath={proposal.path}
         voterId={$user.uid}
         ownsContext={ownsProposal === true}
@@ -486,33 +456,6 @@
       >
         <input type="hidden" name="path" value={proposal.path} />
         <button class="btn btn-error btn-outline">I'm sure, drop it</button>
-      </form>
-    </div>
-  </div>
-  <form method="dialog" class="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog>
-
-<dialog id="revert-to-draft" class="modal" bind:this={revertModal}>
-  <div class="modal-box">
-    <h3 class="font-bold text-lg">Warning</h3>
-    <p class="py-4">Are you sure you want to revert this proposal to a draft?</p>
-
-    <div class="flex justify-end gap-2">
-      <button class="btn btn-info" on:click={() => revertModal.close()}>No, keep it open</button>
-      <form
-        method="post"
-        action="?/revertToDraft"
-        use:enhance={workingCallback({
-          onStart() {
-            revertModal?.close();
-          },
-          reset: true
-        })}
-      >
-        <input type="hidden" name="path" value={proposal.path} />
-        <button class="btn btn-warning btn-outline">I'm sure, revert to draft</button>
       </form>
     </div>
   </div>
