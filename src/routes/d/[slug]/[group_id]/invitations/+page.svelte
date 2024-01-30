@@ -17,7 +17,7 @@
 
   export let data: PageData;
 
-  $: uid = $user?.uid;
+  $: userId = $user?.uid;
   $: invitations = [] as Invitation[];
 
   let unsubscribe: undefined | (() => void);
@@ -82,7 +82,7 @@
         const ref = doc(db, 'handles', handle);
         const handleDoc = await getDoc(ref);
         isHandle = handleDoc.exists();
-        handleUserId = isHandle ? handleDoc.data()!.uid : null;
+        handleUserId = isHandle ? handleDoc.data()!.user_id : null;
         if (isHandle && handleUserId) {
           const profileDoc = await getDoc(doc(db, 'profiles', handleUserId));
           handleProfile = makeDocument<Profile>(profileDoc);
@@ -130,7 +130,7 @@
     <tbody>
       {#each invitations as invitation (invitation.id)}
         <tr>
-          <td>@{invitation.handle}</td>
+          <td>@{invitation.invited_profile_handle}</td>
           <td>{getRoleName(invitation.role)}</td>
           <td>{invitation.rejected ? 'Rejected' : 'Pending'}</td>
           <td>
@@ -158,7 +158,7 @@
                         value={invitation.organization_id}
                       />
                       <input type="hidden" name="invitation_id" value={invitation.id} />
-                      <button type="submit" disabled={invitation.created_by !== uid}>
+                      <button type="submit" disabled={invitation.user_id !== userId}>
                         {invitation.rejected ? 'Remove' : 'Uninvite'}
                       </button>
                     </form>
@@ -194,15 +194,16 @@
         <input type="hidden" name="organization_name" value={data.organization?.name} />
         <input type="hidden" name="group_id" value={data.group?.id} />
         <input type="hidden" name="group_name" value={data.group?.name} />
-        <input type="hidden" name="user_id" bind:value={handleUserId} />
+        <input type="hidden" name="invited_user_id" bind:value={handleUserId} />
         <input type="hidden" name="role" value="mem" />
-        <input type="hidden" name="created_by" value={$user?.uid} />
+        <input type="hidden" name="user_id" value={$user?.uid} />
+        <input type="hidden" name="profile_handle" value={data.profile.handle} />
 
         <div class="flex gap-4">
           <input
             type="text"
             id="handle"
-            name="handle"
+            name="invited_profile_handle"
             autocomplete="off"
             placeholder="User handle"
             class="input input-bordered w-full"

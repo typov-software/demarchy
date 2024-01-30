@@ -11,8 +11,10 @@ export interface GroupProps {
   // latest published library id
   library_id: string | null;
   organization_id: string;
-  created_at: Date;
-  created_by: string;
+  user_id: string;
+  profile_handle: string;
+
+  member_count: number;
 }
 
 export type Group = GroupProps & DocumentMeta;

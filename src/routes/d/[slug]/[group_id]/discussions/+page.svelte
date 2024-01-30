@@ -24,7 +24,7 @@
       group_id: data.group.id,
 
       user_id: data.profile.id,
-      user_handle: data.profile.handle,
+      profile_handle: data.profile.handle,
 
       blocks: [{ uid: crypto.randomUUID(), content: 'New discussion', type: 'text' }],
       state: 'draft'

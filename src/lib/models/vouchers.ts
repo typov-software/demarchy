@@ -6,7 +6,7 @@ export interface VoucherProps {
   /**
    * The user id of the person who owns this voucher.
    */
-  uid: string;
+  user_id: string;
   type: VoucherType;
   redeemed: boolean;
 }

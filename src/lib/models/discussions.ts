@@ -6,7 +6,7 @@ export interface DiscussionProps {
   group_id: string;
 
   user_id: string;
-  user_handle: string;
+  profile_handle: string;
 
   blocks: Block[];
   state: 'draft' | 'open' | 'dropped' | 'archived';

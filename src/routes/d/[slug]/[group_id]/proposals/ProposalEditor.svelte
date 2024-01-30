@@ -3,7 +3,7 @@
   import type { Group } from '$lib/models/groups';
   import type { Organization } from '$lib/models/organizations';
   import type { Profile } from '$lib/models/profiles';
-  import type { Amendment, Proposal } from '$lib/models/proposals';
+  import type { Amendment, Proposal, ProposalProps } from '$lib/models/proposals';
   import { working, workingCallback } from '$lib/stores/working';
   import { pluralize } from '$lib/utils/string';
   import {
@@ -18,7 +18,7 @@
   import { db, docStore, user } from '$lib/firebase';
   import MarkdownTextarea from '$lib/components/MarkdownTextarea.svelte';
   import { formatRelative } from 'date-fns';
-  import type { Reaction } from '$lib/models/reactions';
+  import type { Reaction, ReactionTally } from '$lib/models/reactions';
   import DocSelector from '$lib/components/DocSelector.svelte';
   import type { DocSummary } from '$lib/models/libraries';
   import AmendmentItem from './AmendmentItem.svelte';
@@ -26,14 +26,29 @@
   import { blurActive } from '$lib/utils/dom';
   import { makeDocument } from '$lib/models/utils';
   import uniq from 'lodash/uniq';
+  import BallotCard from '$lib/components/BallotCard.svelte';
+  import type { Ballot } from '$lib/models/ballots';
+  import SeenCounter from '$lib/components/SeenCounter.svelte';
+  import ProfileLink from '$lib/components/ProfileLink.svelte';
+  import type { ProposalSettings } from '$lib/models/settings';
+  import ReactionSelector from '$lib/components/ReactionSelector.svelte';
 
   export let profile: Profile;
   export let organization: Organization;
   export let group: Group;
   export let proposal: Proposal;
+  export let ballot: null | Ballot;
+  export let proposalSettings: ProposalSettings;
 
-  let reaction: null | Reaction;
-  $: reaction = null;
+  let reactionPath = `${proposal.path}/reactions/${$user!.uid}`;
+  let reactionRef = doc(db, reactionPath);
+  let tallyRef = doc(db, `${proposal.path}/tallies/reactions`);
+
+  let reactionDoc = docStore<Reaction>(reactionRef.path);
+  $: reaction = $reactionDoc;
+
+  let tallyDoc = docStore<ReactionTally>(tallyRef.path);
+  $: tally = $tallyDoc;
 
   let title = proposal.title;
   $: title;
@@ -55,7 +70,6 @@
     $liveProposal && (title !== $liveProposal.title || description !== $liveProposal.description);
 
   let dropModal: HTMLDialogElement;
-  let revertModal: HTMLDialogElement;
   let adoptModal: HTMLDialogElement;
   let amendmentsMenu: HTMLDivElement;
 
@@ -80,10 +94,6 @@
     });
     working.remove(job);
     saving = false;
-  }
-
-  function handleClickSeen() {
-    //
   }
 
   function handleShowDestroyDocModal() {
@@ -113,7 +123,7 @@
     const docProps: Omit<DocProps, 'created_at' | 'updated_at'> = {
       contributor_ids: [profile.id],
       user_id: profile.id,
-      user_handle: profile.handle,
+      profile_handle: profile.handle,
       group_id: group.id,
       name: `Unnamed ${docRef.id}`,
       blocks: [
@@ -132,6 +142,9 @@
       },
       type: 'create'
     };
+    const proposalProps: Partial<ProposalProps> = {
+      amendments: { [docRef.id]: amendment }
+    };
     const batch = writeBatch(db);
     batch.set(docRef, {
       ...docProps,
@@ -141,7 +154,7 @@
     batch.set(
       ref,
       {
-        amendments: { [docRef.id]: amendment },
+        ...proposalProps,
         updated_at: serverTimestamp()
       },
       { merge: true }
@@ -164,12 +177,16 @@
       doc: e.detail,
       type: 'destroy'
     };
+    const proposalProps: Partial<ProposalProps> = {
+      amendments: { [e.detail.id]: amendment }
+    };
     const ref = doc(db, proposal.path);
     try {
       await setDoc(
         ref,
         {
-          amendments: { [e.detail.id]: amendment }
+          ...proposalProps,
+          updated_at: serverTimestamp()
         },
         { merge: true }
       );
@@ -199,7 +216,7 @@
     const docProps: Omit<DocProps, 'created_at' | 'updated_at'> = {
       contributor_ids: uniq([...(sourceDoc.data()?.contributor_ids?.slice() ?? []), profile.id]),
       user_id: profile.id,
-      user_handle: profile.handle,
+      profile_handle: profile.handle,
       group_id: group.id,
       name: sourceData.name,
       blocks: sourceData.blocks.slice()
@@ -215,6 +232,9 @@
         doc: e.detail
       }
     };
+    const proposalProps: Partial<ProposalProps> = {
+      amendments: { [docRef.id]: amendment }
+    };
 
     const batch = writeBatch(db);
     batch.set(docRef, {
@@ -226,7 +246,7 @@
     batch.set(
       ref,
       {
-        amendments: { [docRef.id]: amendment },
+        ...proposalProps,
         updated_at: serverTimestamp()
       },
       { merge: true }
@@ -256,19 +276,17 @@
   >
     <h3 class="flex-1">
       Created by
-      <a class="link link-success" href={`/d/profiles/${proposal.user_handle}`}
-        >@{proposal.user_handle}</a
-      >
+      <ProfileLink handle={proposal.profile_handle} />
       {formatRelative(proposal.created_at, new Date())}
     </h3>
 
-    <div class="flex-1" />
     <span
       class="text-xs rounded-full py-1 px-2"
       class:bg-info={state === 'draft'}
       class:bg-success={state === 'open'}
       class:bg-warning={state === 'dropped'}
       class:bg-error={state === 'archived'}
+      class:bg-accent={state === 'adopted'}
     >
       {state}
     </span>
@@ -277,21 +295,15 @@
         <span class="material-symbols-outlined">draft</span>
       </button>
     {/if}
+    {#if isOpen && tally}
+      <SeenCounter context="proposals" contextId={proposal.id} {reaction} {reactionPath} {tally} />
+    {/if}
     {#if ownsProposal && isOpen && !editable}
       <div class="dropdown dropdown-bottom dropdown-end">
         <button class="btn btn-square btn-sm"
           ><span class="material-symbols-outlined">more_vert</span></button
         >
         <ul class="dropdown-content w-60 menu z-[1] shadow bg-base-100 rounded-box">
-          <li>
-            <button
-              class="flex items-center gap-2 text-warning w-full flex-1"
-              on:click={() => revertModal?.showModal()}
-            >
-              <span class="material-symbols-outlined">undo</span>
-              Revert to draft</button
-            >
-          </li>
           <li>
             <button
               class="flex items-center gap-2 text-error w-full flex-1"
@@ -375,6 +387,8 @@
 
         <form method="post" action="?/openProposal" use:enhance={workingCallback()}>
           <input type="hidden" name="path" value={proposal.path} />
+          <input type="hidden" name="organization_id" value={organization.id} />
+          <input type="hidden" name="group_id" value={group.id} />
           <button class="btn btn-success btn-sm h-9">
             <span class="material-symbols-outlined">present_to_all</span>
             Open Proposal</button
@@ -382,33 +396,14 @@
         </form>
       </div>
     {/if}
-    {#if isOpen}
-      <div class="flex">
-        <div class="flex-1" />
-        <button
-          class="flex flex-row items-center btn btn-xs"
-          class:btn-filled={!reaction}
-          class:btn-neutral={!reaction}
-          class:btn-primary={reaction}
-          class:pointer-events-none={reaction}
-          on:click={handleClickSeen}
-        >
-          {#if saving}
-            <div class="loading loading-xs loading-spinner" />
-          {:else}
-            <span class="material-symbols-outlined text-base">
-              {reaction ? 'visibility' : 'visibility_off'}
-            </span>
-          {/if}
-          0
-        </button>
-      </div>
+    {#if isOpen && tally && reaction}
+      <ReactionSelector {reaction} {tally} />
     {/if}
   </div>
 </div>
 
 {#if nAmendments}
-  <h2 class="divider divider-info w-full text-sm m-0">
+  <h2 class="divider divider-neutral w-full text-sm m-0">
     {nAmendments}
     {pluralize('Amendment', nAmendments)}
   </h2>
@@ -426,12 +421,20 @@
 {/if}
 
 {#if isOpen}
-  <h2 class="divider divider-success w-full text-sm m-0">Consensus</h2>
-  <div class="flex flex-wrap items-center w-full gap-2">
-    <!-- <button class="btn">Add clarifying question or concern</button>
-    <button class="btn">Block proposal</button> -->
-    <button class="btn" on:click={() => adoptModal.showModal()}>Adopt proposal</button>
-  </div>
+  <h2 class="divider divider-info w-full text-sm m-0">Consensus</h2>
+
+  {#if ballot && $user}
+    <div class="w-full max-w-3xl">
+      <BallotCard
+        {ballot}
+        {proposalSettings}
+        {group}
+        contextPath={proposal.path}
+        voterId={$user.uid}
+        ownsContext={ownsProposal === true}
+      />
+    </div>
+  {/if}
 {/if}
 
 <dialog id="drop-proposal" class="modal" bind:this={dropModal}>
@@ -461,33 +464,6 @@
   </form>
 </dialog>
 
-<dialog id="revert-to-draft" class="modal" bind:this={revertModal}>
-  <div class="modal-box">
-    <h3 class="font-bold text-lg">Warning</h3>
-    <p class="py-4">Are you sure you want to revert this proposal to a draft?</p>
-
-    <div class="flex justify-end gap-2">
-      <button class="btn btn-info" on:click={() => revertModal.close()}>No, keep it open</button>
-      <form
-        method="post"
-        action="?/revertToDraft"
-        use:enhance={workingCallback({
-          onStart() {
-            revertModal?.close();
-          },
-          reset: true
-        })}
-      >
-        <input type="hidden" name="path" value={proposal.path} />
-        <button class="btn btn-warning btn-outline">I'm sure, revert to draft</button>
-      </form>
-    </div>
-  </div>
-  <form method="dialog" class="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog>
-
 <dialog id="adopt-proposal" class="modal" bind:this={adoptModal}>
   <div class="modal-box">
     <h3 class="font-bold text-lg">Warning</h3>
@@ -499,7 +475,7 @@
       <button class="btn btn-secondary" on:click={() => adoptModal.close()}>No</button>
       <form
         method="post"
-        action="?/DEV_adoptProposal"
+        action="?/adoptProposal"
         use:enhance={workingCallback({
           onStart() {
             adoptModal?.close();
@@ -509,6 +485,7 @@
       >
         <input type="hidden" name="path" value={proposal.path} />
         <input type="hidden" name="organization_id" value={organization.id} />
+        <input type="hidden" name="ballot_id" value={ballot?.id} />
         <button class="btn btn-primary">I'm sure, immediately adopt this</button>
       </form>
     </div>

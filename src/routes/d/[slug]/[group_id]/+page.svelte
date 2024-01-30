@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import ProfileLink from '$lib/components/ProfileLink.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -27,5 +28,14 @@
         </ul>
       </div>
     </div>
+  </div>
+
+  <div class="flex flex-col w-full gap-2">
+    <h2 class="text-2xl">{data.group.name}</h2>
+    <small>
+      Created {data.group.created_at.toLocaleDateString()} by
+      <ProfileLink handle={data.group.profile_handle} />
+    </small>
+    <p>{data.group.description}</p>
   </div>
 </BasicSection>

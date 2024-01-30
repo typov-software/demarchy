@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { doc as fdoc, updateDoc } from 'firebase/firestore';
+  import { doc as fdoc, serverTimestamp, updateDoc } from 'firebase/firestore';
   import BlocksEditor from '$lib/components/BlocksEditor.svelte';
   import { db, docStore, user } from '$lib/firebase';
   import type { Block } from '$lib/models/blocks';
@@ -7,6 +7,8 @@
   import { formatRelative } from 'date-fns';
   import { workingCallback } from '$lib/stores/working';
   import { enhance } from '$app/forms';
+  import ProfileLink from '$lib/components/ProfileLink.svelte';
+  import type { DocProps } from '$lib/models/docs';
 
   export let discussion: Discussion;
   let doc = docStore<Discussion>(discussion.path);
@@ -27,7 +29,11 @@
     if (!nextBlocks.length) {
       nextBlocks = [{ uid: crypto.randomUUID(), content: '', type: 'text' }];
     }
-    await updateDoc(fdoc(db, discussion.path), { blocks: nextBlocks });
+    const docProps: Partial<DocProps> = { blocks: nextBlocks };
+    await updateDoc(fdoc(db, discussion.path), {
+      ...docProps,
+      updated_at: serverTimestamp()
+    });
   }
 </script>
 
@@ -40,9 +46,7 @@
     >
       <h3 class="flex-1">
         Created by
-        <a class="link link-success" href={`/d/profiles/${discussion.user_handle}`}
-          >@{discussion.user_handle}</a
-        >
+        <ProfileLink handle={discussion.profile_handle} />
         {formatRelative(discussion.created_at, new Date())}
       </h3>
       <span

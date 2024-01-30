@@ -6,8 +6,8 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function ownsResource(uid) {
-      return request.auth.uid == uid;
+    function ownsResource(userId) {
+      return request.auth.uid == userId;
     }
 
     // Each `configId` is a named identifier like 'plans' or 'features' and should be readable by any client
@@ -16,7 +16,7 @@ service cloud.firestore {
     }
 
     function isValidHandle(handle) {
-      let isOwner = ownsResource(request.resource.data.uid);
+      let isOwner = ownsResource(request.resource.data.user_id);
       let isValidLength = handle.size() >= 3 && handle.size() <= 32;
       let isValidDoc = getAfter(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.handle == handle;
       return isOwner && isValidLength && isValidDoc;
@@ -43,18 +43,15 @@ service cloud.firestore {
     }
 
     match /inboxes/{inboxId} {
-      allow read: if ownsResource(inboxId);
+      allow read, update: if ownsResource(inboxId);
 
-      match /notification/{notificationId} {
-        allow read: if ownsResource(inboxId);
-        allow update: if ownsResource(inboxId);
-        allow delete: if ownsResource(inboxId);
+      match /notifications/{notificationId} {
+        allow read, update, delete: if ownsResource(inboxId);
       }
     }
 
     match /vouchers/{voucherId} {
-      allow read: if ownsResource(resource.data.uid);
-      allow update: if ownsResource(resource.data.uid);
+      allow read, update: if ownsResource(resource.data.user_id);
     }
 
     // Each `settingsId` corresponds to a user's `uid`
@@ -136,6 +133,10 @@ service cloud.firestore {
         allow create: if isOrgMemberOrHigher();
         allow update: if isGroupMemberOrHigher(groupId); 
 
+        match /settings/{settingsId} {
+          allow read: if canReadOrg();
+        }
+
         match /members/{memberId} {
           allow read: if canReadOrg();
           // admin only
@@ -163,8 +164,35 @@ service cloud.firestore {
             allow update: if ownsResource(resource.data.user_id);
           }
 
+          match /reactions/{reactionId} {
+            allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+          }
+
           match /tallies/{tallyId} {
             allow read, create, update: if isGroupMemberOrHigher(groupId);
+          }
+
+          match /ballots/{ballotId} {
+            allow read: if canReadOrg();
+
+            match /votes/{voterId} {
+              allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(voterId);
+            }
+          }
+
+          match /comments/{commentId} {
+            allow read: if isGroupObsOrHigher(groupId);
+            allow create: if isGroupMemberOrHigher(groupId);
+            // we let members update comment reaction counts directly
+            allow update: if isGroupMemberOrHigher(groupId);
+
+            match /tallies/{tallyId} {
+              allow read, create, update: if isGroupMemberOrHigher(groupId);
+            }
+
+            match /reactions/{reactionId} {
+              allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+            }
           }
         }
 

@@ -1,5 +1,11 @@
 import { initializeApp } from 'firebase/app';
-import { doc, getFirestore, initializeFirestore, onSnapshot } from 'firebase/firestore';
+import {
+  FirestoreError,
+  doc,
+  getFirestore,
+  initializeFirestore,
+  onSnapshot
+} from 'firebase/firestore';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import { derived, writable, type Readable } from 'svelte/store';
@@ -85,17 +91,26 @@ export function docStore<T extends DocumentMeta>(path: string) {
   const docRef = doc(db, path);
 
   const { subscribe, set, update } = writable<T | null>(null, (set) => {
-    unsubscribe = onSnapshot(docRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = makeDocument<T>(snapshot);
-        if (import.meta.env.DEV) {
-          console.debug(`[${path}]`, { data });
+    unsubscribe = onSnapshot(
+      docRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = makeDocument<T>(snapshot);
+          // if (import.meta.env.DEV) {
+          //   console.debug(`[${path}]`, { data });
+          // }
+          set(data);
+        } else {
+          set(null);
         }
-        set(data);
-      } else {
-        set(null);
+      },
+      function onError(error: FirestoreError) {
+        if (import.meta.env.DEV) {
+          console.warn('docStore error:', path);
+        }
+        console.error(error);
       }
-    });
+    );
 
     return () => {
       unsubscribe();

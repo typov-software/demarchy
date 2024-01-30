@@ -40,7 +40,7 @@
 </script>
 
 <svelte:head>
-  <title>Demarchy</title>
+  <title>DEMARCHY</title>
 </svelte:head>
 
 <slot />

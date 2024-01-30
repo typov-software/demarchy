@@ -15,7 +15,9 @@
     "test:integration": "playwright test",
     "test:unit": "vitest",
     "test:ci:unit": "vitest run",
-    "test:ci": "npm run test:integration && npm run test:ci:unit"
+    "test:ci": "npm run test:integration && npm run test:ci:unit",
+    "firestore:indexes": "firebase firestore:indexes > firestore.indexes.json",
+    "emulators:export": "firebase emulators:export ./emulator-data"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.1",

@@ -16,7 +16,7 @@
     alt="photo_url"
     class="mx-auto mt-4 rounded-full w-2/3"
   />
-  <ProfilePhotoEditor uid={data.profile.id} />
+  <ProfilePhotoEditor profileId={data.profile.id} />
 
   <form
     method="POST"

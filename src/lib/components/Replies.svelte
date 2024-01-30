@@ -161,12 +161,12 @@
   });
 </script>
 
-<div style:min-width={threadedColumns ? '28rem' : 'inherit'} class:w-full={!threadedColumns}>
-  <div
-    bind:this={containerEl}
-    class="flex flex-col items-center gap-4 w-full"
-    class:max-w-xl={threadedColumns >= 2}
-  >
+<div
+  class:w-full={!threadedColumns}
+  class:min-w-[85vw]={threadedColumns}
+  class:sm:min-w-[45vw]={threadedColumns}
+>
+  <div bind:this={containerEl} class="flex flex-col items-center gap-4 w-full">
     {#if showForm && userHandle}
       <div class="w-full">
         <CommentEditor
@@ -244,3 +244,17 @@
     {/if}
   </div>
 </div>
+
+<style lang="scss">
+  // .narrow-screen {
+  //   min-width: 85vw;
+  // }
+
+  // .wide-screen {
+  //   min-width: 40vw;
+  // }
+
+  // .full-screen {
+  //   min-width: inherit;
+  // }
+</style>

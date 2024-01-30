@@ -14,14 +14,14 @@ import { makeDocument } from '$lib/models/utils';
  * @cached
  */
 export const GET: RequestHandler = async ({ locals, setHeaders }) => {
-  const uid = locals.user_id;
-  if (!uid) {
+  const user_id = locals.user_id;
+  if (!user_id) {
     error(401, 'unauthorized');
   }
 
-  const profileDoc = await adminProfileRef().doc(uid).get();
+  const profileDoc = await adminProfileRef().doc(user_id).get();
   const profile: Profile = makeDocument(profileDoc);
-  const snapshot = await adminDB.collectionGroup(MEMBERSHIPS).where('uid', '==', uid).get();
+  const snapshot = await adminDB.collectionGroup(MEMBERSHIPS).where('user_id', '==', user_id).get();
   const memberships: Membership[] = snapshot.docs.map((doc) => makeDocument(doc));
   const organizationIds = memberships.map((membership) => membership.organization_id);
 

@@ -10,7 +10,7 @@ export interface MembershipProps {
   /**
    * user id represented in this membership, useful for collection group queries
    */
-  uid: string;
+  user_id: string;
 
   organization_id: string;
 

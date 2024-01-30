@@ -27,7 +27,7 @@
         >
           <input type="hidden" name="organization_id" value={data.organization.id} />
           <input type="hidden" name="group_id" value={data.group.id} />
-          <input type="hidden" name="user_handle" value={data.profile.handle} />
+          <input type="hidden" name="profile_handle" value={data.profile.handle} />
         </form>
         <ul class="menu w-60">
           <li>

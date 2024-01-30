@@ -4,6 +4,7 @@ import { adminDB, adminGroupDiscussionRef, updatedTimestamps } from '$lib/server
 import { type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { verifyDocument } from '$lib/server/access';
+import type { ProposalProps } from '$lib/models/proposals';
 
 export const load = (async ({ params, parent }) => {
   const data = await parent();
@@ -26,9 +27,10 @@ async function updateDiscussionState(
   const discussionDoc = await verifyDocument(discussionPath, userId);
   const batch = adminDB.batch();
   // update proposal state
+  const proposalProps: Partial<ProposalProps> = { state };
   batch.update(discussionDoc.ref, {
     ...updatedTimestamps(),
-    state
+    ...proposalProps
   });
   await batch.commit();
 }

@@ -15,8 +15,8 @@
   <h2 class="text-xl">New group</h2>
   <form method="post" class="max-w-md w-full">
     <input type="hidden" name="organization_id" value={data.organization.id} />
-    <input type="hidden" name="profileName" value={data.profile.name} />
-    <input type="hidden" name="profileHandle" value={data.profile.handle} />
+    <input type="hidden" name="profile_name" value={data.profile.name} />
+    <input type="hidden" name="profile_handle" value={data.profile.handle} />
     <div class="flex flex-col gap-4">
       <input
         type="text"

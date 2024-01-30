@@ -1,4 +1,4 @@
-# ![DEMARCHY](./static/DEMARCHY.png)
+# ![DEMARCHY](./static/demarchy.png)
 
 > WARNING: Demarchy is in active development and highly unstable. Use at your own risk.
 

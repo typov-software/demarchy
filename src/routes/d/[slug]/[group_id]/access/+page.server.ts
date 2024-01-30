@@ -1,8 +1,8 @@
 import type { Actions, PageServerLoad } from './$types';
-import { adminDB, adminMemberRef, adminMembershipRef } from '$lib/server/admin';
+import { adminDB, adminGroupRef, adminMemberRef, adminMembershipRef } from '$lib/server/admin';
 import type { Member } from '$lib/models/members';
 import { error, redirect } from '@sveltejs/kit';
-import type { OrderByDirection } from 'firebase-admin/firestore';
+import { FieldValue, type OrderByDirection } from 'firebase-admin/firestore';
 import { makeDocument } from '$lib/models/utils';
 
 export const load = (async ({ params, url, parent }) => {
@@ -25,7 +25,7 @@ export const actions = {
    * Form action to leave a group or organization (all org groups)
    */
   leaveGroup: async ({ request, locals, params }) => {
-    const uid = locals.user_id!;
+    const user_id = locals.user_id!;
     const formData = await request.formData();
     const context = formData.get('context') as 'organization' | 'group';
     const organizationId = formData.get('organization_id') as string;
@@ -34,15 +34,15 @@ export const actions = {
     // We need to make sure that this user isn't the only member left of the group
     const membersRef = adminMemberRef(organizationId, groupId);
     const membersSnapshot = await membersRef.limit(2).get();
-    if (membersSnapshot.docs.length === 1 && membersSnapshot.docs.at(0)?.id === uid) {
+    if (membersSnapshot.docs.length === 1 && membersSnapshot.docs.at(0)?.id === user_id) {
       error(403, 'forbidden');
     }
 
     const batch = adminDB.batch();
 
     if (context === 'group') {
-      const memberRef = adminMemberRef(organizationId, groupId).doc(uid);
-      const membershipRef = adminMembershipRef(organizationId).doc(uid);
+      const memberRef = adminMemberRef(organizationId, groupId).doc(user_id);
+      const membershipRef = adminMembershipRef(organizationId).doc(user_id);
       const membershipDoc = await membershipRef.get();
       // Remove this groups role from the user's membership document
       const roles = membershipDoc.data()?.roles ?? {};
@@ -51,19 +51,22 @@ export const actions = {
       batch.update(membershipRef, { roles });
       batch.delete(memberRef);
     } else if (context === 'organization') {
-      const membershipRef = adminMembershipRef(organizationId).doc(uid);
+      const membershipRef = adminMembershipRef(organizationId).doc(user_id);
       const membershipDoc = await membershipRef.get();
       const roles = membershipDoc.data()?.roles ?? {};
       const ids = Object.keys(roles);
 
       // Remove all groups this user had access to for this org
       for (const id of ids) {
-        const memberRef = adminMemberRef(organizationId, id).doc(uid);
+        const memberRef = adminMemberRef(organizationId, id).doc(user_id);
         batch.delete(memberRef);
       }
       // Remove full membership document as is no longer needed
       batch.delete(membershipRef);
     }
+
+    const groupRef = adminGroupRef(organizationId).doc(groupId);
+    batch.update(groupRef, { member_count: FieldValue.increment(-1) });
 
     await batch.commit();
 

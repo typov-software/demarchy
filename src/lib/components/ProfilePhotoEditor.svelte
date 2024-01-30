@@ -7,7 +7,7 @@
   import Cropper from 'svelte-easy-crop';
   import type { ChangeEventHandler } from 'svelte/elements';
 
-  export let uid: string;
+  export let profileId: string;
 
   let crop: Crop = { x: 0, y: 0 };
   let zoom = 1;
@@ -36,10 +36,10 @@
   const saveImage = async () => {
     uploading = true;
     croppedImage = await getCroppedImg(image!, pixelCrop);
-    const storageRef = ref(storage, `profiles/${uid}/profile.png`);
+    const storageRef = ref(storage, `profiles/${profileId}/profile.png`);
     const result = await uploadBytes(storageRef, croppedImage!);
     const url = await getDownloadURL(result.ref);
-    await setDoc(doc(db, 'profiles', uid), { photo_url: url }, { merge: true });
+    await setDoc(doc(db, 'profiles', profileId), { photo_url: url }, { merge: true });
     uploading = false;
     croppedImage = null;
     image = null;

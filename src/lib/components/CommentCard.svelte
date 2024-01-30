@@ -11,6 +11,7 @@
   import BlocksEditor from './BlocksEditor.svelte';
   import ReactionSelector from './ReactionSelector.svelte';
   import SeenCounter from './SeenCounter.svelte';
+  import ProfileLink from './ProfileLink.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -80,10 +81,8 @@
       <small class="text-left text-neutral flex-1">
         {#if isAnonymous}
           anonymous
-        {:else}
-          <a href={`/d/profiles/${comment.user_handle}`} class="link text-success">
-            @{comment.user_handle}
-          </a>
+        {:else if comment.profile_handle}
+          <ProfileLink handle={comment.profile_handle} />
         {/if}
         said
         {comment.created_at ? formatRelative(comment.created_at, now) : ''}

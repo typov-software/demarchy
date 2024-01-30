@@ -5,8 +5,8 @@ import type { Organization } from '$lib/models/organizations';
 import type { Profile } from '$lib/models/profiles';
 
 export const load = (async ({ locals, fetch }) => {
-  const uid = locals.user_id;
-  if (!uid) {
+  const user_id = locals.user_id;
+  if (!user_id) {
     redirect(301, '/login');
   }
 

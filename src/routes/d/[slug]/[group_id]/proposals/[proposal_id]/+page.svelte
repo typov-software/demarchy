@@ -14,5 +14,7 @@
     group={data.group}
     profile={data.profile}
     proposal={data.proposal}
+    ballot={data.ballot}
+    proposalSettings={data.settings.proposals}
   />
 </BasicSection>

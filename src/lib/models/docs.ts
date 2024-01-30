@@ -4,7 +4,7 @@ import type { DocumentMeta } from './utils';
 export interface DocProps {
   contributor_ids: string[];
   user_id: string;
-  user_handle: string;
+  profile_handle: string;
   group_id: string;
 
   created_at: Date;

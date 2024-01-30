@@ -16,7 +16,7 @@ export interface CommentProps {
   parent: string | null;
   depth: number;
   user_id: string | null; // allow anonymous comments
-  user_handle: string | null; // allow anonymous comments
+  profile_handle: string | null; // allow anonymous comments
   blocks: Block[];
 }
 

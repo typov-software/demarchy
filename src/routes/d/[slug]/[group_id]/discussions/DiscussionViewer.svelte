@@ -11,6 +11,7 @@
   import { fade } from 'svelte/transition';
   import ReactionSelector from '$lib/components/ReactionSelector.svelte';
   import ThreadedReplies from '$lib/components/ThreadedReplies.svelte';
+  import ProfileLink from '$lib/components/ProfileLink.svelte';
 
   export let discussion: Discussion;
 
@@ -48,9 +49,7 @@
     >
       <h3 class="flex-1 w-full">
         Created by
-        <a class="link link-success" href={`/d/profiles/${discussion.user_handle}`}
-          >@{discussion.user_handle}</a
-        >
+        <ProfileLink handle={discussion.profile_handle} />
         {formatRelative(discussion.created_at, new Date())}
       </h3>
       <span

@@ -4,12 +4,12 @@ import { adminAuth } from '$lib/server/admin';
 import { SUPPORTED_PROVIDER_IDS, type AuthProvider } from '$lib/models/profiles';
 
 export const load = (async ({ locals }) => {
-  const uid = locals.user_id;
-  if (!uid) {
+  const user_id = locals.user_id;
+  if (!user_id) {
     redirect(301, '/login');
   }
 
-  const user = await adminAuth.getUser(uid);
+  const user = await adminAuth.getUser(user_id);
   const providerData = user.providerData ?? [];
   const connected = providerData.map((p) => p.providerId);
   const disconnected = SUPPORTED_PROVIDER_IDS.filter(
