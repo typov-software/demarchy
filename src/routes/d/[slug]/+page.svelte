@@ -1,11 +1,13 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import BasicSection from '$lib/components/BasicSection.svelte';
-  import GroupTable from './GroupTable.svelte';
   import type { PageData } from './$types';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import GroupCard from './GroupCard.svelte';
 
   export let data: PageData;
+  $: orgGroup = data.groups.find((group) => group.id === data.organization.id)!;
+  $: orgGroups = data.groups.filter((group) => group.id !== data.organization.id);
 </script>
 
 <BasicSection>
@@ -30,9 +32,11 @@
     </div>
   </div>
 
-  <GroupTable
-    memberships={data.memberships}
-    organization={data.organization}
-    groups={data.groups}
-  />
+  <div class="flex flex-wrap w-full gap-4 max-w-2xl">
+    <GroupCard group={orgGroup} organization={data.organization} memberships={data.memberships} />
+
+    {#each orgGroups as group (group.id)}
+      <GroupCard {group} organization={data.organization} memberships={data.memberships} />
+    {/each}
+  </div>
 </BasicSection>

@@ -55,15 +55,22 @@
 <div class="breadcrumbs p-0 w-full">
   <ul>
     {#if groups}
-      <li class="dropdown dropdown-start dropdown-bottom dropdown-hover">
-        {#if !group}
-          <div role="button" tabindex="0" class="btn btn-sm btn-warning">Select group</div>
-        {:else}
-          <a role="button" tabindex="0" class="btn btn-sm btn-success" href={root}>
-            {group.name}
-          </a>
-        {/if}
+      <li class="dropdown dropdown-start dropdown-bottom">
+        <div
+          role="button"
+          tabindex="0"
+          class="btn btn-sm"
+          class:btn-warning={!group}
+          class:btn-success={group}
+        >
+          {group ? group.name : 'Select group'}
+        </div>
         <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
+          <li>
+            <a href={root} title="All groups" class="text-neutral hover:text-base-content">
+              See all groups
+            </a>
+          </li>
           {#each groups as g (g.id)}
             <li>
               <a href={root + g.slug + (matchedRoute ? `/${matchedRoute}` : '')} title={g.name}>
@@ -76,25 +83,25 @@
     {/if}
 
     {#if group}
-      <li class="dropdown dropdown-start dropdown-bottom dropdown-hover">
+      <li class="dropdown dropdown-start dropdown-bottom">
         {#if matchedRoute}
-          <a
-            role="button"
-            tabindex="0"
-            class="btn btn-sm btn-ghost px-2"
-            href={`${parts.slice(0, 5).join('/')}`}
-          >
+          <div role="button" tabindex="0" class="btn btn-sm btn-ghost">
             <span class="material-symbols-outlined">{config[matchedRoute].symbol}</span>
             {titleCase(matchedRoute)}
-          </a>
-          <!-- <div role="button" tabindex="0" class="btn btn-sm btn-ghost">
-            <span class="material-symbols-outlined">{config[matchedRoute].symbol}</span>
-            {titleCase(matchedRoute)}
-          </div> -->
+          </div>
         {:else}
           <div role="button" tabindex="0" class="btn btn-sm btn-warning">Go to</div>
         {/if}
         <ul class="menu w-48 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
+          <li>
+            <a
+              href={root + group.slug}
+              title="See group"
+              class="text-neutral hover:text-base-content"
+            >
+              See group
+            </a>
+          </li>
           {#each Object.keys(config) as route}
             <li>
               <a
