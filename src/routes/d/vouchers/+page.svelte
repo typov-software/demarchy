@@ -6,7 +6,7 @@
 </script>
 
 <BasicSection otherClass="w-full items-stretch">
-  <h2 class="text-xl">Your vouchers</h2>
+  <h2 class="text-xl">Your Vouchers</h2>
   <ul class="w-full max-w-lg gap-4 flex flex-col self-center">
     {#each data.vouchers as voucher (voucher.id)}
       <li class="card bg-base-200">

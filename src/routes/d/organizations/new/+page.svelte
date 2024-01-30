@@ -5,6 +5,8 @@
   import { checkValidSlug, slugify } from '$lib/utils/string';
   import AuthCheck from '$lib/components/AuthCheck.svelte';
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
+  import { enhance } from '$app/forms';
+  import { workingCallback } from '$lib/stores/working';
 
   export let data: PageData;
 
@@ -46,7 +48,7 @@
     <div class="hero-content flex-col w-full min-h-full">
       <DemarchyLogo />
 
-      <form method="POST" class="flex flex-col gap-4">
+      <form method="POST" class="flex flex-col gap-4" use:enhance={workingCallback()}>
         <div>
           {#if !selectedVoucher}
             <label class="label" for="voucher_id">

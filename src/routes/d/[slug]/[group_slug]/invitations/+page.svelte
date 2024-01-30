@@ -28,8 +28,8 @@
     if (settingUp) return;
     settingUp = true;
     const ref = query(
-      collection(db, ORGANIZATIONS, data.organization!.id, INVITATIONS),
-      where('group_id', '==', $page.params.group_id)
+      collection(db, ORGANIZATIONS, data.organization.id, INVITATIONS),
+      where('group_id', '==', data.group.id)
     );
     unsubscribe = onSnapshot(ref, (snapshot) => {
       invitations = snapshot.docs.map(makeDocument<Invitation>);

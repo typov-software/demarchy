@@ -12,7 +12,7 @@
 <tr class="hover">
   <td>
     {#if allowed}
-      <a href="/d/{slug}/{group.id}" class="link link-hover">
+      <a href="/d/{slug}/{group.slug}" class="link link-hover">
         {group.name}
       </a>
     {:else}

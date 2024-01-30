@@ -3,6 +3,6 @@
 </script>
 
 <BasicSection otherClass="w-full items-stretch">
-  <h2 class="text-xl">Your discussions</h2>
+  <h2 class="text-xl">Your Discussions</h2>
   <p class="text-warning">Coming soon</p>
 </BasicSection>

@@ -4,6 +4,8 @@
   import { doc, getDoc } from 'firebase/firestore';
   import type { PageData } from './$types';
   import { db } from '$lib/firebase';
+  import { enhance } from '$app/forms';
+  import { workingCallback } from '$lib/stores/working';
 
   export let data: PageData;
 
@@ -41,7 +43,7 @@
 
 <BasicSection>
   <h2 class="text-xl">New group</h2>
-  <form method="post" class="max-w-md w-full">
+  <form method="post" class="max-w-md w-full" use:enhance={workingCallback()}>
     <input type="hidden" name="organization_id" value={data.organization.id} />
     <input type="hidden" name="profile_name" value={data.profile.name} />
     <input type="hidden" name="profile_handle" value={data.profile.handle} />

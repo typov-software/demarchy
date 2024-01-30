@@ -16,37 +16,37 @@
   let config: Record<string, any>;
   $: config = {
     access: {
-      path: root + group?.id + '/access',
+      path: root + group?.slug + '/access',
       symbol: 'key'
     },
     activity: {
       disabled: true,
-      path: root + group?.id + '/activity',
+      path: root + group?.slug + '/activity',
       symbol: 'timeline'
     },
     discussions: {
-      path: root + group?.id + '/discussions',
+      path: root + group?.slug + '/discussions',
       symbol: 'forum'
     },
     docs: {
-      path: root + group?.id + '/docs',
+      path: root + group?.slug + '/docs',
       symbol: 'article'
     },
     feedback: {
-      path: root + group?.id + '/feedback',
+      path: root + group?.slug + '/feedback',
       symbol: 'feedback'
     },
     invitations: {
-      path: root + group?.id + '/invitations',
+      path: root + group?.slug + '/invitations',
       symbol: 'person_add'
     },
     proposals: {
-      path: root + group?.id + '/proposals',
+      path: root + group?.slug + '/proposals',
       symbol: 'history_edu'
     },
     settings: {
       disabled: true,
-      path: root + group?.id + '/settings',
+      path: root + group?.slug + '/settings',
       symbol: 'settings'
     }
   };
@@ -66,7 +66,7 @@
         <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
           {#each groups as g (g.id)}
             <li>
-              <a href={root + g.id + (matchedRoute ? `/${matchedRoute}` : '')} title={g.name}>
+              <a href={root + g.slug + (matchedRoute ? `/${matchedRoute}` : '')} title={g.name}>
                 {g.name}
               </a>
             </li>

@@ -5,13 +5,12 @@ import { error, redirect } from '@sveltejs/kit';
 import { FieldValue, type OrderByDirection } from 'firebase-admin/firestore';
 import { makeDocument } from '$lib/models/utils';
 
-export const load = (async ({ params, url, parent }) => {
+export const load = (async ({ url, parent }) => {
   const direction: OrderByDirection = (url.searchParams.get('direction') ??
     'asc') as OrderByDirection;
   const sortField = url.searchParams.get('sortBy') ?? 'name';
-  const groupId = params.group_id;
-  const data = await parent();
-  const snapshot = await adminMemberRef(data.organization!.id, groupId)
+  const { organization, group } = await parent();
+  const snapshot = await adminMemberRef(organization.id, group.id)
     .orderBy(sortField, direction)
     .get();
   const members: Member[] = snapshot.docs.map((doc) => makeDocument(doc));

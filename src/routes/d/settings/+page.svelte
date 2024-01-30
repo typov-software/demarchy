@@ -43,7 +43,7 @@
 </script>
 
 <BasicSection otherClass="w-full items-stretch">
-  <h2 class="text-xl">Your settings</h2>
+  <h2 class="text-xl">Your Settings</h2>
   <div class="flex flex-col w-full max-w-lg self-center">
     <h2 class="font-bold">Connected Providers</h2>
     <p class="text-xs">Manage your linked providers</p>

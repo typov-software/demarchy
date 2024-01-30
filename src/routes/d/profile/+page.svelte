@@ -11,7 +11,7 @@
 </script>
 
 <BasicSection otherClass="w-full items-stretch">
-  <h2 class="text-xl">Your profile</h2>
+  <h2 class="text-xl">Your Profile</h2>
   <div class="w-full max-w-md self-center flex flex-col gap-4">
     <img
       src={data.profile.photo_url ?? '/user.png'}

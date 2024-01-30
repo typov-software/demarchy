@@ -14,7 +14,7 @@ export const actions = {
     const profile_name = formData.get('profile_name') as string;
     const profile_handle = formData.get('profile_handle') as string;
 
-    const { group_id } = await createGroup({
+    await createGroup({
       user_id,
       profile_handle,
       profile_name,
@@ -24,8 +24,6 @@ export const actions = {
       description
     });
 
-    console.log('created', { group_id });
-
-    redirect(301, `/d/${params.slug}/${group_id}`);
+    redirect(301, `/d/${params.slug}/${slug}`);
   }
 } satisfies Actions;

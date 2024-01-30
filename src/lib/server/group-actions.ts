@@ -71,7 +71,7 @@ export async function createOrganization(params: CreateOrganizationParams) {
       organization_id: orgRef.id,
       // Manually set organization group reserved names
       name: 'Organization',
-      slug: 'organization',
+      slug: 'org',
       description: `Main group for ${name}`,
       creatingOrgGroup: true
     },

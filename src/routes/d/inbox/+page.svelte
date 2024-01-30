@@ -15,8 +15,8 @@
 </script>
 
 <BasicSection otherClass="w-full items-stretch">
-  <h2 class="text-xl">Your inbox</h2>
-  <ul class="w-full max-w-xl self-center">
+  <h2 class="text-xl">Your Inbox</h2>
+  <ul class="w-full max-w-xl self-center gap-2 flex flex-col">
     {#each notifications as notification (notification.id)}
       <NotificationCard {notification} on:deleted={handleDeleted} />
     {/each}
