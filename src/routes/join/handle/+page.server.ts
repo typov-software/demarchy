@@ -26,7 +26,10 @@ export const actions = {
     const newUser = previousHandles.docs.length === 0;
 
     const batch = adminDB.batch();
-    batch.create(adminHandleRef().doc(handle), { user_id });
+    batch.create(adminHandleRef().doc(handle), {
+      ...createdTimestamps(),
+      user_id
+    });
 
     if (newUser) {
       // Bootstrap user documents

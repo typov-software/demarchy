@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import BasicSection from '$lib/components/BasicSection.svelte';
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
   import { user } from '$lib/firebase';
 </script>
@@ -9,8 +8,8 @@
   <div class="hero-content flex-col w-full min-h-full">
     <DemarchyLogo />
 
-    <nav class="mt-4">
-      <ul class="steps steps-horizontal">
+    <nav class="flex mt-4 justify-center w-full max-w-md">
+      <ul class="steps steps-horizontal w-full">
         <a href="/join" class="step step-primary">Connect</a>
         <a
           href={$user ? '/join/handle' : '/join'}
@@ -31,14 +30,10 @@
       </ul>
     </nav>
 
-    <BasicSection>
-      <div class="card bg-base-200 w-96">
-        <div class="card-body items-center text-center">
-          <slot />
-        </div>
+    <div class="card bg-base-200 max-w-lg w-full mt-6">
+      <div class="card-body items-center text-center">
+        <slot />
       </div>
-    </BasicSection>
-
-    <div class="flex-1" />
+    </div>
   </div>
 </main>

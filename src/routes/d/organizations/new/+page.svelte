@@ -42,7 +42,7 @@
 </script>
 
 <AuthCheck>
-  <section class="hero min-h-screen h-full">
+  <section class="hero h-full flex-1">
     <div class="hero-content flex-col w-full min-h-full">
       <DemarchyLogo />
 

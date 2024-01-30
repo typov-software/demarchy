@@ -156,7 +156,7 @@
   "fieldOverrides": [
     {
       "collectionGroup": "members",
-      "fieldPath": "uid",
+      "fieldPath": "user_id",
       "ttl": false,
       "indexes": [
         {
@@ -179,7 +179,7 @@
     },
     {
       "collectionGroup": "memberships",
-      "fieldPath": "uid",
+      "fieldPath": "user_id",
       "ttl": false,
       "indexes": [
         {
