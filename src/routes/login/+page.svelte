@@ -36,7 +36,7 @@
   }
 </script>
 
-<BasicSection otherClass="min-h-full h-full">
+<BasicSection otherClass="min-h-screen h-full justify-center">
   <div class="flex flex-col justify-center items-center w-full h-full min-h-full">
     <DemarchyLogo width={300} />
 
