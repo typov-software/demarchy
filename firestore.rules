@@ -43,18 +43,15 @@ service cloud.firestore {
     }
 
     match /inboxes/{inboxId} {
-      allow read: if ownsResource(inboxId);
+      allow read, update: if ownsResource(inboxId);
 
-      match /notification/{notificationId} {
-        allow read: if ownsResource(inboxId);
-        allow update: if ownsResource(inboxId);
-        allow delete: if ownsResource(inboxId);
+      match /notifications/{notificationId} {
+        allow read, update, delete: if ownsResource(inboxId);
       }
     }
 
     match /vouchers/{voucherId} {
-      allow read: if ownsResource(resource.data.user_id);
-      allow update: if ownsResource(resource.data.user_id);
+      allow read, update: if ownsResource(resource.data.user_id);
     }
 
     // Each `settingsId` corresponds to a user's `uid`
