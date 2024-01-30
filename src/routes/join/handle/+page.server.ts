@@ -3,11 +3,15 @@ import {
   adminDB,
   adminHandleRef,
   adminInboxRef,
+  adminNotificationRef,
   adminProfileRef,
-  createdTimestamps
+  createdTimestamps,
+  updatedTimestamps
 } from '$lib/server/admin';
 import { MEMBERS } from '$lib/models/firestore';
 import type { InboxProps } from '$lib/models/inboxes';
+import type { ProfileProps } from '$lib/models/profiles';
+import type { NotificationProps, NotificationWelcomeData } from '$lib/models/notifications';
 
 export const actions = {
   updateHandle: async ({ request, locals }) => {
@@ -19,24 +23,55 @@ export const actions = {
     const memberDocs = await adminDB.collectionGroup(MEMBERS).where('user_id', '==', user_id).get();
     // Get previous handle records for deletion (should only have 1 but this is a precaution)
     const previousHandles = await adminHandleRef().where('user_id', '==', user_id).get();
+    const newUser = previousHandles.docs.length === 0;
 
     const batch = adminDB.batch();
     batch.create(adminHandleRef().doc(handle), { user_id });
 
-    if (previousHandles.docs.length) {
-      previousHandles.docs.forEach((doc) => batch.delete(doc.ref));
-    } else {
-      // Brand new user, create their inbox
+    if (newUser) {
+      // Bootstrap user documents
+      const profileProps: ProfileProps = {
+        handle,
+        name: handle
+      };
+      batch.create(adminProfileRef().doc(user_id), {
+        ...createdTimestamps(),
+        ...profileProps
+      });
       const inboxRef = adminInboxRef().doc(user_id);
       const inboxProps: InboxProps = {
-        unread: 0
+        unread: 1
       };
-      batch.set(inboxRef, {
+      batch.create(inboxRef, {
         ...createdTimestamps(),
         ...inboxProps
       });
+      const welcomeRef = adminNotificationRef(inboxRef.id).doc();
+      const welcomeNotification: NotificationProps<NotificationWelcomeData> = {
+        seen: 0,
+        type: 'welcome',
+        data: {
+          profile_handle: handle
+        }
+      };
+      batch.create(welcomeRef, {
+        ...createdTimestamps(),
+        ...welcomeNotification
+      });
+    } else {
+      const profileProps: Partial<ProfileProps> = {
+        handle
+      };
+      batch.set(
+        adminProfileRef().doc(user_id),
+        {
+          ...updatedTimestamps(),
+          ...profileProps
+        },
+        { merge: true }
+      );
+      previousHandles.docs.forEach((doc) => batch.delete(doc.ref));
     }
-    batch.set(adminProfileRef().doc(user_id), { handle }, { merge: true });
 
     memberDocs.docs.forEach((doc) => batch.update(doc.ref, { handle }));
 
