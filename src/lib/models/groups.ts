@@ -7,6 +7,7 @@ import type { DocumentMeta } from './utils';
  */
 export interface GroupProps {
   name: string;
+  slug: string;
   description: string;
   // latest published library id
   library_id: string | null;

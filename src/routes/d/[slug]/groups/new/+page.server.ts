@@ -9,6 +9,7 @@ export const actions = {
     const formData = await request.formData();
     const organization_id = formData.get('organization_id') as string;
     const name = formData.get('name') as string;
+    const slug = formData.get('slug') as string;
     const description = formData.get('description') as string;
     const profile_name = formData.get('profile_name') as string;
     const profile_handle = formData.get('profile_handle') as string;
@@ -19,6 +20,7 @@ export const actions = {
       profile_name,
       organization_id,
       name,
+      slug,
       description
     });
 

@@ -18,6 +18,7 @@ import { makeDocument } from '$lib/models/utils';
 import type { Profile } from '$lib/models/profiles';
 import type { VoucherProps } from '$lib/models/vouchers';
 import type { OrganizationProps } from '$lib/models/organizations';
+import { SLUGS } from '$lib/models/firestore';
 
 interface CreateOrganizationParams {
   // Who is creating the org?
@@ -46,7 +47,7 @@ export async function createOrganization(params: CreateOrganizationParams) {
     ...voucherProps
   });
 
-  // Create the slug document
+  // Create the slug document for this organization
   batch.set(adminSlugRef().doc(slug), { organization_id: orgRef.id });
 
   // Create the organization document
@@ -68,7 +69,9 @@ export async function createOrganization(params: CreateOrganizationParams) {
       profile_handle,
       profile_name,
       organization_id: orgRef.id,
+      // Manually set organization group reserved names
       name: 'Organization',
+      slug: 'organization',
       description: `Main group for ${name}`,
       creatingOrgGroup: true
     },
@@ -89,6 +92,7 @@ interface CreateGroupParams {
   organization_id: string;
   // What are the group properties?
   name: string;
+  slug: string;
   description: string;
   // Are we creating the main group for an organization?
   creatingOrgGroup?: boolean;
@@ -101,24 +105,33 @@ export async function createGroup(params: CreateGroupParams, batch?: WriteBatch)
     profile_name,
     organization_id,
     name,
+    slug,
     description,
     creatingOrgGroup = false
   } = params;
   if (!batch) {
     batch = adminDB.batch();
   }
+  // Create the group firestore reference based on organization or fresh id
   let groupRef;
   if (creatingOrgGroup) {
     groupRef = adminGroupRef(organization_id).doc(organization_id);
   } else {
     groupRef = adminGroupRef(organization_id).doc();
   }
+
   const membershipRef = adminMembershipRef(organization_id).doc(user_id);
   const memberRef = adminMemberRef(organization_id, groupRef.id).doc(user_id);
   const proposalSettingsRef = groupRef.collection('settings').doc('proposals');
+  console.log({ slug, organization_id });
+  const slugRef = adminOrganizationRef().doc(organization_id).collection(SLUGS).doc(slug);
+
+  // Create the slug document for this group
+  batch.set(slugRef, { organization_id, group_id: groupRef.id });
 
   const groupProps: GroupProps = {
     name,
+    slug,
     description,
     library_id: null,
     organization_id,

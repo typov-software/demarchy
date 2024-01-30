@@ -65,6 +65,7 @@ service cloud.firestore {
       return isValidLength && isValidDoc;
     }
 
+    // slugs collection for organization slugs
     match /slugs/{slug} {
       allow read;
       allow create: if isValidSlug(slug);
@@ -118,6 +119,18 @@ service cloud.firestore {
         return org && (ws || ownsResource(id));
       }
 
+      function isValidGroupSlug(slug) {
+        let isValidLength = slug.size() >= 3 && slug.size() <= 32;
+        let isValidDoc = getAfter(/databases/$(database)/documents/organizations/$(organizationId)/groups/$(request.resource.data.group_id)).data.slug == slug;
+        return isValidLength && isValidDoc;
+      }
+
+      // slugs collection for organization groups
+      match /slugs/{slug} {
+        allow read;
+        allow create: if isValidGroupSlug(slug);
+      }
+
       match /invitations/{invitationId} {
         allow read: if ownsResource(resource.data.user_id) || isGroupMemberOrHigher(resource.data.group_id);
         allow create: if isGroupMemberOrHigher(resource.data.group_id);
@@ -128,9 +141,15 @@ service cloud.firestore {
         allow read: if ownsResource(membershipId) && canReadOrg();
       }
 
+      function isValidGroup() {
+        let slug = request.resource.data.slug;
+        let createdValidSlug = existsAfter(/databases/$(database)/documents/organizations/$(organizationId)/slugs/$(slug));
+        return createdValidSlug;
+      }
+
       match /groups/{groupId} {
         allow read: if canReadOrg();
-        allow create: if isOrgMemberOrHigher();
+        allow create: if isOrgMemberOrHigher() && isValidGroup();
         allow update: if isGroupMemberOrHigher(groupId); 
 
         match /settings/{settingsId} {

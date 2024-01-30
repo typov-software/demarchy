@@ -75,7 +75,6 @@
 
         <input
           disabled={!selectedVoucher}
-          class="input input-bordered w-full"
           type="text"
           name="name"
           id="name"
@@ -83,15 +82,16 @@
           autocomplete="off"
           on:input={checkSlugAvailability}
           bind:value={name}
+          class="input input-bordered w-full"
           class:input-error={!isValidName}
           class:input-success={isValidName}
         />
-        {#if name.length && !isValidName}
+        {#if isTouched && !isValidName}
           <p class="text-error text-sm">must be 3-32 characters long</p>
         {/if}
 
         <div>
-          {#if name.length}
+          {#if isTouched}
             <label for="slug" class="label">
               <span class="label-text">Suggested: {slugify(name)}</span>
             </label>
