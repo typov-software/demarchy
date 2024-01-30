@@ -59,6 +59,7 @@
   class:btn-primary={notification.seen}
   class:pointer-events-none={notification.seen}
   on:click={handleClickSeen}
+  title="Mark as seen"
 >
   {#if looking}
     <div class="loading loading-xs loading-spinner" />
@@ -73,6 +74,7 @@
   <button
     class="flex flex-row items-center btn btn-xs btn-secondary btn-outline"
     on:click={handleClickDelete}
+    title="Delete notification"
   >
     {#if deleting}
       <div class="loading loading-xs loading-spinner" />
