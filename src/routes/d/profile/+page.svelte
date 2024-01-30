@@ -10,41 +10,44 @@
   let name = data.profile.name;
 </script>
 
-<BasicSection otherClass="w-full max-w-md self-center">
-  <img
-    src={data.profile.photo_url ?? '/user.png'}
-    alt="photo_url"
-    class="mx-auto mt-4 rounded-full w-2/3"
-  />
-  <ProfilePhotoEditor profileId={data.profile.id} />
+<BasicSection otherClass="w-full items-stretch">
+  <h2 class="text-xl">Your profile</h2>
+  <div class="w-full max-w-md self-center flex flex-col gap-4">
+    <img
+      src={data.profile.photo_url ?? '/user.png'}
+      alt="photo_url"
+      class="mx-auto my-4 rounded-full w-2/3"
+    />
+    <ProfilePhotoEditor profileId={data.profile.id} />
 
-  <form
-    method="POST"
-    action="?/updateName"
-    use:enhance={workingCallback()}
-    class="flex items-end gap-4 w-full"
-  >
-    <div class="flex flex-col flex-1 items-start justify-end">
-      <label for="name">Name</label>
-      <input
-        type="text"
-        id="name"
-        name="name"
-        bind:value={name}
-        class="input input-bordered w-full"
-      />
-    </div>
-    <button type="submit" class="btn btn-primary" disabled={name === data.profile.name}>
-      Save
-    </button>
-  </form>
+    <form
+      method="POST"
+      action="?/updateName"
+      use:enhance={workingCallback()}
+      class="flex items-end gap-4 w-full"
+    >
+      <div class="flex flex-col flex-1 items-start justify-end">
+        <label for="name">Name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          bind:value={name}
+          class="input input-bordered w-full"
+        />
+      </div>
+      <button type="submit" class="btn btn-primary" disabled={name === data.profile.name}>
+        Save
+      </button>
+    </form>
 
-  <form
-    method="POST"
-    action="?/updateHandle"
-    use:enhance={workingCallback()}
-    class="flex flex-col gap-4 w-full"
-  >
-    <HandleEditor initialValue={data.profile.handle} />
-  </form>
+    <form
+      method="POST"
+      action="?/updateHandle"
+      use:enhance={workingCallback()}
+      class="flex flex-col gap-4 w-full"
+    >
+      <HandleEditor initialValue={data.profile.handle} />
+    </form>
+  </div>
 </BasicSection>

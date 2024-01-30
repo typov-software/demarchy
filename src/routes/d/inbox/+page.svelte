@@ -14,8 +14,9 @@
   }
 </script>
 
-<BasicSection>
-  <ul class="w-full max-w-xl">
+<BasicSection otherClass="w-full items-stretch">
+  <h2 class="text-xl">Your inbox</h2>
+  <ul class="w-full max-w-xl self-center">
     {#each notifications as notification (notification.id)}
       <NotificationCard {notification} on:deleted={handleDeleted} />
     {/each}

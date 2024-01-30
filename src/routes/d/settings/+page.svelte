@@ -42,9 +42,9 @@
   }
 </script>
 
-<BasicSection>
-  <h1 class="max-w-lg w-full text-xl font-semibold">Account Settings</h1>
-  <div class="flex flex-col w-full max-w-lg">
+<BasicSection otherClass="w-full items-stretch">
+  <h2 class="text-xl">Your settings</h2>
+  <div class="flex flex-col w-full max-w-lg self-center">
     <h2 class="font-bold">Connected Providers</h2>
     <p class="text-xs">Manage your linked providers</p>
     <ul class="w-full mt-4 flex flex-col gap-4">
@@ -69,7 +69,7 @@
   </div>
 
   {#if data.disconnected.length > 0}
-    <div class="flex flex-col max-w-lg w-full">
+    <div class="flex flex-col max-w-lg w-full self-center">
       <h2 class="font-bold">Available Providers</h2>
       <p class="text-xs">Link third party providers to increase your login options</p>
       <ul class="w-full mt-4 flex flex-col gap-4">
