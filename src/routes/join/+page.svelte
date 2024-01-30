@@ -44,12 +44,12 @@
 {#if $user}
   <div class="flex items-center gap-4">
     <button
-      title="Sign out"
+      title="Logout"
       class="btn btn-ghost text-neutral hover:text-base-content"
       on:click={endSession}
     >
       <span class="material-symbols-outlined -scale-100">logout</span>
-      Sign out
+      Logout
     </button>
     <a href="/join/handle" class="btn btn-success">
       <span class="material-symbols-outlined">navigate_next</span>

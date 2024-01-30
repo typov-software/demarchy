@@ -46,18 +46,18 @@
           Welcome back, {$profile?.name}!
         </p>
       {:else}
-        <p class="py-6">Sign in using an existing provider</p>
+        <p class="py-6">Login using an existing provider</p>
       {/if}
 
       {#if $user && $profile}
         <div class="flex items-center gap-4">
           <button
-            title="Sign out"
+            title="Logout"
             class="btn btn-ghost text-neutral hover:text-base-content"
             on:click={endSession}
           >
             <span class="material-symbols-outlined -scale-100">logout</span>
-            Sign out
+            Logout
           </button>
           <a href="/d" class="btn btn-primary" title="Go to dashboard">
             <span class="material-symbols-outlined">exit_to_app</span>
