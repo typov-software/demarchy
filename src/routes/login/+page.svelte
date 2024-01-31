@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import AuthProviders from '$lib/components/AuthProviders.svelte';
-  import BasicSection from '$lib/components/BasicSection.svelte';
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
   import { auth, db, profile, user } from '$lib/firebase';
   import { type AuthProvider } from '$lib/models/profiles';
@@ -36,17 +35,17 @@
   }
 </script>
 
-<BasicSection otherClass="min-h-screen h-full justify-center">
-  <div class="flex flex-col justify-center items-center w-full h-full min-h-full">
-    <DemarchyLogo width={300} />
+<main class="hero min-h-screen h-full">
+  <div class="hero-content flex-col w-full min-h-full">
+    <DemarchyLogo />
 
     <div class="flex flex-col items-center w-full">
       {#if $user}
-        <p class="py-6">
+        <p class="pb-6">
           Welcome back, {$profile?.name}!
         </p>
       {:else}
-        <p class="py-6">Login using an existing provider</p>
+        <p class="pb-6">Login using an existing provider</p>
       {/if}
 
       {#if $user && $profile}
@@ -75,4 +74,4 @@
       {/if}
     </div>
   </div>
-</BasicSection>
+</main>
