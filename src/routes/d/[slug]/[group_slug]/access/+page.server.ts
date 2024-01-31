@@ -1,21 +1,41 @@
 import type { Actions, PageServerLoad } from './$types';
-import { adminDB, adminGroupRef, adminMemberRef, adminMembershipRef } from '$lib/server/admin';
+import {
+  adminDB,
+  adminGroupRef,
+  adminInboxRef,
+  adminInvitationRef,
+  adminMemberRef,
+  adminMembershipRef,
+  adminNotificationRef,
+  createdTimestamps,
+  updatedTimestamps
+} from '$lib/server/admin';
 import type { Member } from '$lib/models/members';
 import { error, redirect } from '@sveltejs/kit';
 import { FieldValue, type OrderByDirection } from 'firebase-admin/firestore';
 import { makeDocument } from '$lib/models/utils';
+import type { Invitation, InvitationProps } from '$lib/models/invitations';
+import type { RoleAccess } from '$lib/models/roles';
+import type { NotificationInvitationData, NotificationProps } from '$lib/models/notifications';
 
 export const load = (async ({ url, parent }) => {
   const direction: OrderByDirection = (url.searchParams.get('direction') ??
     'asc') as OrderByDirection;
-  const sortField = url.searchParams.get('sortBy') ?? 'name';
+  const sortField = url.searchParams.get('sortBy') ?? 'handle';
   const { organization, group } = await parent();
   const snapshot = await adminMemberRef(organization.id, group.id)
     .orderBy(sortField, direction)
     .get();
+  const invitationsSnapshot = await adminInvitationRef(organization.id)
+    .where('group_id', '==', group.id)
+    .get();
+
   const members: Member[] = snapshot.docs.map((doc) => makeDocument(doc));
+  const invitations: Invitation[] = invitationsSnapshot.docs.map((doc) => makeDocument(doc));
+
   return {
-    members
+    members,
+    invitations
   };
 }) satisfies PageServerLoad;
 
@@ -74,5 +94,74 @@ export const actions = {
     } else if (context === 'organization') {
       redirect(301, `/d`);
     }
+  },
+  invite: async ({ request, url }) => {
+    const formData = await request.formData();
+    const organization_id = formData.get('organization_id') as string;
+    const organization_name = formData.get('organization_name') as string;
+    const group_id = formData.get('group_id') as string;
+    const group_name = formData.get('group_name') as string;
+    const invited_user_id = formData.get('invited_user_id') as string;
+    const invited_profile_handle = formData.get('invited_profile_handle') as string;
+    const role = (formData.get('role') ?? 'mem') as RoleAccess;
+    const user_id = formData.get('user_id') as string;
+    const profile_handle = formData.get('profile_handle') as string;
+    if (!organization_id || !group_id || !invited_user_id || !role || !user_id || !profile_handle) {
+      error(401, 'unauthorized');
+    }
+    const invitationRef = adminInvitationRef(organization_id).doc();
+    const batch = adminDB.batch();
+    const invitationProps: InvitationProps = {
+      user_id,
+      profile_handle,
+      invited_profile_handle,
+      invited_user_id,
+      organization_id,
+      group_id,
+      role,
+      rejected: false
+    };
+    batch.create(invitationRef, {
+      ...createdTimestamps(),
+      ...invitationProps
+    });
+    batch.set(
+      adminInboxRef().doc(invited_user_id),
+      {
+        ...updatedTimestamps(),
+        unread: FieldValue.increment(1)
+      },
+      {
+        merge: true
+      }
+    );
+    const inviteData: NotificationInvitationData = {
+      invitation_id: invitationRef.id,
+      organization_id,
+      organization_name,
+      group_id,
+      group_name,
+      invited_by_id: user_id,
+      invited_by_handle: profile_handle
+    };
+    const notificationProps: NotificationProps = {
+      type: 'invitation',
+      seen: 0,
+      data: inviteData
+    };
+    batch.create(adminNotificationRef(invited_user_id).doc(), {
+      ...createdTimestamps(),
+      ...notificationProps
+    });
+    await batch.commit();
+
+    redirect(303, url.pathname);
+  },
+  uninvite: async ({ request }) => {
+    const formData = await request.formData();
+    const organization_id = formData.get('organization_id') as string;
+    const invitation_id = formData.get('invitation_id') as string;
+    await adminInvitationRef(organization_id).doc(invitation_id).delete();
+    return {};
   }
 } satisfies Actions;

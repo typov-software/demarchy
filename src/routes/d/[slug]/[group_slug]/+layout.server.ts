@@ -26,7 +26,10 @@ export const load = (async ({ parent, params, locals }) => {
     .doc('proposals')
     .get();
 
+  const role = organization_memberships.roles[group.id];
+
   return {
+    role,
     group,
     settings: {
       proposals: makeDocument<ProposalSettings>(proposalSettings)

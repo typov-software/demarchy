@@ -36,10 +36,6 @@
       path: root + group?.slug + '/feedback',
       symbol: 'feedback'
     },
-    invitations: {
-      path: root + group?.slug + '/invitations',
-      symbol: 'person_add'
-    },
     proposals: {
       path: root + group?.slug + '/proposals',
       symbol: 'history_edu'
