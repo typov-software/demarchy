@@ -32,15 +32,13 @@ export const actions = {
     const name = formData.get('name') as string;
     const slug = formData.get('slug') as string;
 
-    const { organization_id, group_id } = await createOrganization({
+    await createOrganization({
       user_id,
       voucher_id,
       name,
       slug
     });
 
-    console.log('created', { organization_id, group_id });
-
-    redirect(301, `/d/${slug}`);
+    redirect(301, `/d/${slug}/org`);
   }
 } satisfies Actions;

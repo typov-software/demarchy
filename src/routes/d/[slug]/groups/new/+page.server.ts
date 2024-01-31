@@ -9,21 +9,21 @@ export const actions = {
     const formData = await request.formData();
     const organization_id = formData.get('organization_id') as string;
     const name = formData.get('name') as string;
+    const slug = formData.get('slug') as string;
     const description = formData.get('description') as string;
     const profile_name = formData.get('profile_name') as string;
     const profile_handle = formData.get('profile_handle') as string;
 
-    const { group_id } = await createGroup({
+    await createGroup({
       user_id,
       profile_handle,
       profile_name,
       organization_id,
       name,
+      slug,
       description
     });
 
-    console.log('created', { group_id });
-
-    redirect(301, `/d/${params.slug}/${group_id}`);
+    redirect(301, `/d/${params.slug}/${slug}`);
   }
 } satisfies Actions;

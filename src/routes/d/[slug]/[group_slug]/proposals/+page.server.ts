@@ -59,6 +59,6 @@ export const actions = {
       ...createdTimestamps(),
       ...props
     });
-    redirect(301, `/d/${params.slug}/${group_id}/proposals/${proposalDoc.id}`);
+    redirect(301, `/d/${params.slug}/${params.group_slug}/proposals/${proposalDoc.id}`);
   }
 } satisfies Actions;

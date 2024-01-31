@@ -3,7 +3,7 @@
 </script>
 
 <footer
-  class="footer flex md:flex-row flex-col justify-around items-center py-8 text-neutral gap-0"
+  class="footer flex md:flex-row flex-col justify-around items-center py-4 md:py-8 text-neutral gap-0"
 >
   <aside class="flex flex-row items-center">
     <DemarchyLogo width={127} />
@@ -14,13 +14,17 @@
       </a>
     </p>
   </aside>
-  <nav class="flex flex-row flex-wrap items-center justify-center gap-x-2 text-sm mt-1">
-    <a href="/terms" title="Terms" class="link-hover">Terms</a>
-    <a href="/privacy" title="Privacy" class="link-hover">Privacy</a>
-    <a href="/security" title="Security" class="link-hover">Security</a>
-    <a href="/documentation" title="Documentation" class="link-hover">Documentation</a>
-    <a href="/pricing" title="Pricing" class="link-hover">Pricing</a>
-    <a href="/about" title="About" class="link-hover">About</a>
+  <nav class="flex flex-row flex-wrap items-center justify-center gap-x-2 gap-y-0 text-sm mt-1">
+    <div>
+      <a href="/terms" title="Terms" class="link-hover">Terms</a>
+      <a href="/privacy" title="Privacy" class="link-hover">Privacy</a>
+      <a href="/security" title="Security" class="link-hover">Security</a>
+    </div>
+    <div>
+      <a href="/documentation" title="Documentation" class="link-hover">Documentation</a>
+      <a href="/pricing" title="Pricing" class="link-hover">Pricing</a>
+      <a href="/about" title="About" class="link-hover">About</a>
+    </div>
   </nav>
 </footer>
 

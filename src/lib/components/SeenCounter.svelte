@@ -56,6 +56,7 @@
   class:btn-primary={reaction}
   class:pointer-events-none={reaction}
   on:click={handleClickSeen}
+  title="Mark as seen"
 >
   {tally.seen || ''}
   {#if looking}

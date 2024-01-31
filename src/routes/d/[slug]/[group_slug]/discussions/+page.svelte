@@ -55,7 +55,7 @@
     });
     await batch.commit();
     working.remove(job);
-    goto(`/d/${$page.params.slug}/${$page.params.group_id}/discussions/${draftRef.id}`);
+    goto(`/d/${$page.params.slug}/${$page.params.group_slug}/discussions/${draftRef.id}`);
   }
 </script>
 

@@ -233,7 +233,7 @@ export const actions = {
     const batch = await updateProposalState(proposalPath, userId, 'draft');
     await batch.commit();
   },
-  adoptProposal: async ({ request, locals, params }) => {
+  adoptProposal: async ({ request, locals }) => {
     // Once the ballot has surpassed acceptance thresholds, the proposal author
     // and group mods can manually adopt the proposal and accept changes.
     const formData = await request.formData();
@@ -241,17 +241,8 @@ export const actions = {
     const proposalPath = formData.get('path') as string;
     const ballotId = formData.get('ballot_id') as string;
     const organizationId = formData.get('organization_id') as string;
-    const groupId = params.group_id;
+    const groupId = formData.get('group_id') as string;
     const ballotPath = `${proposalPath}/ballots/${ballotId}`;
-
-    console.log({
-      userId,
-      proposalPath,
-      ballotId,
-      organizationId,
-      groupId,
-      ballotPath
-    });
 
     const ballotRef = adminDB.doc(ballotPath);
     const tallyRef = adminDB.doc(`${proposalPath}/tallies/consensus`);

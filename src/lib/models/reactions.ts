@@ -7,6 +7,7 @@ export type ReactionType =
   | 'disappointment'
   | 'anger'
   | 'frustration'
+  | 'cool'
   | 'neutral'
   | 'confusion'
   | 'fear'
@@ -31,6 +32,7 @@ export const REACTIONS: Record<ReactionType, string> = Object.freeze({
   laughter: '😂',
   gratitude: '🤗',
   sarcasm: '😉',
+  cool: '😎',
   neutral: '😐',
   confusion: '😕',
   disappointment: '😞',

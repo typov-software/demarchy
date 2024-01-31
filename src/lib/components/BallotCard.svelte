@@ -123,6 +123,7 @@
       >
         <input type="hidden" name="path" value={contextPath} />
         <input type="hidden" name="organization_id" value={ballot.organization_id} />
+        <input type="hidden" name="group_id" value={ballot.group_id} />
         <input type="hidden" name="ballot_id" value={ballot.id} />
         <button class="btn btn-primary">I'm sure, immediately adopt this</button>
       </form>

@@ -162,9 +162,9 @@
 
       <ul class="menu">
         <li>
-          <button on:click={endSession} class="rounded-none" title="Sign out">
+          <button on:click={endSession} class="rounded-none" title="Logout">
             <span class="material-symbols-outlined">logout</span>
-            Sign out
+            Logout
           </button>
         </li>
       </ul>
