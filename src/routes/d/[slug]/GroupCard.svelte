@@ -11,6 +11,7 @@
   export let organization: Organization;
   export let memberships: Membership[];
   export let subroute: string = '';
+  export let title: string = `Load ${group.name}`;
 
   function getMembershipRole(groupId: string) {
     const membership = memberships.find((mem) => mem.organization_id === organization?.id);
@@ -29,7 +30,7 @@
   class:cursor-default={!allowed}
   class:bg-base-300={group.id === organization.id}
   class:border-base-300={group.id === organization.id}
-  title={`Load ${group.name}`}
+  {title}
   href={allowed ? `/d/${organization.slug}/${group.slug}${subroute}` : ''}
 >
   <div class="card-body p-4">

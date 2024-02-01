@@ -28,7 +28,7 @@
     </div>
   </div>
 
-  <div class="flex flex-col items-center max-w-2xl w-full">
+  <div class="flex flex-col items-center max-w-3xl w-full">
     <Replies
       organizationId={data.organization.id}
       groupId={data.group.id}

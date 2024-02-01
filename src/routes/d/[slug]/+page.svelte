@@ -32,11 +32,32 @@
     </div>
   </div>
 
-  <div class="flex flex-wrap w-full gap-4 max-w-2xl">
-    <GroupCard group={orgGroup} organization={data.organization} memberships={data.memberships} />
-
-    {#each orgGroups as group (group.id)}
-      <GroupCard {group} organization={data.organization} memberships={data.memberships} />
-    {/each}
+  <div class="flex flex-wrap w-full gap-4">
+    <div class="flex flex-col gap-6 border-2 border-base-200 p-6 rounded-box w-full">
+      <div class="flex flex-col gap-2">
+        <h2 class="text-2xl mb-2">Groups</h2>
+        <p>
+          These are the <strong class="text-accent">Groups</strong> formed within your organization.
+        </p>
+        <p>
+          Any organization member can view group resources, but only <strong class="text-success"
+            >Members</strong
+          > of the group can participate in proposals, polls, and discussions.
+        </p>
+        <p>
+          Load the <strong class="text-primary">Organization</strong> group to interact with all members.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+        <GroupCard
+          group={orgGroup}
+          organization={data.organization}
+          memberships={data.memberships}
+        />
+        {#each orgGroups as group (group.id)}
+          <GroupCard {group} organization={data.organization} memberships={data.memberships} />
+        {/each}
+      </div>
+    </div>
   </div>
 </BasicSection>
