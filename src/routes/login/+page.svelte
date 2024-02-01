@@ -43,12 +43,14 @@
     <DemarchyLogo />
 
     <div class="flex flex-col items-center w-full">
-      {#if $user && !expired}
+      {#if $user && $profile && !expired}
         <p class="pb-6">
-          Welcome back, {$profile?.name}!
+          Welcome back, {$profile.name}!
         </p>
       {:else if expired}
-        <p class="pb-6">A recent login is required to proceed</p>
+        <p class="pb-6">
+          A <span class="text-accent">recent</span> login is required to proceed
+        </p>
       {:else}
         <p class="pb-6">Login using an existing provider</p>
       {/if}
