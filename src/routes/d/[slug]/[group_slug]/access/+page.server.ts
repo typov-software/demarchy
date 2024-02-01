@@ -188,6 +188,16 @@ export const actions = {
       ...createdTimestamps(),
       ...notificationProps
     });
+    batch.set(
+      adminInboxRef().doc(invitation.invited_user_id),
+      {
+        ...updatedTimestamps(),
+        unread: FieldValue.increment(1)
+      },
+      {
+        merge: true
+      }
+    );
     batch.delete(invitationRef);
     await batch.commit();
     return {};
