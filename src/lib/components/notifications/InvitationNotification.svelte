@@ -1,13 +1,13 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import type { Notification, NotificationInvitationData } from '$lib/models/notifications';
+  import type { Notification, InvitationNotificationData } from '$lib/models/notifications';
   import { workingCallback } from '$lib/stores/working';
   import { createEventDispatcher } from 'svelte';
   import ProfileLink from '../ProfileLink.svelte';
 
   const dispatch = createEventDispatcher();
 
-  export let notification: Notification<NotificationInvitationData>;
+  export let notification: Notification<InvitationNotificationData>;
 
   let rejectModal: HTMLDialogElement;
   let isOrgInvite = notification.data.organization_id === notification.data.group_id;

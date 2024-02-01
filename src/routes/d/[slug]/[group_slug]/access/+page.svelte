@@ -170,6 +170,13 @@
                               name="organization_id"
                               value={invitation.organization_id}
                             />
+                            <input
+                              type="hidden"
+                              name="organization_name"
+                              value={data.organization.name}
+                            />
+                            <input type="hidden" name="group_id" value={invitation.group_id} />
+                            <input type="hidden" name="group_name" value={data.group.name} />
                             <input type="hidden" name="invitation_id" value={invitation.id} />
                           </form>
                           <button

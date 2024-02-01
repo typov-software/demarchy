@@ -1,6 +1,6 @@
 import type { DocumentMeta } from './utils';
 
-export type NotificationType = 'invitation' | 'welcome';
+export type NotificationType = 'invitation' | 'uninvite' | 'welcome';
 
 export interface NotificationProps<T = unknown> {
   seen: number;
@@ -10,7 +10,7 @@ export interface NotificationProps<T = unknown> {
 
 export type Notification<T = unknown> = NotificationProps<T> & DocumentMeta;
 
-export interface NotificationInvitationData {
+export interface InvitationNotificationData {
   invitation_id: string;
   organization_id: string;
   organization_name: string;
@@ -20,6 +20,14 @@ export interface NotificationInvitationData {
   invited_by_handle: string;
 }
 
-export interface NotificationWelcomeData {
+export interface UninviteNotificationData {
+  invitation_id: string;
+  organization_id: string;
+  organization_name: string;
+  group_id: string;
+  group_name: string;
+}
+
+export interface WelcomeNotificationData {
   profile_handle: string;
 }

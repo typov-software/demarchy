@@ -16,7 +16,11 @@ import { FieldValue, type OrderByDirection } from 'firebase-admin/firestore';
 import { makeDocument } from '$lib/models/utils';
 import type { Invitation, InvitationProps } from '$lib/models/invitations';
 import type { RoleAccess } from '$lib/models/roles';
-import type { NotificationInvitationData, NotificationProps } from '$lib/models/notifications';
+import type {
+  InvitationNotificationData,
+  NotificationProps,
+  UninviteNotificationData
+} from '$lib/models/notifications';
 
 export const load = (async ({ url, parent }) => {
   const direction: OrderByDirection = (url.searchParams.get('direction') ??
@@ -135,7 +139,7 @@ export const actions = {
         merge: true
       }
     );
-    const inviteData: NotificationInvitationData = {
+    const inviteData: InvitationNotificationData = {
       invitation_id: invitationRef.id,
       organization_id,
       organization_name,
@@ -160,8 +164,32 @@ export const actions = {
   uninvite: async ({ request }) => {
     const formData = await request.formData();
     const organization_id = formData.get('organization_id') as string;
+    const organization_name = formData.get('organization_name') as string;
+    const group_id = formData.get('group_id') as string;
+    const group_name = formData.get('group_name') as string;
     const invitation_id = formData.get('invitation_id') as string;
-    await adminInvitationRef(organization_id).doc(invitation_id).delete();
+    const invitationRef = adminInvitationRef(organization_id).doc(invitation_id);
+    const invitationDoc = await invitationRef.get();
+    const invitation = makeDocument<Invitation>(invitationDoc);
+    const notificationData: UninviteNotificationData = {
+      invitation_id,
+      organization_id,
+      organization_name,
+      group_id,
+      group_name
+    };
+    const notificationProps: NotificationProps = {
+      type: 'uninvite',
+      seen: 0,
+      data: notificationData
+    };
+    const batch = adminDB.batch();
+    batch.create(adminNotificationRef(invitation.invited_user_id).doc(), {
+      ...createdTimestamps(),
+      ...notificationProps
+    });
+    batch.delete(invitationRef);
+    await batch.commit();
     return {};
   },
   resend: async ({ request }) => {
@@ -178,7 +206,7 @@ export const actions = {
       error(401, 'Missing invitation');
     }
     const invitation = makeDocument<Invitation>(invitationDoc);
-    const inviteData: NotificationInvitationData = {
+    const inviteData: InvitationNotificationData = {
       invitation_id,
       organization_id,
       organization_name,

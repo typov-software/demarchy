@@ -5,6 +5,7 @@
   import WelcomeNotification from './notifications/WelcomeNotification.svelte';
   import NotificationSeen from './NotificationSeen.svelte';
   import { formatRelative } from 'date-fns';
+  import UninviteNotification from './notifications/UninviteNotification.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -28,6 +29,8 @@
   <div class="card-body px-3 pt-0 pb-3">
     {#if notification.type === 'invitation'}
       <InvitationNotification {notification} on:deleted={handleDeleted} />
+    {:else if notification.type === 'uninvite'}
+      <UninviteNotification {notification} />
     {:else if notification.type === 'welcome'}
       <WelcomeNotification {notification} />
     {/if}

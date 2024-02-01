@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { Notification, NotificationWelcomeData } from '$lib/models/notifications';
+  import type { Notification, WelcomeNotificationData } from '$lib/models/notifications';
   import ProfileLink from '../ProfileLink.svelte';
 
-  export let notification: Notification<NotificationWelcomeData>;
+  export let notification: Notification<WelcomeNotificationData>;
 </script>
 
 <p>
