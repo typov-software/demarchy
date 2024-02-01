@@ -7,21 +7,24 @@ import {
   adminMemberRef,
   adminMembershipRef,
   adminNotificationRef,
+  adminOrganizationRef,
   adminProfileRef,
   createdTimestamps
 } from '$lib/server/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import type { PageServerLoad } from './$types';
-import { error, type Actions } from '@sveltejs/kit';
+import { error, type Actions, redirect } from '@sveltejs/kit';
 import type { Invitation } from '$lib/models/invitations';
 import type { MembershipProps } from '$lib/models/memberships';
 import type { MemberProps } from '$lib/models/members';
 import type { Profile } from '$lib/models/profiles';
 import { makeDocument } from '$lib/models/utils';
+import { type Group } from '$lib/models/groups';
+import { type Organization } from '$lib/models/organizations';
 
 export const load = (async ({ locals }) => {
   const user_id = locals.user_id!;
-  const snapshot = await adminNotificationRef(user_id).limit(50).get();
+  const snapshot = await adminNotificationRef(user_id).orderBy('created_at', 'desc').get();
   const notifications: Notification[] = snapshot.docs.map((doc) => makeDocument(doc));
   return {
     notifications
@@ -43,6 +46,7 @@ export const actions = {
     // Invitation may have been removed before chance to reject
     const invitationDoc = await adminInvitationRef(organization_id).doc(invitation_id).get();
     if (invitationDoc.exists) {
+      // We want to keep the invitation document around
       batch.update(invitationDoc.ref, { rejected: true });
     }
     batch.update(inboxRef, { unread: FieldValue.increment(-1) });
@@ -110,5 +114,11 @@ export const actions = {
     batch.delete(notificationRef);
     batch.delete(invitationDoc.ref);
     await batch.commit();
+
+    const orgDoc = await adminOrganizationRef().doc(organization_id).get();
+    const groupDoc = await groupRef.get();
+    const organization = makeDocument<Organization>(orgDoc);
+    const group = makeDocument<Group>(groupDoc);
+    redirect(301, `/d/${organization.slug}/${group.slug}`);
   }
 } satisfies Actions;

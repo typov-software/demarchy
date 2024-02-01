@@ -8,6 +8,6 @@
 </script>
 
 <BasicSection>
-  <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
+  <Breadcrumbs organization={data.organization} groups={data.allowed_groups} group={data.group} />
   <DocCard doc={data.doc} />
 </BasicSection>

@@ -48,5 +48,8 @@
     </div>
   </div>
 
-  <a href="/d" class="btn btn-success">Go to dashboard</a>
+  <a href="/d" class="btn btn-success self-end">
+    Go to your Dashboard
+    <span class="material-symbols-outlined">navigate_next</span>
+  </a>
 </AuthCheck>

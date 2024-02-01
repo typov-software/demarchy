@@ -12,7 +12,7 @@
 
 <BasicSection>
   <div class="flex flex-row w-full items-center">
-    <Breadcrumbs organization={data.organization} groups={data.groups} group={undefined} />
+    <Breadcrumbs organization={data.organization} groups={data.allowed_groups} group={undefined} />
 
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">

@@ -2,7 +2,7 @@
 
 > WARNING: Demarchy is in active development and highly unstable. Use at your own risk.
 
-Demarchy is a democratic document editor for organizations and communities.
+Demarchy is a democratic document editor for organizations, communities, and cooperatives.
 
 At launch, you'll be able to join the official instance at [demarchy.app](https://demarchy.app/).
 

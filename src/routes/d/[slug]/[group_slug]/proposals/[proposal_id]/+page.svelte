@@ -8,7 +8,7 @@
 </script>
 
 <BasicSection>
-  <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
+  <Breadcrumbs organization={data.organization} groups={data.allowed_groups} group={data.group} />
   <ProposalEditor
     organization={data.organization}
     group={data.group}

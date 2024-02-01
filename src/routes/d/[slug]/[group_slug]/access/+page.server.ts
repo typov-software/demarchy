@@ -163,5 +163,41 @@ export const actions = {
     const invitation_id = formData.get('invitation_id') as string;
     await adminInvitationRef(organization_id).doc(invitation_id).delete();
     return {};
+  },
+  resend: async ({ request }) => {
+    const formData = await request.formData();
+    const organization_id = formData.get('organization_id') as string;
+    const organization_name = formData.get('organization_name') as string;
+    const group_id = formData.get('group_id') as string;
+    const group_name = formData.get('group_name') as string;
+    const user_id = formData.get('user_id') as string;
+    const profile_handle = formData.get('profile_handle') as string;
+    const invitation_id = formData.get('invitation_id') as string;
+    const invitationDoc = await adminInvitationRef(organization_id).doc(invitation_id).get();
+    if (!invitationDoc.exists) {
+      error(401, 'Missing invitation');
+    }
+    const invitation = makeDocument<Invitation>(invitationDoc);
+    const inviteData: NotificationInvitationData = {
+      invitation_id,
+      organization_id,
+      organization_name,
+      group_id,
+      group_name,
+      invited_by_id: user_id,
+      invited_by_handle: profile_handle
+    };
+    const notificationProps: NotificationProps = {
+      type: 'invitation',
+      seen: 0,
+      data: inviteData
+    };
+    const batch = adminDB.batch();
+    batch.create(adminNotificationRef(invitation.invited_user_id).doc(), {
+      ...createdTimestamps(),
+      ...notificationProps
+    });
+    await batch.commit();
+    return {};
   }
 } satisfies Actions;

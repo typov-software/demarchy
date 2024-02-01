@@ -12,6 +12,8 @@
   import { formatRelative } from 'date-fns';
   import { makeDocument } from '$lib/models/utils';
   import type { Profile } from '$lib/models/profiles';
+  import { onMount } from 'svelte';
+  import { pluralize } from '$lib/utils/string';
 
   export let data: PageData;
 
@@ -34,7 +36,7 @@
     await goto(`${$page.url.pathname}?${searchParams.toString()}`, { invalidateAll: true });
   }
 
-  let invitedProfileHandle: string = '';
+  let invitedProfileHandle: string = $page.url.searchParams.get('handle') ?? '';
   let invitedUserId: string | null = null;
   let loadingInvitedProfile = false;
   let invitedUserExists = false;
@@ -68,11 +70,17 @@
       loadingInvitedProfile = false;
     }, 500);
   }
+
+  onMount(() => {
+    if ($page.url.searchParams.get('handle')) {
+      checkValidHandle();
+    }
+  });
 </script>
 
 <BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
-    <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
+    <Breadcrumbs organization={data.organization} groups={data.allowed_groups} group={data.group} />
   </div>
 
   {#if data.invitations.length}
@@ -115,6 +123,39 @@
                   </button>
                   <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
                     <ul class="menu w-64">
+                      <li>
+                        <form
+                          id={`resend-${invitation.invited_user_id}`}
+                          method="POST"
+                          action="?/resend"
+                          use:enhance={workingCallback({ invalidateAll: true })}
+                          class="hidden"
+                        >
+                          <input
+                            type="hidden"
+                            name="organization_id"
+                            value={data.organization.id}
+                          />
+                          <input
+                            type="hidden"
+                            name="organization_name"
+                            value={data.organization.name}
+                          />
+                          <input type="hidden" name="group_id" value={data.group.id} />
+                          <input type="hidden" name="group_name" value={data.group.name} />
+                          <input type="hidden" name="user_id" value={$user?.uid} />
+                          <input type="hidden" name="profile_handle" value={data.profile.handle} />
+                          <input type="hidden" name="invitation_id" value={invitation.id} />
+                        </form>
+                        <button
+                          form={`resend-${invitation.invited_user_id}`}
+                          type="submit"
+                          disabled={invitation.user_id !== $user?.uid}
+                          class="w-full"
+                        >
+                          Resend
+                        </button>
+                      </li>
                       {#if data.role === 'mod' || invitation.user_id === $user?.uid}
                         <li>
                           <form
@@ -160,7 +201,9 @@
     <div class="card bg-base-200">
       <div class="card-body px-0 py-4">
         <div class="card-title w-full pl-4 pr-2">
-          <span class="flex-1">Members</span>
+          <span class="flex-1"
+            >{group.member_count.toLocaleString()} {pluralize('Member', group.member_count)}</span
+          >
           <div class="dropdown dropdown-end mr-1">
             <div tabindex="0" role="button" class="btn btn-square btn-sm btn-ghost">
               <span class="material-symbols-outlined">sort</span>
@@ -179,6 +222,14 @@
             </div>
             <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
               <ul class="menu w-60">
+                {#if !data.invitations.length}
+                  <li>
+                    <a href="?modal=invite" title="Invite someone">
+                      <span class="material-symbols-outlined">person_add</span>
+                      Invite someone
+                    </a>
+                  </li>
+                {/if}
                 <li>
                   <form
                     class="flex justify-start text-left"
@@ -230,7 +281,9 @@
   class:modal-open={$page.url.searchParams.get('modal') === 'invite'}
 >
   <div class="modal-box">
-    <h3 class="text-lg mb-4">Invite someone to this group</h3>
+    <h3 class="text-lg mb-4">
+      Send an invitation to {context === 'group' ? group.name : data.organization.name}
+    </h3>
     <form method="POST" action="?/invite" use:enhance={workingCallback()}>
       <input type="hidden" name="organization_id" value={data.organization.id} />
       <input type="hidden" name="organization_name" value={data.organization.name} />
@@ -241,21 +294,27 @@
       <input type="hidden" name="user_id" value={$user?.uid} />
       <input type="hidden" name="profile_handle" value={data.profile.handle} />
 
-      <div class="flex gap-4">
-        <input
-          type="text"
-          id="handle"
-          name="invited_profile_handle"
-          autocomplete="off"
-          placeholder="User handle"
-          class="input input-bordered w-full"
-          bind:value={invitedProfileHandle}
-          on:input={checkValidHandle}
-        />
+      <div class="flex items-center gap-4 w-full">
+        <div class="flex items-center w-full">
+          <span class="text-2xl mr-3">@</span>
+          <input
+            type="text"
+            id="handle"
+            name="invited_profile_handle"
+            autocomplete="off"
+            placeholder="profile_handle"
+            class="input input-bordered w-full px-2"
+            bind:value={invitedProfileHandle}
+            on:input={checkValidHandle}
+          />
+        </div>
         <button
           disabled={loadingInvitedProfile || !invitedUserExists || !invitedProfile}
           type="submit"
-          class="btn btn-primary">Add</button
+          class="btn btn-primary"
+        >
+          <span class="material-symbols-outlined">person_add</span>
+          Invite</button
         >
       </div>
       {#if loadingInvitedProfile}
@@ -266,8 +325,12 @@
       {/if}
       {#if !loadingInvitedProfile && invitedUserExists && invitedProfile}
         <div class="flex items-center gap-4 mt-4">
-          <img src={invitedProfile.photo_url} class="avatar w-16" alt={invitedProfile.name} />
-          <p>{invitedProfile.name} (@{invitedProfile.handle})</p>
+          <img
+            src={invitedProfile.photo_url ?? '/user.png'}
+            class="avatar rounded-full w-10 bg-success"
+            alt={invitedProfile.name}
+          />
+          <p>{invitedProfile.name} (<ProfileLink handle={invitedProfile.handle} />)</p>
         </div>
       {/if}
     </form>

@@ -47,7 +47,7 @@
       use:enhance={workingCallback()}
       class="flex flex-col gap-4 w-full"
     >
-      <HandleEditor initialValue={data.profile.handle} />
+      <HandleEditor currentHandle={data.profile.handle} />
     </form>
   </div>
 </BasicSection>
