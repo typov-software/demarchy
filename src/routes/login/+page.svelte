@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import AuthProviders from '$lib/components/AuthProviders.svelte';
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
   import { auth, db, profile, user } from '$lib/firebase';
@@ -9,6 +10,8 @@
   import { doc, getDoc } from 'firebase/firestore';
 
   const providers = getProviders();
+
+  $: expired = $page.url.searchParams.get('session') === 'expired';
 
   async function handleSignIn(pid: AuthProvider) {
     const provider = providers[pid];
@@ -40,15 +43,17 @@
     <DemarchyLogo />
 
     <div class="flex flex-col items-center w-full">
-      {#if $user}
+      {#if $user && !expired}
         <p class="pb-6">
           Welcome back, {$profile?.name}!
         </p>
+      {:else if expired}
+        <p class="pb-6">A recent login is required to proceed</p>
       {:else}
         <p class="pb-6">Login using an existing provider</p>
       {/if}
 
-      {#if $user && $profile}
+      {#if $user && $profile && !expired}
         <div class="flex items-center gap-4">
           <button
             title="Logout"
@@ -63,7 +68,7 @@
             Go to dashboard</a
           >
         </div>
-      {:else if $user && !$profile}
+      {:else if $user && !$profile && !expired}
         <a href="/join/handle" class="btn btn-primary">Finish signing up</a>
       {:else}
         <div class="card w-full max-w-sm">
