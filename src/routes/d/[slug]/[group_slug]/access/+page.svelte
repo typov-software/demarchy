@@ -1,19 +1,17 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { type OrderByDirection, doc, getDoc } from 'firebase/firestore';
+  import { type OrderByDirection } from 'firebase/firestore';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import { enhance } from '$app/forms';
   import { workingCallback } from '$lib/stores/working';
-  import { user, db } from '$lib/firebase';
+  import { user } from '$lib/firebase';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
   import ProfileLink from '$lib/components/ProfileLink.svelte';
   import { formatRelative } from 'date-fns';
-  import { makeDocument } from '$lib/models/utils';
-  import type { Profile } from '$lib/models/profiles';
-  import { onMount } from 'svelte';
   import { pluralize } from '$lib/utils/string';
+  import InvitationModal from './InvitationModal.svelte';
 
   export let data: PageData;
 
@@ -35,47 +33,6 @@
     searchParams.set('direction', direction);
     await goto(`${$page.url.pathname}?${searchParams.toString()}`, { invalidateAll: true });
   }
-
-  let invitedProfileHandle: string = $page.url.searchParams.get('handle') ?? '';
-  let invitedUserId: string | null = null;
-  let loadingInvitedProfile = false;
-  let invitedUserExists = false;
-  let debounceTimer: NodeJS.Timeout;
-  $: isInvitingTouched = invitedProfileHandle.length > 0;
-  let invitedProfile: Profile | null = null;
-
-  async function onCloseModal() {
-    await goto($page.url.pathname);
-  }
-
-  async function checkValidHandle() {
-    clearTimeout(debounceTimer);
-    loadingInvitedProfile = true;
-    invitedUserExists = false;
-    debounceTimer = setTimeout(async () => {
-      if (invitedProfileHandle.trim().length) {
-        const ref = doc(db, 'handles', invitedProfileHandle);
-        const handleDoc = await getDoc(ref);
-        invitedUserExists = handleDoc.exists();
-        invitedUserId = invitedUserExists ? handleDoc.data()!.user_id : null;
-        if (invitedUserExists && invitedUserId) {
-          const profileDoc = await getDoc(doc(db, 'profiles', invitedUserId));
-          invitedProfile = makeDocument<Profile>(profileDoc);
-        } else {
-          invitedProfile = null;
-        }
-      } else {
-        invitedUserExists = false;
-      }
-      loadingInvitedProfile = false;
-    }, 500);
-  }
-
-  onMount(() => {
-    if ($page.url.searchParams.get('handle')) {
-      checkValidHandle();
-    }
-  });
 </script>
 
 <BasicSection otherClass="py-0">
@@ -282,67 +239,8 @@
   </div>
 </BasicSection>
 
-<dialog
-  id="invite"
-  class="modal"
-  class:modal-open={$page.url.searchParams.get('modal') === 'invite'}
->
-  <div class="modal-box">
-    <h3 class="text-lg mb-4">
-      Send an invitation to {context === 'group' ? group.name : data.organization.name}
-    </h3>
-    <form method="POST" action="?/invite" use:enhance={workingCallback()}>
-      <input type="hidden" name="organization_id" value={data.organization.id} />
-      <input type="hidden" name="organization_name" value={data.organization.name} />
-      <input type="hidden" name="group_id" value={data.group.id} />
-      <input type="hidden" name="group_name" value={data.group.name} />
-      <input type="hidden" name="invited_user_id" bind:value={invitedUserId} />
-      <input type="hidden" name="role" value="mem" />
-      <input type="hidden" name="user_id" value={$user?.uid} />
-      <input type="hidden" name="profile_handle" value={data.profile.handle} />
-
-      <div class="flex items-center gap-4 w-full">
-        <div class="flex items-center w-full">
-          <span class="text-2xl mr-3">@</span>
-          <input
-            type="text"
-            id="handle"
-            name="invited_profile_handle"
-            autocomplete="off"
-            placeholder="profile_handle"
-            class="input input-bordered w-full px-2"
-            bind:value={invitedProfileHandle}
-            on:input={checkValidHandle}
-          />
-        </div>
-        <button
-          disabled={loadingInvitedProfile || !invitedUserExists || !invitedProfile}
-          type="submit"
-          class="btn btn-primary"
-        >
-          <span class="material-symbols-outlined">person_add</span>
-          Invite</button
-        >
-      </div>
-      {#if loadingInvitedProfile}
-        <p class="text-sm pt-4">Checking if this @{invitedProfileHandle} exists...</p>
-      {/if}
-      {#if !loadingInvitedProfile && isInvitingTouched && !invitedUserExists}
-        <p class="text-error text-sm pt-4">This person does not exist</p>
-      {/if}
-      {#if !loadingInvitedProfile && invitedUserExists && invitedProfile}
-        <div class="flex items-center gap-4 mt-4">
-          <img
-            src={invitedProfile.photo_url ?? '/user.png'}
-            class="avatar rounded-full w-10 bg-success"
-            alt={invitedProfile.name}
-          />
-          <p>{invitedProfile.name} (<ProfileLink handle={invitedProfile.handle} />)</p>
-        </div>
-      {/if}
-    </form>
-  </div>
-  <form method="dialog" class="modal-backdrop" on:submit={onCloseModal}>
-    <button>close</button>
-  </form>
-</dialog>
+<InvitationModal
+  open={$page.url.searchParams.get('modal') === 'invite'}
+  organization={data.organization}
+  group={data.group}
+/>

@@ -37,10 +37,10 @@
       <div class="flex flex-col gap-2">
         <h2 class="text-2xl mb-2">Groups</h2>
         <p>
-          These are the <strong class="text-accent">Groups</strong> formed within your organization.
+          These are the <strong class="text-success">Groups</strong> formed within your organization.
         </p>
         <p>
-          Any organization member can view group resources, but only <strong class="text-success"
+          Any organization member can view group resources, but only <strong class="text-purple-500"
             >Members</strong
           > of the group can participate in proposals, polls, and discussions.
         </p>

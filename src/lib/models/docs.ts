@@ -10,6 +10,7 @@ export interface DocProps {
   created_at: Date;
   updated_at: Date;
 
+  // root_id: string;
   name: string;
   blocks: Block[];
 }

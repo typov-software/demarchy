@@ -1,3 +1,4 @@
+import _set from 'lodash/set';
 import type { Actions, PageServerLoad } from './$types';
 import {
   adminDB,
@@ -15,7 +16,6 @@ import { error, redirect } from '@sveltejs/kit';
 import { FieldValue, type OrderByDirection } from 'firebase-admin/firestore';
 import { makeDocument } from '$lib/models/utils';
 import type { Invitation, InvitationProps } from '$lib/models/invitations';
-import type { RoleAccess } from '$lib/models/roles';
 import type {
   InvitationNotificationData,
   NotificationProps,
@@ -99,67 +99,120 @@ export const actions = {
       redirect(301, `/d`);
     }
   },
-  invite: async ({ request, url }) => {
+  sendInvitations: async ({ request, url }) => {
     const formData = await request.formData();
+    const entries = Array.from(formData.entries());
     const organization_id = formData.get('organization_id') as string;
     const organization_name = formData.get('organization_name') as string;
     const group_id = formData.get('group_id') as string;
     const group_name = formData.get('group_name') as string;
-    const invited_user_id = formData.get('invited_user_id') as string;
-    const invited_profile_handle = formData.get('invited_profile_handle') as string;
-    const role = (formData.get('role') ?? 'mem') as RoleAccess;
     const user_id = formData.get('user_id') as string;
     const profile_handle = formData.get('profile_handle') as string;
-    if (!organization_id || !group_id || !invited_user_id || !role || !user_id || !profile_handle) {
+    if (!organization_id || !group_id || !user_id || !profile_handle) {
       error(401, 'unauthorized');
     }
-    const invitationRef = adminInvitationRef(organization_id).doc();
-    const batch = adminDB.batch();
-    const invitationProps: InvitationProps = {
-      user_id,
-      profile_handle,
-      invited_profile_handle,
-      invited_user_id,
-      organization_id,
-      group_id,
-      role,
-      rejected: false
-    };
-    batch.create(invitationRef, {
-      ...createdTimestamps(),
-      ...invitationProps
-    });
-    batch.set(
-      adminInboxRef().doc(invited_user_id),
-      {
-        ...updatedTimestamps(),
-        unread: FieldValue.increment(1)
-      },
-      {
-        merge: true
+    const inviteMap: Record<string, Record<string, string>> = {};
+    for (const [key, value] of entries) {
+      if (!key.startsWith('invitee-')) {
+        continue;
       }
-    );
-    const inviteData: InvitationNotificationData = {
-      invitation_id: invitationRef.id,
-      organization_id,
-      organization_name,
-      group_id,
-      group_name,
-      invited_by_id: user_id,
-      invited_by_handle: profile_handle
-    };
-    const notificationProps: NotificationProps = {
-      type: 'invitation',
-      seen: 0,
-      data: inviteData
-    };
-    batch.create(adminNotificationRef(invited_user_id).doc(), {
-      ...createdTimestamps(),
-      ...notificationProps
-    });
-    await batch.commit();
+      const handle = /invitee-(.*)\[/.exec(key)?.at(1);
+      const type = /\[(.*)\]/.exec(key)?.at(1);
+      _set(inviteMap, `${handle}.${type}`, value);
+    }
 
-    redirect(303, url.pathname);
+    const handles = Object.keys(inviteMap);
+    const failures: { id: string; handle: string; reason: string }[] = [];
+    for (const key of handles) {
+      const pair = inviteMap[key];
+      const invitee = {
+        id: pair.id,
+        handle: pair.handle
+      };
+      if (!invitee.id || !invitee.handle) {
+        // invalid entry
+        failures.push({
+          id: pair.id,
+          handle: pair.handle,
+          reason: 'invalid'
+        });
+        continue;
+      }
+
+      // TODO: look for existing invitation
+      const existingInvitationSnapshot = await adminInvitationRef(organization_id)
+        .where('invited_user_id', '==', invitee.id)
+        .get();
+      if (existingInvitationSnapshot.docs.length) {
+        failures.push({
+          id: pair.id,
+          handle: pair.handle,
+          reason: 'duplicate'
+        });
+        continue;
+      }
+
+      const batch = adminDB.batch();
+      const invitationRef = adminInvitationRef(organization_id).doc();
+      const invitationProps: InvitationProps = {
+        user_id,
+        profile_handle,
+        invited_profile_handle: invitee.handle,
+        invited_user_id: invitee.id,
+        organization_id,
+        group_id,
+        role: 'mem',
+        rejected: false
+      };
+      batch.create(invitationRef, {
+        ...createdTimestamps(),
+        ...invitationProps
+      });
+      batch.set(
+        adminInboxRef().doc(invitee.id),
+        {
+          ...updatedTimestamps(),
+          unread: FieldValue.increment(1)
+        },
+        {
+          merge: true
+        }
+      );
+      const inviteData: InvitationNotificationData = {
+        invitation_id: invitationRef.id,
+        organization_id,
+        organization_name,
+        group_id,
+        group_name,
+        invited_by_id: user_id,
+        invited_by_handle: profile_handle
+      };
+      const notificationProps: NotificationProps = {
+        type: 'invitation',
+        seen: 0,
+        data: inviteData
+      };
+      batch.create(adminNotificationRef(invitee.id).doc(), {
+        ...createdTimestamps(),
+        ...notificationProps
+      });
+
+      try {
+        await batch.commit();
+      } catch (e) {
+        console.error(e);
+        failures.push({
+          ...invitee,
+          reason: (e as Error).message
+        });
+      }
+    }
+
+    if (failures.length) {
+      console.log({ failures });
+    }
+
+    redirect(301, url.pathname);
   },
   uninvite: async ({ request }) => {
     const formData = await request.formData();
