@@ -7,6 +7,7 @@
 
   export let data: PageData;
   let isOrgGroup = data.organization.id === data.group.id;
+  $: isOrgGroup;
 </script>
 
 <BasicSection>
@@ -40,13 +41,15 @@
         </p>
       </div>
 
-      <GroupCard
-        group={data.group}
-        organization={data.organization}
-        memberships={data.memberships}
-        subroute="/access"
-        title="Manage access"
-      />
+      {#each [data.group.id] as group_id (group_id)}
+        <GroupCard
+          group={data.group}
+          organization={data.organization}
+          memberships={data.memberships}
+          subroute="/access"
+          title="Manage access"
+        />
+      {/each}
     </div>
   </div>
 

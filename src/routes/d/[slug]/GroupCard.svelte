@@ -21,17 +21,17 @@
   let role = getMembershipRole(group.id);
   let allowed = ['obs', 'mem', 'mod', 'adm'].includes(role);
   let emptyDescription = emptyString(group.description);
+  $: role, allowed;
 </script>
 
 <a
   class="card bg-base-200 border-base-200 border-2 w-full transition-all"
   class:hover:border-success={allowed}
   class:hover:border-base-300={!allowed}
-  class:cursor-default={!allowed}
   class:bg-base-300={group.id === organization.id}
   class:border-base-300={group.id === organization.id}
   {title}
-  href={allowed ? `/d/${organization.slug}/${group.slug}${subroute}` : ''}
+  href={`/d/${organization.slug}/${group.slug}${subroute}`}
 >
   <div class="card-body p-4">
     <h3 class="card-title justify-between">
@@ -41,11 +41,11 @@
       <span
         class="badge font-normal"
         class:badge-success={role === 'mem'}
-        class:badge-neutral={role === 'obs'}
+        class:badge-info={role === 'obs' || role === undefined}
         class:badge-warning={role === 'mod'}
         class:badge-accent={role === 'adm'}
       >
-        {getRoleName(role)}
+        {role ? getRoleName(role) : 'Observer'}
       </span>
     </h3>
     <p class="" class:italic={emptyDescription}>

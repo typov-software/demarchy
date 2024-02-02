@@ -132,7 +132,7 @@ service cloud.firestore {
       }
 
       match /invitations/{invitationId} {
-        allow read: if ownsResource(resource.data.user_id) || isGroupMemberOrHigher(resource.data.group_id);
+        allow read: if ownsResource(resource.data.user_id) || canReadOrg();
         allow create: if isGroupMemberOrHigher(resource.data.group_id);
         allow delete: if ownsResource(resource.data.created_by) || isGroupAdmin(resource.data.group_id);
       }
@@ -184,11 +184,15 @@ service cloud.firestore {
           }
 
           match /reactions/{reactionId} {
-            allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+            allow read: if canReadOrg();
+            // allow write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+            allow write: if canReadOrg() && ownsResource(reactionId);
           }
 
           match /tallies/{tallyId} {
-            allow read, create, update: if isGroupMemberOrHigher(groupId);
+            allow read: if canReadOrg();
+            // allow create, update: if isGroupMemberOrHigher(groupId);
+            allow write: if canReadOrg();
           }
 
           match /ballots/{ballotId} {
@@ -200,17 +204,21 @@ service cloud.firestore {
           }
 
           match /comments/{commentId} {
-            allow read: if isGroupObsOrHigher(groupId);
+            allow read: if canReadOrg();
             allow create: if isGroupMemberOrHigher(groupId);
             // we let members update comment reaction counts directly
             allow update: if isGroupMemberOrHigher(groupId);
 
             match /tallies/{tallyId} {
-              allow read, create, update: if isGroupMemberOrHigher(groupId);
+              allow read: if canReadOrg();
+              // allow create, update: if isGroupMemberOrHigher(groupId);
+              allow write: if canReadOrg();
             }
 
             match /reactions/{reactionId} {
-              allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+              allow read: if canReadOrg();
+              // allow write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+              allow write: if canReadOrg() && ownsResource(reactionId);
             }
           }
         }
@@ -238,46 +246,58 @@ service cloud.firestore {
         }
 
         match /feedback/{commentId} {
-          allow read: if isGroupObsOrHigher(groupId);
+          allow read: if canReadOrg();
           allow create: if isGroupMemberOrHigher(groupId);
           // There's currently no UI supporting feedback updates
           // allow update: if isGroupMemberOrHigher(groupId) && ownsResource(resource.data.user_id);
 
           match /reactions/{reactionId} {
-            allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+            allow read: if canReadOrg();
+            // allow write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+            allow write: if canReadOrg() && ownsResource(reactionId);
           }
 
           match /tallies/{tallyId} {
-            allow read, create, update: if isGroupMemberOrHigher(groupId);
+            allow read: if canReadOrg();
+            // allow create, update: if isGroupMemberOrHigher(groupId);
+            allow write: if canReadOrg();
           }
         }
         
         match /discussions/{discussionId} {
-          allow read: if isGroupObsOrHigher(groupId);
+          allow read: if canReadOrg();
           allow create: if isGroupMemberOrHigher(groupId);
           // only authors can update the discussion
           allow update: if ownsResource(resource.data.user_id);
 
           match /tallies/{tallyId} {
-            allow read, create, update: if isGroupMemberOrHigher(groupId);
+            allow read: if canReadOrg();
+            // allow create, update: if isGroupMemberOrHigher(groupId);
+            allow write: if canReadOrg();
           }
 
           match /reactions/{reactionId} {
-            allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+            allow read: if canReadOrg();
+            // allow write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+            allow write: if canReadOrg() && ownsResource(reactionId);
           }
 
           match /comments/{commentId} {
-            allow read: if isGroupObsOrHigher(groupId);
+            allow read: if canReadOrg();
             allow create: if isGroupMemberOrHigher(groupId);
             // we let members update comment reaction counts directly
             allow update: if isGroupMemberOrHigher(groupId);
 
             match /tallies/{tallyId} {
-              allow read, create, update: if isGroupMemberOrHigher(groupId);
+              allow read: if canReadOrg();
+              // allow create, update: if isGroupMemberOrHigher(groupId);
+              allow write: if canReadOrg();
             }
 
             match /reactions/{reactionId} {
-              allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+              allow read: if canReadOrg();
+              // allow write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+              allow write: if canReadOrg() && ownsResource(reactionId);
             }
           }
         }

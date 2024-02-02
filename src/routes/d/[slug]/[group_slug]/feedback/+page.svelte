@@ -30,6 +30,7 @@
 
   <div class="flex flex-col items-center max-w-3xl w-full">
     <Replies
+      can_write={data.can_write}
       organizationId={data.organization.id}
       groupId={data.group.id}
       context="feedback"

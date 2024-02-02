@@ -13,6 +13,7 @@
   import ThreadedReplies from '$lib/components/ThreadedReplies.svelte';
   import ProfileLink from '$lib/components/ProfileLink.svelte';
 
+  export let can_write: boolean;
   export let discussion: Discussion;
 
   $: editable = discussion.state === 'draft';
@@ -121,6 +122,7 @@
 
 {#if reaction && tally}
   <ThreadedReplies
+    {can_write}
     organizationId={discussion.organization_id}
     groupId={discussion.group_id}
     contextId={discussion.id}

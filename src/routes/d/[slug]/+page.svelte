@@ -49,11 +49,13 @@
         </p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
-        <GroupCard
-          group={orgGroup}
-          organization={data.organization}
-          memberships={data.memberships}
-        />
+        {#each [orgGroup.id] as group_id (group_id)}
+          <GroupCard
+            group={orgGroup}
+            organization={data.organization}
+            memberships={data.memberships}
+          />
+        {/each}
         {#each orgGroups as group (group.id)}
           <GroupCard {group} organization={data.organization} memberships={data.memberships} />
         {/each}

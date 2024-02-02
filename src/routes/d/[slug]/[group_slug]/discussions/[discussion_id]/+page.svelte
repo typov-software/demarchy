@@ -30,10 +30,10 @@
   </div>
 
   <div class="w-full">
-    {#if data.discussion.state === 'draft'}
+    {#if data.discussion.state === 'draft' && data.can_write}
       <DiscussionEditor discussion={data.discussion} />
     {:else}
-      <DiscussionViewer discussion={data.discussion} />
+      <DiscussionViewer discussion={data.discussion} can_write={data.can_write} />
     {/if}
   </div>
 </BasicSection>

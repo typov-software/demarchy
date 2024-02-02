@@ -47,21 +47,23 @@
           <div class="card-title w-full pl-4 pr-2">
             <span class="flex-1">Invitations</span>
 
-            <div class="dropdown dropdown-end">
-              <div tabindex="0" role="button" class="btn btn-sm btn-square btn-neutral">
-                <span class="material-symbols-outlined">more_vert</span>
+            {#if data.can_write}
+              <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-sm btn-square btn-neutral">
+                  <span class="material-symbols-outlined">more_vert</span>
+                </div>
+                <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+                  <ul class="menu w-60">
+                    <li>
+                      <a href="?modal=invite" title="Invite someone">
+                        <span class="material-symbols-outlined">person_add</span>
+                        Invite someone
+                      </a>
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
-                <ul class="menu w-60">
-                  <li>
-                    <a href="?modal=invite" title="Invite someone">
-                      <span class="material-symbols-outlined">person_add</span>
-                      Invite someone
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            {/if}
           </div>
           <ul>
             {#each data.invitations as invitation (invitation.id)}
@@ -74,85 +76,91 @@
                 {#if invitation.rejected}
                   <div class="badge badge-error text-xs mx-2">rejected</div>
                 {/if}
-                <div class="dropdown dropdown-end">
-                  <button tabindex="0" class="btn btn-sm btn-square btn-ghost">
-                    <span class="material-symbols-outlined">more_vert</span>
-                  </button>
-                  <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
-                    <ul class="menu w-64">
-                      <li>
-                        <form
-                          id={`resend-${invitation.invited_user_id}`}
-                          method="POST"
-                          action="?/resend"
-                          use:enhance={workingCallback({ invalidateAll: true })}
-                          class="hidden"
-                        >
-                          <input
-                            type="hidden"
-                            name="organization_id"
-                            value={data.organization.id}
-                          />
-                          <input
-                            type="hidden"
-                            name="organization_name"
-                            value={data.organization.name}
-                          />
-                          <input type="hidden" name="group_id" value={data.group.id} />
-                          <input type="hidden" name="group_name" value={data.group.name} />
-                          <input type="hidden" name="user_id" value={$user?.uid} />
-                          <input type="hidden" name="profile_handle" value={data.profile.handle} />
-                          <input type="hidden" name="invitation_id" value={invitation.id} />
-                        </form>
-                        <button
-                          form={`resend-${invitation.invited_user_id}`}
-                          type="submit"
-                          disabled={invitation.user_id !== $user?.uid}
-                          class="w-full"
-                        >
-                          Resend
-                        </button>
-                      </li>
-                      {#if data.role === 'mod' || invitation.user_id === $user?.uid}
+                {#if data.can_write}
+                  <div class="dropdown dropdown-end">
+                    <button tabindex="0" class="btn btn-sm btn-square btn-ghost">
+                      <span class="material-symbols-outlined">more_vert</span>
+                    </button>
+                    <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+                      <ul class="menu w-64">
                         <li>
                           <form
-                            id={`uninvite-${invitation.invited_user_id}`}
+                            id={`resend-${invitation.invited_user_id}`}
                             method="POST"
-                            action="?/uninvite"
+                            action="?/resend"
                             use:enhance={workingCallback({ invalidateAll: true })}
                             class="hidden"
                           >
                             <input
                               type="hidden"
                               name="organization_id"
-                              value={invitation.organization_id}
+                              value={data.organization.id}
                             />
                             <input
                               type="hidden"
                               name="organization_name"
                               value={data.organization.name}
                             />
-                            <input type="hidden" name="group_id" value={invitation.group_id} />
+                            <input type="hidden" name="group_id" value={data.group.id} />
                             <input type="hidden" name="group_name" value={data.group.name} />
+                            <input type="hidden" name="user_id" value={$user?.uid} />
+                            <input
+                              type="hidden"
+                              name="profile_handle"
+                              value={data.profile.handle}
+                            />
                             <input type="hidden" name="invitation_id" value={invitation.id} />
                           </form>
                           <button
-                            form={`uninvite-${invitation.invited_user_id}`}
+                            form={`resend-${invitation.invited_user_id}`}
                             type="submit"
                             disabled={invitation.user_id !== $user?.uid}
                             class="w-full"
                           >
-                            {invitation.rejected ? 'Remove' : 'Uninvite'}
+                            Resend
                           </button>
                         </li>
-                      {/if}
-                    </ul>
-                    <small class="px-4 pb-3 pt-1 block text-xs text-right">
-                      Invited by
-                      <ProfileLink handle={invitation.profile_handle} />
-                    </small>
+                        {#if data.role === 'mod' || invitation.user_id === $user?.uid}
+                          <li>
+                            <form
+                              id={`uninvite-${invitation.invited_user_id}`}
+                              method="POST"
+                              action="?/uninvite"
+                              use:enhance={workingCallback({ invalidateAll: true })}
+                              class="hidden"
+                            >
+                              <input
+                                type="hidden"
+                                name="organization_id"
+                                value={invitation.organization_id}
+                              />
+                              <input
+                                type="hidden"
+                                name="organization_name"
+                                value={data.organization.name}
+                              />
+                              <input type="hidden" name="group_id" value={invitation.group_id} />
+                              <input type="hidden" name="group_name" value={data.group.name} />
+                              <input type="hidden" name="invitation_id" value={invitation.id} />
+                            </form>
+                            <button
+                              form={`uninvite-${invitation.invited_user_id}`}
+                              type="submit"
+                              disabled={invitation.user_id !== $user?.uid}
+                              class="w-full"
+                            >
+                              {invitation.rejected ? 'Remove' : 'Uninvite'}
+                            </button>
+                          </li>
+                        {/if}
+                      </ul>
+                      <small class="px-4 pb-3 pt-1 block text-xs text-right">
+                        Invited by
+                        <ProfileLink handle={invitation.profile_handle} />
+                      </small>
+                    </div>
                   </div>
-                </div>
+                {/if}
               </li>
             {/each}
           </ul>
@@ -180,48 +188,50 @@
             </div>
           </div>
 
-          <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn btn-sm btn-square btn-neutral">
-              <span class="material-symbols-outlined">more_vert</span>
-            </div>
-            <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
-              <ul class="menu w-60">
-                {#if !data.invitations.length}
+          {#if data.can_write}
+            <div class="dropdown dropdown-end">
+              <div tabindex="0" role="button" class="btn btn-sm btn-square btn-neutral">
+                <span class="material-symbols-outlined">more_vert</span>
+              </div>
+              <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+                <ul class="menu w-60">
+                  {#if !data.invitations.length}
+                    <li>
+                      <a href="?modal=invite" title="Invite someone">
+                        <span class="material-symbols-outlined">person_add</span>
+                        Invite someone
+                      </a>
+                    </li>
+                  {/if}
                   <li>
-                    <a href="?modal=invite" title="Invite someone">
-                      <span class="material-symbols-outlined">person_add</span>
-                      Invite someone
-                    </a>
+                    <form
+                      class="flex justify-start text-left"
+                      method="post"
+                      action="?/leaveGroup"
+                      use:enhance={workingCallback()}
+                    >
+                      <input type="hidden" name="context" value={context} />
+                      <input type="hidden" name="organization_id" value={data.organization.id} />
+                      <input type="hidden" name="group_id" value={data.group?.id} />
+                      <span
+                        class="material-symbols-outlined text-error"
+                        class:text-neutral={isOnlyMember}>logout</span
+                      >
+                      <button
+                        disabled={isOnlyMember}
+                        class:cursor-not-allowed={isOnlyMember}
+                        class:text-neutral={isOnlyMember}
+                        class="text-error w-full text-left"
+                        title={`Leave ${context}`}
+                      >
+                        Leave {context}</button
+                      >
+                    </form>
                   </li>
-                {/if}
-                <li>
-                  <form
-                    class="flex justify-start text-left"
-                    method="post"
-                    action="?/leaveGroup"
-                    use:enhance={workingCallback()}
-                  >
-                    <input type="hidden" name="context" value={context} />
-                    <input type="hidden" name="organization_id" value={data.organization.id} />
-                    <input type="hidden" name="group_id" value={data.group?.id} />
-                    <span
-                      class="material-symbols-outlined text-error"
-                      class:text-neutral={isOnlyMember}>logout</span
-                    >
-                    <button
-                      disabled={isOnlyMember}
-                      class:cursor-not-allowed={isOnlyMember}
-                      class:text-neutral={isOnlyMember}
-                      class="text-error w-full text-left"
-                      title={`Leave ${context}`}
-                    >
-                      Leave {context}</button
-                    >
-                  </form>
-                </li>
-              </ul>
+                </ul>
+              </div>
             </div>
-          </div>
+          {/if}
         </div>
         <ul>
           {#each data.members as member (member.id)}
