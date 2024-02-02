@@ -1,4 +1,4 @@
-import { isGroupObserverOrHigher } from '$lib/server/access';
+import { canReadOrg, isGroupObserverOrHigher } from '$lib/server/access';
 import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import { adminDB } from '$lib/server/admin';
@@ -9,14 +9,15 @@ export const load = (async ({ parent, params, locals }) => {
   const { groups, organization, organization_memberships } = await parent();
 
   const group = groups.find((ws) => ws.slug === params.group_slug);
-  const allowed = await isGroupObserverOrHigher(
+  const can_read = await canReadOrg(organization.id, locals.user_id!, organization_memberships);
+  const can_write = await isGroupObserverOrHigher(
     organization.id,
     group!.id,
     locals.user_id!,
     organization_memberships
   );
 
-  if (!allowed || !group) {
+  if (!can_read || !group) {
     error(403, 'forbidden');
   }
 
@@ -29,6 +30,8 @@ export const load = (async ({ parent, params, locals }) => {
   const role = organization_memberships.roles[group.id];
 
   return {
+    can_read,
+    can_write,
     role,
     group,
     settings: {

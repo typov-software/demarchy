@@ -61,23 +61,25 @@
 
 <BasicSection otherClass="!items-start">
   <div class="flex flex-row w-full items-center">
-    <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
+    <Breadcrumbs organization={data.organization} groups={data.allowed_groups} group={data.group} />
     <div class="flex flex-1" />
-    <div class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="btn btn-sm btn-square btn-primary">
-        <span class="material-symbols-outlined">more_vert</span>
+    {#if data.can_write}
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button" class="btn btn-sm btn-square btn-primary">
+          <span class="material-symbols-outlined">more_vert</span>
+        </div>
+        <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+          <ul class="menu w-60">
+            <li>
+              <button on:click={() => draftDiscussion()} disabled={$working.length > 0}>
+                <span class="material-symbols-outlined">add</span>
+                Draft a discussion
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
-        <ul class="menu w-60">
-          <li>
-            <button on:click={() => draftDiscussion()} disabled={$working.length > 0}>
-              <span class="material-symbols-outlined">add</span>
-              Draft a discussion
-            </button>
-          </li>
-        </ul>
-      </div>
-    </div>
+    {/if}
   </div>
 
   {#if data.drafts.length}

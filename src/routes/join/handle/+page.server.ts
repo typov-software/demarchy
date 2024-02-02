@@ -11,7 +11,7 @@ import {
 import { MEMBERS } from '$lib/models/firestore';
 import type { InboxProps } from '$lib/models/inboxes';
 import type { ProfileProps } from '$lib/models/profiles';
-import type { NotificationProps, NotificationWelcomeData } from '$lib/models/notifications';
+import type { NotificationProps, WelcomeNotificationData } from '$lib/models/notifications';
 
 export const actions = {
   updateHandle: async ({ request, locals }) => {
@@ -50,7 +50,7 @@ export const actions = {
         ...inboxProps
       });
       const welcomeRef = adminNotificationRef(inboxRef.id).doc();
-      const welcomeNotification: NotificationProps<NotificationWelcomeData> = {
+      const welcomeNotification: NotificationProps<WelcomeNotificationData> = {
         seen: 0,
         type: 'welcome',
         data: {

@@ -12,33 +12,36 @@
 
 <BasicSection>
   <div class="flex flex-row w-full items-center">
-    <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
+    <Breadcrumbs organization={data.organization} groups={data.allowed_groups} group={data.group} />
     <div class="flex flex-1" />
-    <div class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="btn btn-sm btn-square btn-primary">
-        <span class="material-symbols-outlined">more_vert</span>
+
+    {#if data.can_write}
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button" class="btn btn-sm btn-square btn-primary">
+          <span class="material-symbols-outlined">more_vert</span>
+        </div>
+        <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+          <form
+            id="create-proposal"
+            method="post"
+            action="?/createProposal"
+            use:enhance={workingCallback()}
+          >
+            <input type="hidden" name="organization_id" value={data.organization.id} />
+            <input type="hidden" name="group_id" value={data.group.id} />
+            <input type="hidden" name="profile_handle" value={data.profile.handle} />
+          </form>
+          <ul class="menu w-60">
+            <li>
+              <button type="submit" form="create-proposal">
+                <span class="material-symbols-outlined">add</span>
+                New Proposal
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
-        <form
-          id="create-proposal"
-          method="post"
-          action="?/createProposal"
-          use:enhance={workingCallback()}
-        >
-          <input type="hidden" name="organization_id" value={data.organization.id} />
-          <input type="hidden" name="group_id" value={data.group.id} />
-          <input type="hidden" name="profile_handle" value={data.profile.handle} />
-        </form>
-        <ul class="menu w-60">
-          <li>
-            <button type="submit" form="create-proposal">
-              <span class="material-symbols-outlined">add</span>
-              New Proposal
-            </button>
-          </li>
-        </ul>
-      </div>
-    </div>
+    {/if}
   </div>
 
   {#if data.drafts.length}

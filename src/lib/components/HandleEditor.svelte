@@ -4,15 +4,17 @@
   import { checkValidHandle } from '$lib/utils/string';
   import { doc, getDoc } from 'firebase/firestore';
 
-  export let initialValue: string;
-  let handle = initialValue;
+  export let currentHandle: string;
+  let handle = currentHandle;
   let loading = false;
   let isAvailable = false;
   let debounceTimer: NodeJS.Timeout;
+
+  $: handle;
   $: isValid = checkValidHandle(handle);
   $: isTouched = handle.length > 0;
   $: isTaken = isValid && !isAvailable && !loading;
-  $: isChanged = initialValue !== handle;
+  $: isChanged = currentHandle !== handle;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function checkHandleAvailability(e: any) {

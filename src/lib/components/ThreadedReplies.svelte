@@ -5,6 +5,7 @@
   import { tick } from 'svelte';
   import Replies from './Replies.svelte';
 
+  export let can_write: boolean;
   export let organizationId: string;
   export let groupId: string;
   export let contextId: string;
@@ -64,6 +65,7 @@
   class:mx-auto={!parents.length}
 >
   <Replies
+    {can_write}
     threaded={true}
     {organizationId}
     {groupId}
@@ -78,6 +80,7 @@
 
   {#each parents as parent, index (parent)}
     <Replies
+      {can_write}
       threaded={true}
       {organizationId}
       {groupId}

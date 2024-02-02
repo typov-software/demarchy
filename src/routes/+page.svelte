@@ -8,7 +8,9 @@
       <h1 title="Demarchy">
         <DemarchyLogo width="100%" />
       </h1>
-      <p class="py-6 max-w-sm">A democratic document editor for organizations and communities.</p>
+      <p class="py-6 max-w-sm">
+        A democratic document editor for organizations, communities, and cooperatives.
+      </p>
       <div class="flex flex-row gap-4 justify-center mt-2">
         <a href="/join" class="btn btn-secondary">
           <span class="material-symbols-outlined">join</span>

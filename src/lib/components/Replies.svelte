@@ -24,6 +24,7 @@
 
   const dispatch = createEventDispatcher();
 
+  export let can_write: boolean;
   export let organizationId: string;
   export let groupId: string;
   export let context: CommentContext;
@@ -167,7 +168,7 @@
   class:sm:min-w-[45vw]={threadedColumns}
 >
   <div bind:this={containerEl} class="flex flex-col items-center gap-4 w-full">
-    {#if showForm && userHandle}
+    {#if can_write && showForm && userHandle}
       <div class="w-full">
         <CommentEditor
           {collectionPath}
@@ -244,17 +245,3 @@
     {/if}
   </div>
 </div>
-
-<style lang="scss">
-  // .narrow-screen {
-  //   min-width: 85vw;
-  // }
-
-  // .wide-screen {
-  //   min-width: 40vw;
-  // }
-
-  // .full-screen {
-  //   min-width: inherit;
-  // }
-</style>

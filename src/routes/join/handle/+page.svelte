@@ -9,7 +9,21 @@
 </script>
 
 <AuthCheck>
-  <form method="post" action="?/updateHandle" use:enhance={workingCallback()}>
-    <HandleEditor initialValue={data.profile?.handle ?? ''} />
+  <form
+    method="post"
+    action="?/updateHandle"
+    use:enhance={workingCallback({
+      reset: false,
+      invalidateAll: true
+    })}
+    class="w-full"
+  >
+    <HandleEditor currentHandle={data.profile?.handle ?? ''} />
   </form>
+  {#if data.profile?.handle}
+    <a class="btn btn-success self-end mt-4" href="/join/profile">
+      Update your Profile
+      <span class="material-symbols-outlined">navigate_next</span>
+    </a>
+  {/if}
 </AuthCheck>

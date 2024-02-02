@@ -7,7 +7,7 @@
     <div class="max-w-md">
       <h1 class="text-5xl font-bold">About</h1>
       <p class="py-4 pt-6">
-        Demarchy is a democratic document editor for organizations and communities.
+        Demarchy is a democratic document editor for organizations, communities, and cooperatives.
       </p>
       <p class="py-4">
         Modern real-time document libraries are missing the tools for equitable, transparent, and

@@ -7,7 +7,7 @@ import type { Profile } from '$lib/models/profiles';
 export const load = (async ({ locals, fetch }) => {
   const user_id = locals.user_id;
   if (!user_id) {
-    redirect(301, '/login');
+    redirect(301, '/login?session=expired');
   }
 
   const res = await fetch('/api/d', { method: 'GET' });

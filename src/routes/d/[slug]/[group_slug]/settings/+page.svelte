@@ -9,7 +9,7 @@
 
 <BasicSection otherClass="py-0">
   <div class="flex flex-row w-full items-center">
-    <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
+    <Breadcrumbs organization={data.organization} groups={data.allowed_groups} group={data.group} />
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-square btn-sm btn-primary">

@@ -4,5 +4,5 @@
 
 <BasicSection otherClass="w-full items-stretch">
   <h2 class="text-xl">Your Discussions</h2>
-  <p class="text-warning">Coming soon</p>
+  <p class="badge badge-warning badge-lg">Coming soon</p>
 </BasicSection>

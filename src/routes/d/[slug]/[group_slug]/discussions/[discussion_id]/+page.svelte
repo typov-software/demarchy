@@ -10,7 +10,7 @@
 
 <BasicSection>
   <div class="flex flex-row w-full items-center">
-    <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
+    <Breadcrumbs organization={data.organization} groups={data.allowed_groups} group={data.group} />
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-sm btn-square btn-primary">
@@ -30,10 +30,10 @@
   </div>
 
   <div class="w-full">
-    {#if data.discussion.state === 'draft'}
+    {#if data.discussion.state === 'draft' && data.can_write}
       <DiscussionEditor discussion={data.discussion} />
     {:else}
-      <DiscussionViewer discussion={data.discussion} />
+      <DiscussionViewer discussion={data.discussion} can_write={data.can_write} />
     {/if}
   </div>
 </BasicSection>

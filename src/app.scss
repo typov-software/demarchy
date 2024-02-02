@@ -7,8 +7,12 @@
 @tailwind utilities;
 
 .firebase-emulator-warning {
-  opacity: 0.2;
   pointer-events: none;
+  background-color: rgba(0, 0, 0, 0) !important;
+  color: transparent !important;
+  border-width: 0 !important;
+  border-bottom-width: 2px !important;
+  border-color: red !important;
   /* display: none; */
 }
 

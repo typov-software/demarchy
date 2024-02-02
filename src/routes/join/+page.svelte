@@ -52,8 +52,8 @@
       Logout
     </button>
     <a href="/join/handle" class="btn btn-success">
-      <span class="material-symbols-outlined">navigate_next</span>
       Choose your handle
+      <span class="material-symbols-outlined">navigate_next</span>
     </a>
   </div>
 {:else}

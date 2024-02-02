@@ -9,7 +9,7 @@
 
 <BasicSection otherClass="py-0 pb-2">
   <div class="flex flex-row w-full items-center">
-    <Breadcrumbs organization={data.organization} groups={data.groups} group={data.group} />
+    <Breadcrumbs organization={data.organization} groups={data.allowed_groups} group={data.group} />
     <div class="flex flex-1" />
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-square btn-sm btn-primary">
@@ -28,8 +28,9 @@
     </div>
   </div>
 
-  <div class="flex flex-col items-center max-w-2xl w-full">
+  <div class="flex flex-col items-center max-w-3xl w-full">
     <Replies
+      can_write={data.can_write}
       organizationId={data.organization.id}
       groupId={data.group.id}
       context="feedback"

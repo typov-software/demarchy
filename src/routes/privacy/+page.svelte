@@ -18,7 +18,7 @@
 
 <div class="hero min-h-screen">
   <div class="hero-content w-full text-center">
-    <div class="max-w-2xl flex flex-col">
+    <div class="max-w-3xl flex flex-col">
       <h1 class="text-5xl font-bold pt-8">Privacy</h1>
       <small class="block py-2">Updated January 15, 2024</small>
       <div class="max-w-sm self-center my-4">

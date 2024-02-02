@@ -3,6 +3,6 @@
 </script>
 
 <BasicSection otherClass="w-full items-stretch">
-  <h2 class="text-xl">Your dashboard</h2>
-  <p class="text-warning">Coming soon</p>
+  <h2 class="text-xl">Your Dashboard</h2>
+  <p class="badge badge-warning badge-lg">Coming soon</p>
 </BasicSection>
