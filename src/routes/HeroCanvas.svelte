@@ -3,6 +3,7 @@
 
   let canvasEl: HTMLCanvasElement;
   const colors = ['#f4f4f5', '#111111', '#2563eb', '#e11d48', '#d946ef'];
+  const speed = 0.5;
 
   class Particle {
     color: string = colors[0];
@@ -21,8 +22,8 @@
       this.x = Math.floor(Math.random() * innerWidth);
       this.y = Math.floor(Math.random() * innerHeight);
 
-      this.vx = (Math.random() * 2 - 1) * Math.random();
-      this.vy = (Math.random() * 2 - 1) * Math.random();
+      this.vx = speed * (Math.random() * 2 - 1) * Math.random();
+      this.vy = speed * (Math.random() * 2 - 1) * Math.random();
       this.vo = (Math.random() * 2 - 1) * Math.random() * 0.02;
     }
 

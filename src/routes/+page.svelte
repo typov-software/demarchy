@@ -108,8 +108,8 @@
 </HomepageHero>
 
 <div class="flex flex-col items-center pb-28 gap-8 z-1 relative">
-  <p class="text-lg">Sign up for early access</p>
-  <a href="/join" class="btn btn-secondary sm:btn-lg">
+  <p class="text-lg">Sign up for <strong class="demarchy-faded-walk">early</strong> access</p>
+  <a href="/join" class="btn btn-secondary sm:btn-lg" title="Join now">
     <span class="material-symbols-outlined">join</span>
     Join now
   </a>
