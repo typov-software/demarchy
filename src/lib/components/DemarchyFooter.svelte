@@ -3,10 +3,10 @@
 </script>
 
 <footer
-  class="footer flex md:flex-row flex-col justify-around items-center py-4 md:py-8 text-neutral gap-0"
+  class="footer flex md:flex-row flex-col justify-around items-center py-4 md:py-8 text-neutral gap-0 relative z-1"
 >
   <aside class="flex flex-row items-center">
-    <DemarchyLogo width={127} />
+    <DemarchyLogo width={127} animate />
     <p class="text-sm ml-2 mt-1">
       &copy; 2024
       <a href="https://typov.com" target="_blank" rel="noopener noreferrer" class="link link-hover">
