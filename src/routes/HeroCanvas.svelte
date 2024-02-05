@@ -63,8 +63,11 @@
     while (num--) {
       particles.push(new Particle());
     }
-    canvasEl.height = innerHeight;
-    canvasEl.width = innerWidth;
+    canvasEl.height = innerHeight * devicePixelRatio;
+    canvasEl.width = innerWidth * devicePixelRatio;
+    canvasEl.style.width = innerWidth + 'px';
+    canvasEl.style.height = innerHeight + 'px';
+    canvasEl.getContext('2d')?.scale(devicePixelRatio, devicePixelRatio);
   }
 
   function draw() {
@@ -73,7 +76,7 @@
     if (!ctx) return;
 
     ctx.globalCompositeOperation = 'destination-over';
-    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    ctx.clearRect(0, 0, innerWidth * devicePixelRatio, innerHeight * devicePixelRatio);
 
     particles.forEach((p) => p.update(ctx));
 

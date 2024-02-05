@@ -18,7 +18,7 @@
     </header>
 
     <div class="card bg-base-200 flex-1">
-      <div class="card-body sm:text-lg sm:max-w-xl">
+      <div class="card-body sm:text-lg sm:max-w-xl text-justify">
         <slot />
       </div>
     </div>
