@@ -15,19 +15,11 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let config: Record<string, any>;
   $: config = {
-    access: {
-      path: root + group?.slug + '/access',
-      symbol: 'key'
-    },
-    activity: {
-      disabled: true,
-      path: root + group?.slug + '/activity',
-      symbol: 'timeline'
-    },
-    discussions: {
-      path: root + group?.slug + '/discussions',
-      symbol: 'forum'
-    },
+    // activity: {
+    //   disabled: true,
+    //   path: root + group?.slug + '/activity',
+    //   symbol: 'timeline'
+    // },
     docs: {
       path: root + group?.slug + '/docs',
       symbol: 'article'
@@ -36,9 +28,18 @@
       path: root + group?.slug + '/feedback',
       symbol: 'feedback'
     },
+    discussions: {
+      path: root + group?.slug + '/discussions',
+      symbol: 'forum'
+    },
     proposals: {
       path: root + group?.slug + '/proposals',
-      symbol: 'history_edu'
+      symbol: 'history_edu',
+      divider: true
+    },
+    access: {
+      path: root + group?.slug + '/access',
+      symbol: 'key'
     },
     settings: {
       disabled: true,
@@ -111,6 +112,9 @@
                 {titleCase(route)}
               </a>
             </li>
+            {#if config[route].divider}
+              <div class="divider p-0 my-2 min-h-0 h-0" />
+            {/if}
           {/each}
         </ul>
       </li>
