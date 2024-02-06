@@ -25,7 +25,7 @@
   });
 </script>
 
-<header class="flex flex-row items-center z-50 p-3 gap-2">
+<header class="flex flex-row items-center z-50 px-3 pt-2 pb-1 gap-2">
   <a href="/d" title="Dashboard">
     <DemarchyDLoader {loading} />
   </a>
