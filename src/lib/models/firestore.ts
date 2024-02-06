@@ -1,5 +1,6 @@
 // bad at spelling
 export const ACTIVITIES = 'activities';
+export const APPLICATIONS = 'applications';
 export const BALLOTS = 'ballots';
 export const CONFIGS = 'configs';
 export const DISCUSSIONS = 'discussions';

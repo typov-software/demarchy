@@ -152,6 +152,12 @@ service cloud.firestore {
         allow create: if isOrgMemberOrHigher() && isValidGroup();
         allow update: if isGroupMemberOrHigher(groupId); 
 
+        match /applications/{applicationId} {
+          allow read: if canReadOrg();
+          allow update: if isGroupMemberOrHigher(groupId);
+          allow create: if canReadOrg();
+        } 
+
         match /settings/{settingsId} {
           allow read: if canReadOrg();
         }

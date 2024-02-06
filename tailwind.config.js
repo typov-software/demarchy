@@ -25,6 +25,7 @@ export default {
     extend: {},
     fontFamily: {
       sans: ['Fira Code', 'monospace'],
+      prompt: ['Prompt', 'sans-serif'],
       noto: ['Noto Sans', 'sans-serif']
     }
   },
@@ -38,7 +39,7 @@ export default {
           'base-100': '#f4f4f5',
           'base-200': '#e4e4e7',
           'base-300': '#d4d4d8',
-          'base-content': '#09090b'
+          'base-content': '#111111'
         }
       },
       {
@@ -46,7 +47,7 @@ export default {
           ...sharedThemeOptions,
           'color-scheme': 'dark',
           neutral: '#a1a1aa',
-          'base-100': '#0f0f0f',
+          'base-100': '#111111',
           'base-200': '#18181b',
           'base-300': '#27272a',
           'base-content': '#f4f4f5'
