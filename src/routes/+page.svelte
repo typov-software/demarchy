@@ -31,7 +31,7 @@
         class="py-6 w-full text-center text-base sm:text-xl"
         transition:fly={{ delay: 200, duration: 1000, y: 60, easing }}
       >
-        A <strong class="demarchy-faded-walk">democratic</strong> toolkit for communities
+        A <strong class="demarchy-faded-walk">democratic</strong> toolkit for communities and cooperatives
       </p>
       <div
         class="flex flex-row gap-4 justify-center mt-2"
@@ -58,57 +58,107 @@
   </div>
 </div>
 
-<HomepageHero reverse title="Organize" subtitle="Unite people around shared goals and values">
+<HomepageHero title="Organize" subtitle="Unite people around shared goals and values">
+  <!-- the problem -->
   <p>
     A workplace, a social group, a fandom — whatever brings us together deserves flexible tools to
     support and sustain it.
   </p>
+  <!-- demarchy solution -->
   <p>
     Demarchy is a new but familiar toolkit built for finding <strong class="demarchy-faded-walk"
       >Unity</strong
     > within communities.
   </p>
+  <!-- setup next -->
   <p>
     Biased towards transparency, ambitious super majorities, and no tolerance for intolerance — some
     values can't be compromised.
   </p>
 </HomepageHero>
 
-<HomepageHero title="Listen" subtitle="Accept feedback to find opportunity for progress">
+<HomepageHero reverse title="Listen" subtitle="Accept feedback to find opportunity for progress">
+  <!-- the problem -->
   <p>Healthy communities start by listening to the needs of it's individuals.</p>
+  <!-- demarchy solution -->
   <p>
     With Demarchy's <strong class="demarchy-faded-walk">Feedback</strong> tool, groups can uplift comments
     and concerns in a place for all to see.
   </p>
+  <!-- setup next -->
   <p>Use comments as a spark for change to make progress towards goals.</p>
 </HomepageHero>
 
 <HomepageHero
-  reverse
   title="Discuss"
   subtitle="Focus ideas and conversations to shape policy and take action"
 >
-  <p>TODO</p>
+  <!-- the problem -->
+  <p>
+    Modern chat rooms and collaborative document editors fail to keep discussions productive with
+    all stakeholders involved.
+  </p>
+  <!-- demarchy solution -->
+  <p>
+    Dive into the details with Demarchy <strong class="demarchy-faded-walk">Discussions</strong> and
+    lead conversations to transparent, meaningful outcomes.
+  </p>
+  <!-- setup next -->
+  <p>
+    Keep members informed by pinning action items and conflict resolutions from comments to the top
+    of discussions.
+  </p>
 </HomepageHero>
 
-<HomepageHero title="Propose" subtitle="Craft proposals that update group libraries and settings">
-  <p>TODO</p>
+<HomepageHero reverse title="Propose" subtitle="Reconcile ideas and materials">
+  <!-- the problem -->
+  <p>Live editing documents shared by many peers is traditionally a risky endeavor.</p>
+  <!-- demarchy solution -->
+  <p>
+    <strong class="demarchy-faded-walk">Proposals</strong> in Demarchy collect changes to libraries before
+    updates are approved &mdash; creating time and space for consensus.
+  </p>
+  <!-- setup next -->
+  <p>
+    Members of a community should have a say in how they operate without steep hierarchies to climb.
+  </p>
 </HomepageHero>
 
-<HomepageHero
-  reverse
-  title="Together"
-  subtitle="Seek understanding and consensus from the group with tools to resolve questions and concerns"
->
-  <p>TODO</p>
+<HomepageHero title="Together" subtitle="Seek clarity and consensus with tools for resolution">
+  <!-- the problem -->
+  <p>Many decisions that affect our communities are made by an elite few out of sight.</p>
+  <!-- demarchy solution -->
+  <p>
+    In Demarchy, any member of an organization can form <strong class="demarchy-faded-walk"
+      >Groups</strong
+    > that own their docs and settings for all to see.
+  </p>
+  <!-- setup next -->
+  <p>
+    Besides comment moderation, all roles in Demarchy are equal &mdash; you'll find no
+    "administrators" here.
+  </p>
 </HomepageHero>
 
-<HomepageHero title="Vote" subtitle="Take action for the changes you believe in">
-  <p>TODO</p>
+<HomepageHero reverse title="Vote" subtitle="Aim high with configurable super majorities">
+  <!-- the problem -->
+  <p>
+    Today's leaders proudly defend democratic ideals &mdash; until its time to make consequential
+    decisions.
+  </p>
+  <!-- demarchy solution -->
+  <p>
+    Demarchy <strong class="demarchy-faded-walk">Ballots</strong> makes voting simple, fast, and automatic.
+  </p>
+  <!-- setup next (CTA) -->
+  <p>
+    Bring horizontal decision making to your community and trust people to make changes on their own
+    behalf.
+  </p>
 </HomepageHero>
 
 <div class="flex flex-col items-center pb-28 gap-8 z-1 relative">
-  <p class="text-lg">Sign up for <strong class="demarchy-faded-walk">early</strong> access</p>
+  <p class="text-xl">Sign up for <strong class="demarchy-faded-walk">early</strong> access</p>
   <a href="/join" class="btn btn-secondary sm:btn-lg" title="Join now">
     <span class="material-symbols-outlined">join</span>
     Join now
