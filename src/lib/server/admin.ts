@@ -18,7 +18,8 @@ import {
   PROPOSALS,
   LIBRARIES,
   DOCS,
-  DISCUSSIONS
+  DISCUSSIONS,
+  APPLICATIONS
 } from '$lib/models/firestore';
 
 try {
@@ -85,6 +86,10 @@ export function adminGroupRef(organization_id: string) {
 
 export function adminMemberRef(organization_id: string, group_id: string) {
   return adminGroupRef(organization_id).doc(group_id).collection(MEMBERS);
+}
+
+export function adminGroupApplicationRef(organization_id: string, group_id: string) {
+  return adminGroupRef(organization_id).doc(group_id).collection(APPLICATIONS);
 }
 
 export function adminGroupFeedbackRef(organization_id: string, group_id: string) {

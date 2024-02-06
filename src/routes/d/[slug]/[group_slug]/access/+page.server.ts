@@ -2,6 +2,7 @@ import _set from 'lodash/set';
 import type { Actions, PageServerLoad } from './$types';
 import {
   adminDB,
+  adminGroupApplicationRef,
   adminGroupRef,
   adminInboxRef,
   adminInvitationRef,
@@ -15,12 +16,11 @@ import type { Member } from '$lib/models/members';
 import { error, redirect } from '@sveltejs/kit';
 import { FieldValue, type OrderByDirection } from 'firebase-admin/firestore';
 import { makeDocument } from '$lib/models/utils';
-import type { Invitation, InvitationProps } from '$lib/models/invitations';
-import type {
-  InvitationNotificationData,
-  NotificationProps,
-  UninviteNotificationData
-} from '$lib/models/notifications';
+import type { Invitation } from '$lib/models/invitations';
+import type { NotificationProps, UninviteNotificationData } from '$lib/models/notifications';
+import type { Application } from '$lib/models/applications';
+import { addDays } from 'date-fns';
+import { resendInvitation, sendInvitation } from '$lib/server/invitation-actions';
 
 export const load = (async ({ url, parent }) => {
   const direction: OrderByDirection = (url.searchParams.get('direction') ??
@@ -34,12 +34,20 @@ export const load = (async ({ url, parent }) => {
     .where('group_id', '==', group.id)
     .get();
 
+  const applicationsSnapshot = await adminDB
+    .doc(group.path)
+    .collection('applications')
+    .where('created_at', '>=', addDays(new Date(), -7))
+    .get();
+
   const members: Member[] = snapshot.docs.map((doc) => makeDocument(doc));
   const invitations: Invitation[] = invitationsSnapshot.docs.map((doc) => makeDocument(doc));
+  const applications: Application[] = applicationsSnapshot.docs.map((doc) => makeDocument(doc));
 
   return {
     members,
-    invitations
+    invitations,
+    applications
   };
 }) satisfies PageServerLoad;
 
@@ -99,6 +107,7 @@ export const actions = {
       redirect(301, `/d`);
     }
   },
+
   sendInvitations: async ({ request, url }) => {
     const formData = await request.formData();
     const entries = Array.from(formData.entries());
@@ -139,71 +148,22 @@ export const actions = {
         continue;
       }
 
-      // TODO: look for existing invitation
-      const existingInvitationSnapshot = await adminInvitationRef(organization_id)
-        .where('invited_user_id', '==', invitee.id)
-        .get();
-      if (existingInvitationSnapshot.docs.length) {
-        failures.push({
-          id: pair.id,
-          handle: pair.handle,
-          reason: 'duplicate'
-        });
-        continue;
-      }
-
-      const batch = adminDB.batch();
-      const invitationRef = adminInvitationRef(organization_id).doc();
-      const invitationProps: InvitationProps = {
-        user_id,
-        profile_handle,
-        invited_profile_handle: invitee.handle,
-        invited_user_id: invitee.id,
-        organization_id,
-        group_id,
-        role: 'mem',
-        rejected: false
-      };
-      batch.create(invitationRef, {
-        ...createdTimestamps(),
-        ...invitationProps
-      });
-      batch.set(
-        adminInboxRef().doc(invitee.id),
-        {
-          ...updatedTimestamps(),
-          unread: FieldValue.increment(1)
-        },
-        {
-          merge: true
-        }
-      );
-      const inviteData: InvitationNotificationData = {
-        invitation_id: invitationRef.id,
+      const result = await sendInvitation({
         organization_id,
         organization_name,
         group_id,
         group_name,
-        invited_by_id: user_id,
-        invited_by_handle: profile_handle
-      };
-      const notificationProps: NotificationProps = {
-        type: 'invitation',
-        seen: 0,
-        data: inviteData
-      };
-      batch.create(adminNotificationRef(invitee.id).doc(), {
-        ...createdTimestamps(),
-        ...notificationProps
+        invited_user_id: invitee.id,
+        invited_profile_handle: invitee.handle,
+        user_id,
+        profile_handle,
+        role: 'mem'
       });
 
-      try {
-        await batch.commit();
-      } catch (e) {
-        console.error(e);
+      if (result !== 'sent') {
         failures.push({
           ...invitee,
-          reason: (e as Error).message
+          reason: result
         });
       }
     }
@@ -214,6 +174,7 @@ export const actions = {
 
     redirect(301, url.pathname);
   },
+
   uninvite: async ({ request }) => {
     const formData = await request.formData();
     const organization_id = formData.get('organization_id') as string;
@@ -255,50 +216,55 @@ export const actions = {
     await batch.commit();
     return {};
   },
+
   resend: async ({ request }) => {
     const formData = await request.formData();
+    const invitation_path = formData.get('invitation_path') as string;
+    const result = await resendInvitation({ invitation_path });
+    if (result !== 'sent') {
+      console.error(`Failed to resend invitation: ${result}`);
+    }
+  },
+
+  acceptApplication: async ({ request, locals }) => {
+    const user_id = locals.user_id!;
+    const formData = await request.formData();
+    const application_id = formData.get('application_id') as string;
     const organization_id = formData.get('organization_id') as string;
     const organization_name = formData.get('organization_name') as string;
     const group_id = formData.get('group_id') as string;
     const group_name = formData.get('group_name') as string;
-    const user_id = formData.get('user_id') as string;
     const profile_handle = formData.get('profile_handle') as string;
-    const invitation_id = formData.get('invitation_id') as string;
-    const invitationDoc = await adminInvitationRef(organization_id).doc(invitation_id).get();
-    if (!invitationDoc.exists) {
-      error(401, 'Missing invitation');
+
+    const applicationDoc = await adminGroupApplicationRef(organization_id, group_id)
+      .doc(application_id)
+      .get();
+    const application = makeDocument<Application>(applicationDoc);
+    // Check for missing application or unexpected form input
+    if (
+      !applicationDoc.exists ||
+      application.organization_id !== organization_id ||
+      application.group_id !== group_id
+    ) {
+      error(401, 'Missing application');
     }
-    const invitation = makeDocument<Invitation>(invitationDoc);
-    const inviteData: InvitationNotificationData = {
-      invitation_id,
+
+    const result = await sendInvitation({
       organization_id,
       organization_name,
       group_id,
       group_name,
-      invited_by_id: user_id,
-      invited_by_handle: profile_handle
-    };
-    const notificationProps: NotificationProps = {
-      type: 'invitation',
-      seen: 0,
-      data: inviteData
-    };
-    const batch = adminDB.batch();
-    batch.create(adminNotificationRef(invitation.invited_user_id).doc(), {
-      ...createdTimestamps(),
-      ...notificationProps
+      invited_user_id: application.user_id,
+      invited_profile_handle: application.profile_handle,
+      user_id,
+      profile_handle,
+      role: 'mem'
     });
-    batch.set(
-      adminInboxRef().doc(invitation.invited_user_id),
-      {
-        ...updatedTimestamps(),
-        unread: FieldValue.increment(1)
-      },
-      {
-        merge: true
-      }
-    );
-    await batch.commit();
-    return {};
+
+    if (result !== 'sent') {
+      console.error(`Failed to resend invitation: ${result}`);
+    } else {
+      await applicationDoc.ref.delete();
+    }
   }
 } satisfies Actions;
