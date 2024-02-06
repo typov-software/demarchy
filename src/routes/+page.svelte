@@ -72,7 +72,7 @@
   </p>
   <!-- setup next -->
   <p>
-    Biased towards transparency, ambitious super majorities, and no tolerance for intolerance — some
+    Biased towards transparency, ambitious super majorities, and no space for intolerance — some
     values can't be compromised.
   </p>
 </HomepageHero>
