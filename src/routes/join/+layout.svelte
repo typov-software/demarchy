@@ -2,7 +2,10 @@
   import { page } from '$app/stores';
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
   import { user } from '$lib/firebase';
+  import HeroCanvas from '../HeroCanvas.svelte';
 </script>
+
+<HeroCanvas />
 
 <main class="hero min-h-screen h-full">
   <div class="hero-content flex-col w-full min-h-full">

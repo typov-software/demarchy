@@ -9,6 +9,7 @@
   import { signInWithPopup, signOut } from 'firebase/auth';
   import { doc, getDoc } from 'firebase/firestore';
   import { onMount } from 'svelte';
+  import HeroCanvas from '../HeroCanvas.svelte';
 
   const providers = getProviders();
 
@@ -22,8 +23,6 @@
       fetchingProfile = false;
     });
   });
-
-  $: console.log({ fetchingProfile });
 
   async function handleSignIn(pid: AuthProvider) {
     const provider = providers[pid];
@@ -49,6 +48,8 @@
     await signOut(auth);
   }
 </script>
+
+<HeroCanvas />
 
 <main class="hero min-h-screen h-full">
   <div class="hero-content flex-col w-full min-h-full">

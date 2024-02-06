@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
 
   let canvasEl: HTMLCanvasElement;
-  const colors = ['#f4f4f5', '#111111', '#2563eb', '#e11d48', '#d946ef'];
+  const colors = ['#2563eb', '#e11d48', '#d946ef'];
   const speed = 0.5;
 
   class Particle {
