@@ -5,6 +5,7 @@
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
   import HomepageHero from './HomepageHero.svelte';
   import HeroCanvas from './HeroCanvas.svelte';
+  import { theme, toggleTheme } from '$lib/stores/themes';
 
   const easing = expoInOut;
 
@@ -167,6 +168,21 @@
     Join now
   </a>
 </div>
+
+<label
+  for="theme-toggle"
+  class="theme-toggle flex flex-row items-center rounded-none absolute top-2 right-2 z-10 gap-1 opacity-50 cursor-pointer"
+>
+  <span class="material-symbols-outlined text-sm">light_mode</span>
+  <input
+    id="theme-toggle"
+    type="checkbox"
+    class="toggle toggle-xs"
+    checked={$theme === 'dark'}
+    on:change={toggleTheme}
+  />
+  <span class="material-symbols-outlined text-sm">dark_mode</span>
+</label>
 
 <style lang="scss">
   .below-the-fold {
