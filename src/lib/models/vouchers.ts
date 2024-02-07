@@ -1,6 +1,6 @@
 import type { DocumentMeta } from './utils';
 
-export type VoucherType = '/d/organizations/new';
+export type VoucherType = '/join' | '/d/organizations/new';
 
 export interface VoucherProps {
   /**

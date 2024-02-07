@@ -7,6 +7,7 @@
   import { formatRelative } from 'date-fns';
   import UninviteNotification from './notifications/UninviteNotification.svelte';
   import ApplicationNotification from './notifications/ApplicationNotification.svelte';
+  import VoucherRequestedNotification from './notifications/VoucherRequestedNotification.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -34,6 +35,8 @@
       <InvitationNotification {notification} on:deleted={handleDeleted} />
     {:else if notification.type === 'uninvite'}
       <UninviteNotification {notification} />
+    {:else if notification.type === 'voucher-requested'}
+      <VoucherRequestedNotification {notification} />
     {:else if notification.type === 'welcome'}
       <WelcomeNotification {notification} />
     {/if}
