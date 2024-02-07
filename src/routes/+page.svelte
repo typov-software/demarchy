@@ -17,7 +17,7 @@
 
 <HeroCanvas />
 
-<div class="hero w-full min-h-screen py-2">
+<div class="hero w-full min-h-screen py-2 relative">
   <div class="hero-content flex-col w-full">
     {#if showDescription}
       <h1
@@ -56,6 +56,9 @@
       </div>
     {/if}
   </div>
+  <button class="below-the-fold absolute bottom-0"
+    ><span class="material-symbols-outlined text-accent text-6xl">arrow_drop_down</span></button
+  >
 </div>
 
 <HomepageHero title="Organize" subtitle="Unite people around shared goals and values">
@@ -164,3 +167,27 @@
     Join now
   </a>
 </div>
+
+<style lang="scss">
+  .below-the-fold {
+    animation-name: below-the-fold;
+    animation-iteration-count: infinite;
+    animation-duration: 2000ms;
+    animation-timing-function: ease-in-out;
+  }
+
+  @keyframes below-the-fold {
+    0% {
+      opacity: 1;
+      transform: translateY(-25px);
+    }
+
+    50% {
+      opacity: 0;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+</style>
