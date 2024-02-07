@@ -1,6 +1,6 @@
 import type { DocumentMeta } from './utils';
 
-export type NotificationType = 'invitation' | 'uninvite' | 'welcome';
+export type NotificationType = 'application' | 'invitation' | 'uninvite' | 'welcome';
 
 export interface NotificationProps<T = unknown> {
   seen: number;
@@ -9,6 +9,10 @@ export interface NotificationProps<T = unknown> {
 }
 
 export type Notification<T = unknown> = NotificationProps<T> & DocumentMeta;
+
+export interface ApplicationNotificationData {
+  text: string;
+}
 
 export interface InvitationNotificationData {
   invitation_id: string;

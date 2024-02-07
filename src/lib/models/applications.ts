@@ -5,6 +5,7 @@ export interface ApplicationProps {
   profile_handle: string;
   organization_id: string;
   group_id: string;
+  text: string;
 }
 
 export type Application = ApplicationProps & DocumentMeta;

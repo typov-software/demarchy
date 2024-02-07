@@ -11,7 +11,7 @@
 <AuthCheck>
   <p class="w-full max-w-sm text-left pb-4 self-start">
     Across groups and organizations, people will know you by your
-    <span class="demarchy-faded-walk">handle</span>
+    <span class="d-anim-text-walk">handle</span>
   </p>
   <form
     method="post"

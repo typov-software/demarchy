@@ -33,7 +33,7 @@
 <AuthCheck>
   <p class="w-full max-w-sm text-left self-start pb-4">
     Choose how others will see
-    <span class="demarchy-faded-walk">you</span>
+    <span class="d-anim-text-walk">you</span>
   </p>
   <form class="w-full flex flex-row items-end" on:submit|preventDefault={confirmName}>
     <div class="flex flex-1 flex-col items-start w-full gap-2">

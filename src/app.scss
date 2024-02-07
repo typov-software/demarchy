@@ -41,14 +41,14 @@ body {
   }
 }
 
-.demarchy-faded-walk {
+.d-anim-text-walk {
   display: inline-block;
-  animation-name: demarchy-faded-walk;
+  animation-name: d-anim-text-walk;
   animation-duration: 6000ms;
   animation-iteration-count: infinite;
 }
 
-@keyframes demarchy-faded-walk {
+@keyframes d-anim-text-walk {
   0% {
     color: oklch(var(--bc));
     transform: translate(0, 0);

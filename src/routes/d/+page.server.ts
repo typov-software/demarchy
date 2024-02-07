@@ -1,28 +1,9 @@
 import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { submitApplication } from '$lib/server/application-actions';
-import { adminGroupApplicationRef } from '$lib/server/admin';
-import type { Application } from '$lib/models/applications';
-import { makeDocument } from '$lib/models/utils';
 
-export const load = (async ({ parent, locals }) => {
-  const data = await parent();
-
-  let application: Application | null = null;
-  try {
-    const applicationDoc = await adminGroupApplicationRef(data.organization.id, data.group.id)
-      .doc(locals.user_id!)
-      .get();
-    if (applicationDoc.exists) {
-      application = makeDocument<Application>(applicationDoc);
-    }
-  } catch (e) {
-    console.error('Error looking for application', e);
-  }
-
-  return {
-    application
-  };
+export const load = (async () => {
+  return {};
 }) satisfies PageServerLoad;
 
 export const actions = {

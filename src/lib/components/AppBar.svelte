@@ -38,7 +38,7 @@
             {organization.name}
           </div>
         {:else}
-          <div tabindex="0" role="button" class="btn-warning btn-sm btn">Select organization</div>
+          <div tabindex="0" role="button" class="btn-success btn-sm btn">Select organization</div>
         {/if}
 
         <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box -left-5">

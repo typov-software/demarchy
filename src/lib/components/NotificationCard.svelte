@@ -6,6 +6,7 @@
   import NotificationSeen from './NotificationSeen.svelte';
   import { formatRelative } from 'date-fns';
   import UninviteNotification from './notifications/UninviteNotification.svelte';
+  import ApplicationNotification from './notifications/ApplicationNotification.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -27,7 +28,9 @@
     <NotificationSeen {notification} on:deleted={handleDeleted} />
   </div>
   <div class="card-body px-3 pt-0 pb-3">
-    {#if notification.type === 'invitation'}
+    {#if notification.type === 'application'}
+      <ApplicationNotification {notification} />
+    {:else if notification.type === 'invitation'}
       <InvitationNotification {notification} on:deleted={handleDeleted} />
     {:else if notification.type === 'uninvite'}
       <UninviteNotification {notification} />
