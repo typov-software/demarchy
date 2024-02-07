@@ -76,7 +76,7 @@
   </p>
   <!-- setup next -->
   <p>
-    Biased towards transparency, ambitious super majorities, and no space for intolerance — some
+    Biased towards transparency, ambitious supermajorities, and no space for intolerance — some
     values can't be compromised.
   </p>
 </HomepageHero>
@@ -99,8 +99,8 @@
 >
   <!-- the problem -->
   <p>
-    Modern chat rooms and collaborative document editors fail to keep discussions productive with
-    all stakeholders involved.
+    Modern chatrooms and collaborative document editors fail to keep discussions productive with all
+    stakeholders involved.
   </p>
   <!-- demarchy solution -->
   <p>
@@ -144,7 +144,7 @@
   </p>
 </HomepageHero>
 
-<HomepageHero reverse title="Vote" subtitle="Aim high with configurable super majorities">
+<HomepageHero reverse title="Vote" subtitle="Aim high with configurable supermajorities">
   <!-- the problem -->
   <p>
     Today's leaders proudly defend democratic ideals &mdash; until its time to make consequential

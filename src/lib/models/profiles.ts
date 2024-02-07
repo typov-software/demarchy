@@ -13,5 +13,6 @@ export type AuthProvider = 'google.com' | 'github.com' | 'microsoft.com' | 'appl
 export const SUPPORTED_PROVIDER_IDS: AuthProvider[] = [
   'google.com',
   'github.com',
-  'microsoft.com' /*, 'apple.com' */
+  'microsoft.com',
+  'apple.com'
 ];
