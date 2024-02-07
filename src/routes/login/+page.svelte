@@ -8,10 +8,21 @@
   import { getProviders } from '$lib/utils/client-auth';
   import { signInWithPopup, signOut } from 'firebase/auth';
   import { doc, getDoc } from 'firebase/firestore';
+  import { onMount } from 'svelte';
+  import HeroCanvas from '../HeroCanvas.svelte';
 
   const providers = getProviders();
 
   $: expired = $page.url.searchParams.get('session') === 'expired';
+
+  let fetchingProfile: boolean = true;
+  $: fetchingProfile = true;
+
+  onMount(() => {
+    profile.subscribe(() => {
+      fetchingProfile = false;
+    });
+  });
 
   async function handleSignIn(pid: AuthProvider) {
     const provider = providers[pid];
@@ -38,24 +49,19 @@
   }
 </script>
 
+<HeroCanvas />
+
 <main class="hero min-h-screen h-full">
   <div class="hero-content flex-col w-full min-h-full">
     <DemarchyLogo />
 
     <div class="flex flex-col items-center w-full">
-      {#if $user && $profile && !expired}
+      {#if fetchingProfile}
+        <div class="loading" />
+      {:else if $user && $profile && !expired}
         <p class="pb-6">
           Welcome back, {$profile.name}!
         </p>
-      {:else if expired}
-        <p class="pb-6">
-          A <span class="text-accent">recent</span> login is required to proceed
-        </p>
-      {:else}
-        <p class="pb-6">Login using an existing provider</p>
-      {/if}
-
-      {#if $user && $profile && !expired}
         <div class="flex items-center gap-4">
           <button
             title="Logout"
@@ -71,8 +77,15 @@
           >
         </div>
       {:else if $user && !$profile && !expired}
-        <a href="/join/handle" class="btn btn-primary">Finish signing up</a>
+        <a href="/join/handle" class="btn m-4">Finish signing up</a>
       {:else}
+        {#if expired}
+          <p class="pb-6">
+            A <span class="text-accent">recent</span> login is required to proceed
+          </p>
+        {:else}
+          <p class="pb-6">Login using an existing provider</p>
+        {/if}
         <div class="card w-full max-w-sm">
           <div class="card-body bg-base-200 rounded-box">
             <AuthProviders action="in" onChoose={handleSignIn} />

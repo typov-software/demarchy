@@ -47,7 +47,8 @@
   };
 </script>
 
-<form class="flex flex-col items-center max-w-md w-full gap-4">
+<form class="flex flex-col items-center w-full gap-2">
+  <label for="photo_url" class="text-sm text-neutral w-full text-left">Photo</label>
   <input
     disabled={uploading}
     bind:value={fileinput}
@@ -66,6 +67,6 @@
     <div class="cropper-wrap relative w-80 h-80">
       <Cropper {image} bind:crop bind:zoom aspect={1} on:cropcomplete={previewCrop} />
     </div>
-    <button class="btn btn-primary w-full" on:click={saveImage}>Save</button>
+    <button class="btn btn-primary w-full max-w-xs" on:click={saveImage}>Save</button>
   {/if}
 </form>

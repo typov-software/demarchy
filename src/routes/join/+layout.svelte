@@ -2,10 +2,13 @@
   import { page } from '$app/stores';
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
   import { user } from '$lib/firebase';
+  import HeroCanvas from '../HeroCanvas.svelte';
 </script>
 
+<HeroCanvas />
+
 <main class="hero min-h-screen h-full">
-  <div class="hero-content flex-col w-full min-h-full">
+  <div class="hero-content flex-col justify-start sm:justify-center w-full min-h-full">
     <DemarchyLogo />
 
     <nav class="flex mt-4 justify-center w-full max-w-md">
@@ -31,7 +34,7 @@
     </nav>
 
     <div class="card bg-base-200 max-w-lg w-full mt-6">
-      <div class="card-body items-center text-center">
+      <div class="card-body items-center text-center p-4 sm:p-8">
         <slot />
       </div>
     </div>

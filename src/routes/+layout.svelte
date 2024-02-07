@@ -14,6 +14,8 @@
     '/about',
     '/documentation',
     '/join',
+    '/join/handle',
+    '/join/profile',
     '/login',
     '/pricing',
     '/privacy',

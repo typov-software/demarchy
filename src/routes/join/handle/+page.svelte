@@ -9,6 +9,10 @@
 </script>
 
 <AuthCheck>
+  <p class="w-full max-w-sm text-left pb-4 self-start">
+    Across groups and organizations, people will know you by your
+    <span class="demarchy-faded-walk">handle</span>
+  </p>
   <form
     method="post"
     action="?/updateHandle"
@@ -20,6 +24,9 @@
   >
     <HandleEditor currentHandle={data.profile?.handle ?? ''} />
   </form>
+  <p class="w-full max-w-xs text-right pt-4 text-neutral text-sm self-end">
+    You can change your handle later, so don't sweat it
+  </p>
   {#if data.profile?.handle}
     <a class="btn btn-success self-end mt-4" href="/join/profile">
       Update your Profile

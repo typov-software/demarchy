@@ -34,18 +34,17 @@
 </script>
 
 {#if $user}
-  <p class="pb-6 card-title text-center justify-center">
-    Welcome, {$user.displayName}!
-  </p>
+  <p class="pb-6 card-title text-center justify-center">Welcome to Demarchy</p>
+  <p class="pb-6 text-center justify-center">Continue setting up your account</p>
 {:else}
   <p class="pb-6">Connect with a provider</p>
 {/if}
 
 {#if $user}
-  <div class="flex items-center gap-4">
+  <div class="flex items-center justify-around gap-0 sm:gap-4">
     <button
       title="Logout"
-      class="btn btn-ghost text-neutral hover:text-base-content"
+      class="btn btn-sm btn-ghost text-neutral hover:text-base-content"
       on:click={endSession}
     >
       <span class="material-symbols-outlined -scale-100">logout</span>
