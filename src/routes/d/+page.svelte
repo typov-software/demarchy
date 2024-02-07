@@ -50,8 +50,10 @@
           })}
         >
           <input type="hidden" name="profile_handle" value={data.profile.handle} />
-          <input type="hidden" name="organization_id" value="XQweByNkFu1wZIN9ie1N" />
-          <input type="hidden" name="group_id" value="XQweByNkFu1wZIN9ie1N" />
+          <input type="hidden" name="organization_id" value="psWhCdIftOCR2vMbBNH0" />
+          <input type="hidden" name="group_id" value="psWhCdIftOCR2vMbBNH0" />
+          <!-- <input type="hidden" name="organization_id" value="XQweByNkFu1wZIN9ie1N" />
+          <input type="hidden" name="group_id" value="XQweByNkFu1wZIN9ie1N" /> -->
           <input type="hidden" name="text" value={`You requested an invitation to Demarchy`} />
         </form>
         <button
