@@ -7,14 +7,8 @@ import type {
   NotificationProps,
   VoucherRequestedNotificationData
 } from '$lib/models/notifications';
-import {
-  adminDB,
-  adminInboxRef,
-  adminNotificationRef,
-  createdTimestamps,
-  updatedTimestamps
-} from '$lib/server/admin';
-import { FieldValue } from 'firebase-admin/firestore';
+import { adminDB, createdTimestamps } from '$lib/server/admin';
+import { prepareNotification } from '$lib/server/notification-actions';
 
 export const load = (async () => {
   return {};
@@ -28,6 +22,16 @@ export const actions = {
     if (!['/join', '/d/organizations/new'].includes(type)) {
       error(401, 'unauthorized');
     }
+    const voucherNotification: VoucherRequestedNotificationData = {
+      type
+    };
+    const notificationProps: NotificationProps = {
+      category: 'vouchers',
+      type: 'voucher-requested',
+      seen: 0,
+      data: voucherNotification
+    };
+
     const batch = adminDB.batch();
     batch.set(
       adminDB.collection('voucher_requests').doc(user_id),
@@ -38,30 +42,7 @@ export const actions = {
       },
       { merge: true }
     );
-
-    // create the notifcation
-    const voucherNotification: VoucherRequestedNotificationData = {
-      type
-    };
-    const notificationProps: NotificationProps = {
-      type: 'voucher-requested',
-      seen: 0,
-      data: voucherNotification
-    };
-    batch.create(adminNotificationRef(user_id).doc(), {
-      ...createdTimestamps(),
-      ...notificationProps
-    });
-    batch.set(
-      adminInboxRef().doc(user_id),
-      {
-        ...updatedTimestamps(),
-        unread: FieldValue.increment(1)
-      },
-      {
-        merge: true
-      }
-    );
+    prepareNotification(notificationProps, user_id, batch);
     try {
       await batch.commit();
     } catch (e) {

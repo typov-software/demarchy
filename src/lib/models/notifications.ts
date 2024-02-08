@@ -1,3 +1,4 @@
+import type { InboxCategory } from './inboxes';
 import type { DocumentMeta } from './utils';
 import type { VoucherType } from './vouchers';
 
@@ -9,8 +10,9 @@ export type NotificationType =
   | 'welcome';
 
 export interface NotificationProps<T = unknown> {
-  seen: number;
+  category: InboxCategory;
   type: NotificationType;
+  seen: number;
   data: T;
 }
 
