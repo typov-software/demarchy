@@ -38,8 +38,6 @@
   $: collectionPath = `/inboxes/${userId}/notifications`;
   $: notifications, latestNotifications;
 
-  $: console.log({ category, collectionPath });
-
   let unsubscribe: undefined | (() => void);
   $: unsubscribe = undefined;
   $: settingUp = false;
@@ -107,7 +105,6 @@
   }
 
   function teardown() {
-    console.log('tearing down');
     if (unsubscribe) {
       unsubscribe();
     }

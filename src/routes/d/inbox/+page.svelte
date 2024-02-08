@@ -17,7 +17,7 @@
 
 <BasicSection otherClass="w-full items-stretch">
   {#if $inbox}
-    <div class="flex flex-col sm:flex-row gap-4 w-full">
+    <div class="flex flex-col sm:flex-row md:max-w-4xl md:self-center gap-4 w-full">
       <ul class="menu bg-base-200 rounded-box w-full sm:max-w-56">
         <li>
           <a href="?" class:active={!activeCategory}
