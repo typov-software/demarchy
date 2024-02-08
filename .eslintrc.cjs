@@ -19,7 +19,8 @@ module.exports = {
     node: true
   },
   globals: {
-    NodeJS: true
+    NodeJS: true,
+    __VERSION__: true
   },
   overrides: [
     {
