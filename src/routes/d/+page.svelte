@@ -1,7 +1,9 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import AppToast from '$lib/components/AppToast.svelte';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import ProfileLink from '$lib/components/ProfileLink.svelte';
+  import { toast } from '$lib/stores/toast';
   import { workingCallback } from '$lib/stores/working';
   import { emptyString } from '$lib/utils/string';
   import type { PageData } from './$types';
@@ -46,6 +48,10 @@
             },
             onEnd() {
               requestingInvite = false;
+              toast.add({
+                level: 'info',
+                content: `Your request to join has be received`
+              });
             }
           })}
         >
@@ -95,6 +101,11 @@
             },
             onEnd() {
               subscribing = false;
+              toast.add({
+                level: 'success',
+                content:
+                  'Thanks for subscribing to the Devlog! You can [unsubscribe](/unsubscribe) at any time.'
+              });
             }
           })}
         >
@@ -136,6 +147,10 @@
               },
               onEnd() {
                 requestingVoucher = false;
+                toast.add({
+                  level: 'info',
+                  content: 'Voucher requested'
+                });
               }
             })}
           >
@@ -154,6 +169,10 @@
               },
               onEnd() {
                 requestingVoucher = false;
+                toast.add({
+                  level: 'info',
+                  content: 'Voucher requested'
+                });
               }
             })}
           >
@@ -168,3 +187,5 @@
     </div>
   </div>
 </BasicSection>
+
+<AppToast />

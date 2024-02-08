@@ -55,9 +55,13 @@
           Login
         </a>
       </div>
+      <small
+        class="text-neutral text-xs sm:text-sm"
+        transition:fly={{ delay: 1000, duration: 1000, y: 20, easing }}>Early adopter access</small
+      >
     {/if}
   </div>
-  <button class="below-the-fold absolute bottom-0"
+  <button class="below-the-fold absolute bottom-10"
     ><span class="material-symbols-outlined text-accent text-6xl">arrow_drop_down</span></button
   >
 </div>
@@ -187,8 +191,10 @@
 
 <style lang="scss">
   .below-the-fold {
+    opacity: 0;
     animation-name: below-the-fold;
     animation-iteration-count: infinite;
+    animation-delay: 2000ms;
     animation-duration: 2000ms;
     animation-timing-function: ease-in-out;
   }
