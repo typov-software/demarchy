@@ -1,7 +1,6 @@
 import type { NotificationProps } from '$lib/models/notifications';
 import { FieldValue, type WriteBatch } from 'firebase-admin/firestore';
 import { adminInboxRef, adminNotificationRef, createdTimestamps, updatedTimestamps } from './admin';
-import { makeEmptyInboxCategories } from '$lib/models/inboxes';
 
 export function prepareNotification(
   notificationProps: NotificationProps<unknown>,
@@ -16,7 +15,6 @@ export function prepareNotification(
     adminInboxRef().doc(userId),
     {
       ...updatedTimestamps(),
-      ...makeEmptyInboxCategories(),
       [notificationProps.category]: FieldValue.increment(1),
       unread: FieldValue.increment(1)
     },

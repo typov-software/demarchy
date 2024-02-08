@@ -29,14 +29,14 @@
   let notifications: QueryDocumentSnapshot<DocumentData, NotificationProps<unknown>>[] = [];
   let latestNotifications: QueryDocumentSnapshot<DocumentData, NotificationProps<unknown>>[] = [];
   let containerEl: HTMLDivElement;
+  let collectionPath: string;
+  $: collectionPath = `/inboxes/${userId}/notifications`;
+  $: notifications, latestNotifications;
 
   $: userId = $user!.uid;
   $: hasMore = true;
   $: loadingMore = false;
-
-  let collectionPath: string;
-  $: collectionPath = `/inboxes/${userId}/notifications`;
-  $: notifications, latestNotifications;
+  $: hasNotifications = notifications.length || latestNotifications.length;
 
   let unsubscribe: undefined | (() => void);
   $: unsubscribe = undefined;
@@ -165,9 +165,12 @@
       />
     {/each}
   </ul>
+  {#if !hasMore && !hasNotifications}
+    <p>No notifications</p>
+  {/if}
   {#if hasMore}
     <div class="loading" />
-  {:else}
+  {:else if hasNotifications}
     <div class="flex items-center gap-4">
       <p class="text-xs">End of notifcations</p>
       <button
