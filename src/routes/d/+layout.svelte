@@ -6,6 +6,7 @@
   import type { PageData } from './$types';
   import { useOrganization } from '$lib/stores/organization';
   import DemarchyFooter from '$lib/components/DemarchyFooter.svelte';
+  import { profile } from '$lib/firebase';
 
   export let data: PageData;
 
@@ -20,7 +21,7 @@
   let organization = useOrganization();
 </script>
 
-<AuthCheck>
+<AuthCheck condition={$profile !== null}>
   <main class="flex flex-col h-full">
     <AppBar
       organization={$organization}

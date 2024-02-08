@@ -1,7 +1,7 @@
 <script lang="ts">
   import AuthCheck from '$lib/components/AuthCheck.svelte';
   import ProfilePhotoEditor from '$lib/components/ProfilePhotoEditor.svelte';
-  import { db, user } from '$lib/firebase';
+  import { db, joinVoucher, user } from '$lib/firebase';
   import { emptyString } from '$lib/utils/string';
   import { doc, setDoc } from 'firebase/firestore';
   import type { PageData } from './$types';
@@ -30,7 +30,7 @@
   }
 </script>
 
-<AuthCheck>
+<AuthCheck inline back="/join" condition={$joinVoucher !== null}>
   <p class="w-full max-w-sm text-left self-start pb-4">
     Choose how others will see
     <span class="d-anim-text-walk">you</span>

@@ -2,13 +2,14 @@
   import { enhance } from '$app/forms';
   import AuthCheck from '$lib/components/AuthCheck.svelte';
   import HandleEditor from '$lib/components/HandleEditor.svelte';
+  import { joinVoucher } from '$lib/firebase';
   import { workingCallback } from '$lib/stores/working';
   import type { PageData } from './$types';
 
   export let data: PageData;
 </script>
 
-<AuthCheck>
+<AuthCheck inline back="/join" condition={$joinVoucher?.redeemed === true}>
   <p class="w-full max-w-sm text-left pb-4 self-start">
     Across groups and organizations, people will know you by your
     <span class="d-anim-text-walk">handle</span>
