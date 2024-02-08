@@ -3,13 +3,32 @@ import type { PageServerLoad } from './$types';
 import { adminVoucherRef, updatedTimestamps } from '$lib/server/admin';
 import { makeDocument } from '$lib/models/utils';
 import type { Voucher } from '$lib/models/vouchers';
+import { RateLimiter } from 'sveltekit-rate-limiter/server';
+import { LIMITER_KEY } from '$env/static/private';
 
-export const load = (async () => {
+// See: https://github.com/ciscoheat/sveltekit-rate-limiter
+const limiter = new RateLimiter({
+  // A rate is defined as [number, unit]
+  IP: [10, 'h'], // IP address limiter
+  IPUA: [5, 'm'], // IP + User Agent limiter
+  cookie: {
+    // Cookie limiter
+    name: 'voucher_limiter', // Unique cookie name for this limiter
+    secret: LIMITER_KEY, // Use $env/static/private
+    rate: [2, 'm'],
+    preflight: true // Require preflight call (see load function)
+  }
+});
+
+export const load = (async (event) => {
+  await limiter.cookieLimiter?.preflight(event);
   return {};
 }) satisfies PageServerLoad;
 
 export const actions = {
-  redeem: async ({ request, locals }) => {
+  redeem: async (event) => {
+    if (await limiter.isLimited(event)) error(429);
+    const { request, locals } = event;
     const user_id = locals.user_id!;
     const formData = await request.formData();
     const voucher_id = formData.get('voucher_id') as string;
