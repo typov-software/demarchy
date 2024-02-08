@@ -22,7 +22,7 @@
     const body = await res.json();
     if (body.status === 'started') {
       await invalidateAll();
-      await goto('/join/handle');
+      await goto('/join/voucher');
     }
   }
 
@@ -50,8 +50,8 @@
       <span class="material-symbols-outlined -scale-100">logout</span>
       Logout
     </button>
-    <a href="/join/handle" class="btn btn-success">
-      Choose your handle
+    <a href="/join/voucher" class="btn btn-success">
+      Use your voucher
       <span class="material-symbols-outlined">navigate_next</span>
     </a>
   </div>

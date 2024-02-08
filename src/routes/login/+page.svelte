@@ -37,7 +37,7 @@
     });
     const profileExists = (await getDoc(doc(db, `profiles/${credential.user.uid}`))).exists();
     if (!profileExists) {
-      await goto('/join/handle');
+      await goto('/join/voucher');
     } else {
       await goto('/d');
     }
@@ -77,7 +77,7 @@
           >
         </div>
       {:else if $user && !$profile && !expired}
-        <a href="/join/handle" class="btn m-4">Finish signing up</a>
+        <a href="/join/voucher" class="btn m-4">Finish signing up</a>
       {:else}
         {#if expired}
           <p class="pb-6">

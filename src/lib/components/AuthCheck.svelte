@@ -2,16 +2,22 @@
   import { user } from '$lib/firebase';
   import BasicSection from './BasicSection.svelte';
   import DemarchyLogo from './DemarchyLogo.svelte';
+
+  export let inline = false;
+  export let back = '/login';
+  export let condition = true;
 </script>
 
-{#if $user}
+{#if $user && condition}
   <slot />
 {:else}
-  <BasicSection otherClass="min-h-screen h-full hero justify-center">
+  <BasicSection otherClass={`h-full hero justify-center ${inline ? '' : 'min-h-screen'}`}>
     <div class="hero-content flex-col p-8">
-      <DemarchyLogo />
-      <p class="pb-2">You must be logged in to view this page.</p>
-      <a class="btn btn-primary" href="/login">
+      {#if !inline}
+        <DemarchyLogo />
+      {/if}
+      <p class="pb-2">You must be logged in to view this</p>
+      <a class="btn btn-primary" href={back}>
         <span class="material-symbols-outlined">login</span>
         Login
       </a>

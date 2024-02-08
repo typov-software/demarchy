@@ -40,6 +40,15 @@
                 <input type="hidden" name="profile_handle" value={data.profile.handle} />
                 <input type="hidden" name="organization_id" value={data.organization.id} />
                 <input type="hidden" name="group_id" value={data.group.id} />
+                <input
+                  type="hidden"
+                  name="text"
+                  value={`You requested an invitation to ${
+                    isOrgGroup
+                      ? data.organization.name
+                      : data.organization.name + ' > ' + data.group.name
+                  }`}
+                />
               </form>
               <button
                 form="submit-application"

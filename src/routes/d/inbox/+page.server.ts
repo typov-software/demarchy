@@ -21,6 +21,7 @@ import type { Profile } from '$lib/models/profiles';
 import { makeDocument } from '$lib/models/utils';
 import { type Group } from '$lib/models/groups';
 import { type Organization } from '$lib/models/organizations';
+import { isGroupMemberOrHigher } from '$lib/server/access';
 
 export const load = (async ({ locals }) => {
   const user_id = locals.user_id!;
@@ -67,58 +68,67 @@ export const actions = {
       error(401, 'unauthorized');
     }
 
+    const isAlreadyMember = await isGroupMemberOrHigher(organization_id, group_id, user_id);
+    const groupRef = adminGroupRef(organization_id).doc(group_id);
+    const groupDoc = await groupRef.get();
+    const orgDoc = await adminOrganizationRef().doc(organization_id).get();
     const inboxRef = adminInboxRef().doc(user_id);
     const notificationRef = adminNotificationRef(user_id).doc(notification_id);
-    const groupRef = adminGroupRef(organization_id).doc(group_id);
 
-    const invitation: Invitation = makeDocument(invitationDoc);
-    const profile: Profile = makeDocument(profileDoc);
+    if (!orgDoc.exists || !groupDoc.exists) {
+      error(401, 'unauthorized');
+    }
+
+    const group = makeDocument<Group>(groupDoc);
+    const organization = makeDocument<Organization>(orgDoc);
+    const invitation = makeDocument<Invitation>(invitationDoc);
+    const profile = makeDocument<Profile>(profileDoc);
+
+    const redirectTo = `/d/${organization.slug}/${group.slug}`;
 
     const batch = adminDB.batch();
-    const membershipProps: MembershipProps = {
-      organization_id,
-      user_id: profile.id,
-      standing: 'ok',
-      roles: {
-        [invitation.group_id]: invitation.role
-      }
-    };
-    batch.set(
-      adminMembershipRef(organization_id).doc(invitation.invited_user_id),
-      {
-        ...createdTimestamps(),
-        ...membershipProps
-      },
-      {
-        merge: true
-      }
-    );
-    const memberProps: MemberProps = {
-      user_id: profile.id,
-      name: profile.name,
-      handle: profile.handle,
-      role: invitation.role,
-      group_id: invitation.group_id,
-      organization_id: invitation.organization_id
-    };
-    batch.set(
-      adminMemberRef(organization_id, invitation.group_id).doc(invitation.invited_user_id),
-      {
-        ...createdTimestamps(),
-        ...memberProps
-      },
-      { merge: true }
-    );
+    if (!isAlreadyMember) {
+      const membershipProps: MembershipProps = {
+        organization_id,
+        user_id: profile.id,
+        standing: 'ok',
+        roles: {
+          [invitation.group_id]: invitation.role
+        }
+      };
+      batch.set(
+        adminMembershipRef(organization_id).doc(invitation.invited_user_id),
+        {
+          ...createdTimestamps(),
+          ...membershipProps
+        },
+        {
+          merge: true
+        }
+      );
+      const memberProps: MemberProps = {
+        user_id: profile.id,
+        name: profile.name,
+        handle: profile.handle,
+        role: invitation.role,
+        group_id: invitation.group_id,
+        organization_id: invitation.organization_id
+      };
+      batch.set(
+        adminMemberRef(organization_id, invitation.group_id).doc(invitation.invited_user_id),
+        {
+          ...createdTimestamps(),
+          ...memberProps
+        },
+        { merge: true }
+      );
+      batch.update(groupRef, { member_count: FieldValue.increment(1) });
+    }
     batch.update(inboxRef, { unread: FieldValue.increment(-1) });
-    batch.update(groupRef, { member_count: FieldValue.increment(1) });
     batch.delete(notificationRef);
     batch.delete(invitationDoc.ref);
     await batch.commit();
 
-    const orgDoc = await adminOrganizationRef().doc(organization_id).get();
-    const groupDoc = await groupRef.get();
-    const organization = makeDocument<Organization>(orgDoc);
-    const group = makeDocument<Group>(groupDoc);
-    redirect(301, `/d/${organization.slug}/${group.slug}`);
+    redirect(301, redirectTo);
   }
 } satisfies Actions;

@@ -44,9 +44,15 @@
 
 <BasicSection otherClass="w-full items-stretch">
   <h2 class="text-xl">Your Settings</h2>
+
   <div class="flex flex-col w-full max-w-lg self-center">
-    <h2 class="font-bold">Connected Providers</h2>
-    <p class="text-xs">Manage your linked providers</p>
+    <h3 class="text-lg font-bold">Unsubscribe to mailing lists</h3>
+    <p class="mb-8">
+      Manage your subscriptions <a href="/unsubscribe" class="link link-info">here</a>
+    </p>
+
+    <h3 class="text-lg font-bold">Connected Providers</h3>
+    <p class="">Manage your linked providers</p>
     <ul class="w-full mt-4 flex flex-col gap-4">
       {#each data.connected as provider (provider.providerId)}
         <li class="card bg-base-200">
@@ -70,8 +76,8 @@
 
   {#if data.disconnected.length > 0}
     <div class="flex flex-col max-w-lg w-full self-center">
-      <h2 class="font-bold">Available Providers</h2>
-      <p class="text-xs">Link third party providers to increase your login options</p>
+      <h3 class="text-lg font-bold">Available Providers</h3>
+      <p class="">Link third party providers to increase your login options</p>
       <ul class="w-full mt-4 flex flex-col gap-4">
         {#each data.disconnected as provider (provider)}
           <li class="card bg-base-200">

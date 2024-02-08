@@ -53,13 +53,7 @@
   <ul>
     {#if groups}
       <li class="dropdown dropdown-start dropdown-bottom">
-        <div
-          role="button"
-          tabindex="0"
-          class="btn btn-sm"
-          class:btn-warning={!group}
-          class:btn-success={group}
-        >
+        <div role="button" tabindex="0" class="btn btn-sm" class:btn-success={group}>
           {group ? group.name : 'Select group'}
         </div>
         <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">

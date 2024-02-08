@@ -1,6 +1,12 @@
 import type { DocumentMeta } from './utils';
+import type { VoucherType } from './vouchers';
 
-export type NotificationType = 'invitation' | 'uninvite' | 'welcome';
+export type NotificationType =
+  | 'application'
+  | 'invitation'
+  | 'uninvite'
+  | 'voucher-requested'
+  | 'welcome';
 
 export interface NotificationProps<T = unknown> {
   seen: number;
@@ -9,6 +15,10 @@ export interface NotificationProps<T = unknown> {
 }
 
 export type Notification<T = unknown> = NotificationProps<T> & DocumentMeta;
+
+export interface ApplicationNotificationData {
+  text: string;
+}
 
 export interface InvitationNotificationData {
   invitation_id: string;
@@ -26,6 +36,10 @@ export interface UninviteNotificationData {
   organization_name: string;
   group_id: string;
   group_name: string;
+}
+
+export interface VoucherRequestedNotificationData {
+  type: VoucherType;
 }
 
 export interface WelcomeNotificationData {

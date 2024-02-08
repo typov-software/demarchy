@@ -32,7 +32,7 @@
         class="py-6 w-full text-center text-base sm:text-xl"
         transition:fly={{ delay: 200, duration: 1000, y: 60, easing }}
       >
-        A <strong class="demarchy-faded-walk">democratic</strong> toolkit for communities and cooperatives
+        A <strong class="d-anim-text-walk">democratic</strong> toolkit for communities and cooperatives
       </p>
       <div
         class="flex flex-row gap-4 justify-center mt-2"
@@ -55,9 +55,13 @@
           Login
         </a>
       </div>
+      <small
+        class="text-neutral text-xs sm:text-sm"
+        transition:fly={{ delay: 1000, duration: 1000, y: 20, easing }}>Early adopter access</small
+      >
     {/if}
   </div>
-  <button class="below-the-fold absolute bottom-0"
+  <button class="below-the-fold absolute bottom-10"
     ><span class="material-symbols-outlined text-accent text-6xl">arrow_drop_down</span></button
   >
 </div>
@@ -70,7 +74,7 @@
   </p>
   <!-- demarchy solution -->
   <p>
-    Demarchy is a new but familiar toolkit built for finding <strong class="demarchy-faded-walk"
+    Demarchy is a new but familiar toolkit built for finding <strong class="d-anim-text-walk"
       >Unity</strong
     > within communities.
   </p>
@@ -86,7 +90,7 @@
   <p>Healthy communities start by listening to the needs of it's individuals.</p>
   <!-- demarchy solution -->
   <p>
-    With Demarchy's <strong class="demarchy-faded-walk">Feedback</strong> tool, groups can uplift comments
+    With Demarchy's <strong class="d-anim-text-walk">Feedback</strong> tool, groups can uplift comments
     and concerns in a place for all to see.
   </p>
   <!-- setup next -->
@@ -104,8 +108,8 @@
   </p>
   <!-- demarchy solution -->
   <p>
-    Dive into the details with Demarchy <strong class="demarchy-faded-walk">Discussions</strong> and
-    lead conversations to transparent, meaningful outcomes.
+    Dive into the details with Demarchy <strong class="d-anim-text-walk">Discussions</strong> and lead
+    conversations to transparent, meaningful outcomes.
   </p>
   <!-- setup next -->
   <p>
@@ -119,7 +123,7 @@
   <p>Live editing documents shared by many peers is traditionally a risky endeavor.</p>
   <!-- demarchy solution -->
   <p>
-    <strong class="demarchy-faded-walk">Proposals</strong> in Demarchy collect changes to libraries before
+    <strong class="d-anim-text-walk">Proposals</strong> in Demarchy collect changes to libraries before
     updates are approved &mdash; creating time and space for consensus.
   </p>
   <!-- setup next -->
@@ -133,9 +137,10 @@
   <p>Many decisions that affect our communities are made by an elite few out of sight.</p>
   <!-- demarchy solution -->
   <p>
-    In Demarchy, any member of an organization can form <strong class="demarchy-faded-walk"
+    In Demarchy, any member of an organization can form <strong class="d-anim-text-walk"
       >Groups</strong
-    > that own their docs and settings for all to see.
+    >
+    that own their docs and settings for all to see.
   </p>
   <!-- setup next -->
   <p>
@@ -152,7 +157,7 @@
   </p>
   <!-- demarchy solution -->
   <p>
-    Demarchy <strong class="demarchy-faded-walk">Ballots</strong> makes voting simple, fast, and automatic.
+    Demarchy <strong class="d-anim-text-walk">Ballots</strong> makes voting simple, fast, and automatic.
   </p>
   <!-- setup next (CTA) -->
   <p>
@@ -162,7 +167,7 @@
 </HomepageHero>
 
 <div class="flex flex-col items-center pb-28 gap-8 z-1 relative">
-  <p class="text-xl">Sign up for <strong class="demarchy-faded-walk">early</strong> access</p>
+  <p class="text-xl">Sign up for <strong class="d-anim-text-walk">early</strong> access</p>
   <a href="/join" class="btn btn-secondary sm:btn-lg" title="Join now">
     <span class="material-symbols-outlined">join</span>
     Join now
@@ -186,8 +191,10 @@
 
 <style lang="scss">
   .below-the-fold {
+    opacity: 0;
     animation-name: below-the-fold;
     animation-iteration-count: infinite;
+    animation-delay: 2000ms;
     animation-duration: 2000ms;
     animation-timing-function: ease-in-out;
   }

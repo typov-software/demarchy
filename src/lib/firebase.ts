@@ -1,10 +1,13 @@
 import { initializeApp } from 'firebase/app';
 import {
   FirestoreError,
+  collection,
   doc,
   getFirestore,
   initializeFirestore,
-  onSnapshot
+  onSnapshot,
+  query,
+  where
 } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
@@ -20,6 +23,7 @@ import {
   PUBLIC_USE_EMULATORS
 } from '$env/static/public';
 import { makeDocument, type DocumentMeta } from './models/utils';
+import type { Voucher } from './models/vouchers';
 
 const firebaseConfig = {
   apiKey: PUBLIC_FB_API_KEY,
@@ -129,6 +133,34 @@ export function docStore<T extends DocumentMeta>(path: string) {
 export const profile: Readable<Profile | null> = derived(user, ($user, set) => {
   if ($user) {
     return docStore<Profile>(`profiles/${$user.uid}`).subscribe(set);
+  } else {
+    set(null);
+  }
+});
+
+export const joinVoucher: Readable<Voucher | null> = derived(user, ($user, set) => {
+  if ($user) {
+    const unsubscribe = onSnapshot(
+      query(
+        collection(db, 'vouchers'),
+        where('user_id', '==', $user.uid),
+        where('type', '==', '/join')
+      ),
+      (snapshot) => {
+        if (snapshot.empty) {
+          set(null);
+        } else {
+          set(makeDocument<Voucher>(snapshot.docs[0]));
+        }
+      },
+      function onError(error: FirestoreError) {
+        console.error(error);
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
   } else {
     set(null);
   }

@@ -14,7 +14,7 @@
   <h2 class="text-xl">Your Profile</h2>
   <p class="w-full max-w-sm text-left self-start">
     Choose how others will see
-    <span class="demarchy-faded-walk">you</span>
+    <span class="d-anim-text-walk">you</span>
   </p>
   <div class="w-full max-w-md self-center flex flex-col gap-4">
     <img

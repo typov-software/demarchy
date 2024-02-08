@@ -2,6 +2,15 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    match /devlog_subscribers/{subId} {
+      allow read, write: if false;
+    }
+
+    match /voucher_requests/{reqId} {
+      allow read, write: if false;
+    }
+
     function isSignedIn() {
       return request.auth != null;
     }
