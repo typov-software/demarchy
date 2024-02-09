@@ -3,16 +3,10 @@
   import BasicSection from '$lib/components/BasicSection.svelte';
   import { inbox } from '$lib/firebase';
   import { type InboxCategory } from '$lib/models/inboxes';
-  import type { PageData } from './$types';
   import NotificationFeed from './NotificationFeed.svelte';
-
-  export let data: PageData;
 
   let activeCategory: null | InboxCategory;
   $: activeCategory = ($page.url.searchParams.get('category') as InboxCategory) ?? null;
-
-  let notifications = data.notifications.slice();
-  $: notifications;
 </script>
 
 <BasicSection otherClass="w-full items-stretch">

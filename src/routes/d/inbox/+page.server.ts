@@ -1,4 +1,3 @@
-import type { Notification } from '$lib/models/notifications';
 import {
   adminDB,
   adminGroupRef,
@@ -23,13 +22,8 @@ import { type Group } from '$lib/models/groups';
 import { type Organization } from '$lib/models/organizations';
 import { isGroupMemberOrHigher } from '$lib/server/access';
 
-export const load = (async ({ locals }) => {
-  const user_id = locals.user_id!;
-  const snapshot = await adminNotificationRef(user_id).orderBy('created_at', 'desc').get();
-  const notifications: Notification[] = snapshot.docs.map((doc) => makeDocument(doc));
-  return {
-    notifications
-  };
+export const load = (async () => {
+  return {};
 }) satisfies PageServerLoad;
 
 export const actions = {

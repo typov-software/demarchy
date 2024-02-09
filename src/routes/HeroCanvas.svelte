@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
 
   let canvasEl: HTMLCanvasElement;
   const colors = ['#2563eb', '#e11d48', '#d946ef'];
@@ -90,6 +91,6 @@
   });
 </script>
 
-<div class="min-h-screen w-full fixed z-1">
+<div class="min-h-screen w-full fixed z-1" in:fade={{ duration: 150 }}>
   <canvas bind:this={canvasEl} class="w-full h-full" />
 </div>
