@@ -133,7 +133,7 @@
   });
 </script>
 
-<div class="flex flex-col items-center gap-4 w-full">
+<div class="flex flex-col items-center gap-4 w-full" bind:this={containerEl}>
   {#if latestNotifications.length}
     <ul class="w-full flex flex-col-reverse gap-4 items-center">
       {#each latestNotifications as notification (notification.id)}
@@ -176,8 +176,8 @@
       <button
         class="btn btn-sm"
         on:click={() => {
-          containerEl.scrollTo({ top: 0 });
-          window.scrollTo({ top: 0 });
+          containerEl?.scrollTo({ top: 0 });
+          window?.scrollTo({ top: 0 });
         }}
       >
         <span class="material-symbols-outlined">arrow_upward</span>

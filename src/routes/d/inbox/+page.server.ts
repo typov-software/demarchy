@@ -50,7 +50,10 @@ export const actions = {
       // We want to keep the invitation document around
       batch.update(invitationDoc.ref, { rejected: true });
     }
-    batch.update(inboxRef, { unread: FieldValue.increment(-1) });
+    batch.update(inboxRef, {
+      invitations: FieldValue.increment(-1),
+      unread: FieldValue.increment(-1)
+    });
     batch.delete(notificationRef);
     await batch.commit();
   },
@@ -124,7 +127,10 @@ export const actions = {
       );
       batch.update(groupRef, { member_count: FieldValue.increment(1) });
     }
-    batch.update(inboxRef, { unread: FieldValue.increment(-1) });
+    batch.update(inboxRef, {
+      invitations: FieldValue.increment(-1),
+      unread: FieldValue.increment(-1)
+    });
     batch.delete(notificationRef);
     batch.delete(invitationDoc.ref);
     await batch.commit();

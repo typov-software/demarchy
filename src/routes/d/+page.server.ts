@@ -31,7 +31,6 @@ export const actions = {
       seen: 0,
       data: voucherNotification
     };
-
     const batch = adminDB.batch();
     batch.set(
       adminDB.collection('voucher_requests').doc(user_id),
