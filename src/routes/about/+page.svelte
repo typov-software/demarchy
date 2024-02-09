@@ -1,27 +1,48 @@
-<script>
+<script lang="ts">
   import { user } from '$lib/firebase';
+  import HeroCanvas from '../HeroCanvas.svelte';
 </script>
 
+<HeroCanvas />
+
 <div class="hero min-h-screen">
-  <div class="hero-content text-center">
-    <div class="max-w-md">
-      <h1 class="text-5xl font-bold">About</h1>
-      <p class="py-4 pt-6">
-        Demarchy is a democratic document editor for organizations, communities, and cooperatives.
+  <div class="hero-content">
+    <div class="flex flex-col max-w-xl gap-4 text-justify">
+      <h1 class="text-5xl font-bold font-prompt mb-4">About</h1>
+      <p>
+        Demarchy is a new but familiar toolkit built for finding <strong class="d-anim-text-walk"
+          >Unity</strong
+        > within communities and cooperatives.
       </p>
-      <p class="py-4">
-        Modern real-time document libraries are missing the tools for equitable, transparent, and
-        aligned decisions.
+      <p>
+        At its core is a document library that groups manage democratically through <strong
+          >discussions</strong
+        >
+        and <strong>proposals</strong>.
       </p>
-      <p class="py-4 pb-6">
-        We're building a document editor with democracy as a core user experience instead of just a
-        value.
+      <p>
+        Before libraries can be updated, proposals must be reviewed and <strong>voted</strong> on by
+        group members.
       </p>
-      {#if $user}
-        <a href="/d" class="btn btn-primary">Go to dashboard</a>
-      {:else}
-        <a href="/join" class="btn btn-primary">Join</a>
-      {/if}
+      <p>
+        Once proposals are accepted, authors may commit the proposal changes to a new <strong
+          >version</strong
+        > of the library.
+      </p>
+      <p>
+        A mix of elected and randomly selected <strong>moderators</strong> keep discussions in line with
+        the group's values.
+      </p>
+      <div class="mt-4">
+        {#if $user}
+          <a href="/d" title="Your Dashboard" class="btn btn-primary">Go to dashboard</a>
+        {:else}
+          <a href="/join" title="Join" class="btn btn-secondary">
+            <span class="material-symbols-outlined">join</span>
+            Join now
+          </a>
+        {/if}
+      </div>
     </div>
   </div>
 </div>
