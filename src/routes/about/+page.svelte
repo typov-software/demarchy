@@ -1,9 +1,6 @@
 <script lang="ts">
   import { user } from '$lib/firebase';
-  import HeroCanvas from '../HeroCanvas.svelte';
 </script>
-
-<HeroCanvas />
 
 <div class="hero min-h-screen">
   <div class="hero-content">
