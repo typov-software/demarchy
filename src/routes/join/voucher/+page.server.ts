@@ -34,24 +34,24 @@ export const load = (async (event) => {
 
 export const actions = {
   redeem: async (event) => {
-    console.log('Check if limited');
+    console.log('Check if limited', event.getClientAddress());
     if (
       await limiter.isLimited({
-        ...event,
-        getClientAddress() {
-          const value = event.request.headers.get(ADDRESS_HEADER) ?? '';
-          if (ADDRESS_HEADER === 'x-forwarded-for') {
-            const addresses = value.split(',');
-            if (xff_depth < 1) {
-              throw new Error('XFF_DEPTH must be a positive integer');
-            }
-            if (xff_depth < addresses.length) {
-              throw new Error(`Depth mismath: expected ${xff_depth}, actually ${addresses.length}`);
-            }
-            return addresses[addresses.length - xff_depth].trim();
-          }
-          return value;
-        }
+        ...event
+        // getClientAddress() {
+        //   const value = event.request.headers.get(ADDRESS_HEADER) ?? '';
+        //   if (ADDRESS_HEADER === 'x-forwarded-for') {
+        //     const addresses = value.split(',');
+        //     if (xff_depth < 1) {
+        //       throw new Error('XFF_DEPTH must be a positive integer');
+        //     }
+        //     if (xff_depth < addresses.length) {
+        //       throw new Error(`Depth mismath: expected ${xff_depth}, actually ${addresses.length}`);
+        //     }
+        //     return addresses[addresses.length - xff_depth].trim();
+        //   }
+        //   return value;
+        // }
       })
     ) {
       console.warn('limited', event);
