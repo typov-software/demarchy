@@ -15,6 +15,6 @@
       class="mx-auto mb-4 rounded-full w-2/3"
     />
     <h2 class="text-xl">{data.userProfile.name}</h2>
-    <h3 class="text-success">@{data.userProfile.handle}</h3>
+    <h3 class="text-purple-500">@{data.userProfile.handle}</h3>
   </header>
 </BasicSection>

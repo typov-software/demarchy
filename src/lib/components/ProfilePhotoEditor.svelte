@@ -7,7 +7,7 @@
   import Cropper from 'svelte-easy-crop';
   import type { ChangeEventHandler } from 'svelte/elements';
 
-  export let uid: string;
+  export let profileId: string;
 
   let crop: Crop = { x: 0, y: 0 };
   let zoom = 1;
@@ -36,10 +36,10 @@
   const saveImage = async () => {
     uploading = true;
     croppedImage = await getCroppedImg(image!, pixelCrop);
-    const storageRef = ref(storage, `profiles/${uid}/profile.png`);
+    const storageRef = ref(storage, `profiles/${profileId}/profile.png`);
     const result = await uploadBytes(storageRef, croppedImage!);
     const url = await getDownloadURL(result.ref);
-    await setDoc(doc(db, 'profiles', uid), { photo_url: url }, { merge: true });
+    await setDoc(doc(db, 'profiles', profileId), { photo_url: url }, { merge: true });
     uploading = false;
     croppedImage = null;
     image = null;
@@ -47,7 +47,8 @@
   };
 </script>
 
-<form class="flex flex-col items-center max-w-md w-full gap-4">
+<form class="flex flex-col items-center w-full gap-2">
+  <label for="photo_url" class="text-sm text-neutral w-full text-left">Photo</label>
   <input
     disabled={uploading}
     bind:value={fileinput}
@@ -66,6 +67,6 @@
     <div class="cropper-wrap relative w-80 h-80">
       <Cropper {image} bind:crop bind:zoom aspect={1} on:cropcomplete={previewCrop} />
     </div>
-    <button class="btn btn-primary w-full" on:click={saveImage}>Save</button>
+    <button class="btn btn-primary w-full max-w-xs" on:click={saveImage}>Save</button>
   {/if}
 </form>

@@ -8,6 +8,8 @@ export interface DocSummary {
 }
 
 export interface LibraryProps {
+  // the unique id for this library, duplicate of the firestore id. this let's us have a document with a 'latest' id
+  // and keep the unique 'uid' reference
   uid: string;
   extends_library_id: string | null;
   organization_id: string;

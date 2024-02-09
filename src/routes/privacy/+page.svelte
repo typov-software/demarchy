@@ -17,11 +17,11 @@
 </script>
 
 <div class="hero min-h-screen">
-  <div class="hero-content w-full text-center">
-    <div class="max-w-2xl flex flex-col">
-      <h1 class="text-5xl font-bold pt-8">Privacy</h1>
-      <small class="block py-2">Updated January 15, 2024</small>
-      <div class="max-w-sm self-center my-4">
+  <div class="hero-content w-full">
+    <div class="max-w-xl flex flex-col">
+      <h1 class="text-5xl font-bold font-prompt pt-8">Privacy</h1>
+      <small class="block py-2">Updated February 8, 2024</small>
+      <div class="max-w-sm my-4">
         <p class="py-2">This document describes how Demarchy stores and manages your data.</p>
       </div>
 
@@ -63,6 +63,13 @@
         <p class="py-2">
           The <code>__session</code> cookie is used by Demarchy servers to keep users authenticated throughout
           the duration of their visit and expires after 5 days.
+        </p>
+        <h3 class="text-lg font-bold py-2 mt-4">
+          <code>voucher_limiter</code>
+        </h3>
+        <p class="py-2">
+          The <code>voucher_limiter</code> cookie is used by Demarchy servers to prevent too many requests
+          from affecting services.
         </p>
 
         <h2 id="storage" class="text-2xl font-bold py-2 mt-6">Web Storage</h2>

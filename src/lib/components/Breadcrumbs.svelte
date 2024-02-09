@@ -15,39 +15,35 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let config: Record<string, any>;
   $: config = {
-    access: {
-      path: root + group?.id + '/access',
-      symbol: 'key'
-    },
-    activity: {
-      disabled: true,
-      path: root + group?.id + '/activity',
-      symbol: 'timeline'
-    },
-    discussions: {
-      disabled: true,
-      path: root + group?.id + '/discussions',
-      symbol: 'forum'
-    },
+    // activity: {
+    //   disabled: true,
+    //   path: root + group?.slug + '/activity',
+    //   symbol: 'timeline'
+    // },
     docs: {
-      path: root + group?.id + '/docs',
+      path: root + group?.slug + '/docs',
       symbol: 'article'
     },
     feedback: {
-      path: root + group?.id + '/feedback',
+      path: root + group?.slug + '/feedback',
       symbol: 'feedback'
     },
-    invitations: {
-      path: root + group?.id + '/invitations',
-      symbol: 'person_add'
+    discussions: {
+      path: root + group?.slug + '/discussions',
+      symbol: 'forum'
     },
     proposals: {
-      path: root + group?.id + '/proposals',
-      symbol: 'history_edu'
+      path: root + group?.slug + '/proposals',
+      symbol: 'history_edu',
+      divider: true
+    },
+    access: {
+      path: root + group?.slug + '/access',
+      symbol: 'key'
     },
     settings: {
       disabled: true,
-      path: root + group?.id + '/settings',
+      path: root + group?.slug + '/settings',
       symbol: 'settings'
     }
   };
@@ -56,20 +52,19 @@
 <div class="breadcrumbs p-0 w-full">
   <ul>
     {#if groups}
-      <li class="dropdown dropdown-start dropdown-bottom dropdown-hover">
-        {#if !group}
-          <div role="button" tabindex="0" class="btn btn-sm btn-warning rounded-xl">
-            Select group
-          </div>
-        {:else}
-          <a role="button" tabindex="0" class="btn btn-sm btn-success rounded-xl" href={root}>
-            {group.name}
-          </a>
-        {/if}
+      <li class="dropdown dropdown-start dropdown-bottom">
+        <div role="button" tabindex="0" class="btn btn-sm" class:btn-success={group}>
+          {group ? group.name : 'Select group'}
+        </div>
         <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
-          {#each groups as g}
+          <li>
+            <a href={root} title="All groups" class="text-neutral hover:text-base-content">
+              See all groups
+            </a>
+          </li>
+          {#each groups as g (g.id)}
             <li>
-              <a href={root + g.id + (matchedRoute ? `/${matchedRoute}` : '')} title={g.name}>
+              <a href={root + g.slug + (matchedRoute ? `/${matchedRoute}` : '')} title={g.name}>
                 {g.name}
               </a>
             </li>
@@ -79,25 +74,25 @@
     {/if}
 
     {#if group}
-      <li class="dropdown dropdown-start dropdown-bottom dropdown-hover">
+      <li class="dropdown dropdown-start dropdown-bottom">
         {#if matchedRoute}
-          <!-- <a
-            role="button"
-            tabindex="0"
-            class="btn btn-sm btn-ghost rounded-xl px-2"
-            href={`${parts.slice(0, 5).join('/')}`}
-          >
-            <span class="material-symbols-outlined">{config[matchedRoute].symbol}</span>
-            {titleCase(matchedRoute)}
-          </a> -->
-          <div role="button" tabindex="0" class="btn btn-sm btn-ghost rounded-xl">
+          <div role="button" tabindex="0" class="btn btn-sm btn-ghost">
             <span class="material-symbols-outlined">{config[matchedRoute].symbol}</span>
             {titleCase(matchedRoute)}
           </div>
         {:else}
-          <div role="button" tabindex="0" class="btn btn-sm btn-warning rounded-xl">Go to</div>
+          <div role="button" tabindex="0" class="btn btn-sm btn-warning">Go to</div>
         {/if}
-        <ul class="menu w-47 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
+        <ul class="menu w-48 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
+          <li>
+            <a
+              href={root + group.slug}
+              title="See group"
+              class="text-neutral hover:text-base-content"
+            >
+              See group
+            </a>
+          </li>
           {#each Object.keys(config) as route}
             <li>
               <a
@@ -111,15 +106,19 @@
                 {titleCase(route)}
               </a>
             </li>
+            {#if config[route].divider}
+              <div class="divider p-0 my-2 min-h-0 h-0" />
+            {/if}
           {/each}
         </ul>
       </li>
       {#if parts.at(5)}
-        <!-- <li>
-          <a class="btn btn-sm btn-ghost rounded-xl" href={`${parts.slice(0, 6).join('/')}`}>
+        <!-- breadcrumbs class may have precedence here -->
+        <li class="!hidden sm:!flex">
+          <a class="btn btn-sm btn-ghost text-neutral" href={`${parts.slice(0, 6).join('/')}`}>
             {titleCase(parts[5])}
           </a>
-        </li> -->
+        </li>
       {/if}
     {/if}
   </ul>

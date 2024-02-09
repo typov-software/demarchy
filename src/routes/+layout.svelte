@@ -14,6 +14,9 @@
     '/about',
     '/documentation',
     '/join',
+    '/join/voucher',
+    '/join/handle',
+    '/join/profile',
     '/login',
     '/pricing',
     '/privacy',
@@ -40,7 +43,7 @@
 </script>
 
 <svelte:head>
-  <title>Demarchy</title>
+  <title>DEMARCHY</title>
 </svelte:head>
 
 <slot />
@@ -52,7 +55,10 @@
 <dialog id="cookie-ack-modal" class="modal" bind:this={cookieAckModal}>
   <div class="modal-box">
     <h2 class="text-xl font-bold p2-4">Disclosure</h2>
-    <p class="py-4">Demarchy uses a single cookie and saves simple preferences on your device.</p>
+    <p class="py-4">
+      Demarchy uses a couple cookies for security purposes and saves simple preferences on your
+      device.
+    </p>
     <div class="flex gap-2">
       <a href="/privacy" class="btn btn-info" on:click={close}>See privacy policy</a>
       <button class="btn btn-success" on:click={acknowledge}>I consent</button>

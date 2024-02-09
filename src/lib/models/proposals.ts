@@ -17,7 +17,7 @@ export interface LinkedResource {
 
 export interface ProposalProps {
   user_id: string;
-  user_handle: string;
+  profile_handle: string;
   group_id: string;
 
   state: 'draft' | 'open' | 'dropped' | 'adopted' | 'archived';

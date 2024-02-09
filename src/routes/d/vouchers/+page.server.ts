@@ -9,12 +9,12 @@ import { makeDocument } from '$lib/models/utils';
  * @cached
  */
 export const load = (async ({ locals, setHeaders }) => {
-  const uid = locals.user_id;
-  if (!uid) {
+  const user_id = locals.user_id;
+  if (!user_id) {
     redirect(301, '/login');
   }
 
-  const snapshot = await adminVoucherRef().where('uid', '==', uid).get();
+  const snapshot = await adminVoucherRef().where('user_id', '==', user_id).get();
   const vouchers: Voucher[] = snapshot.docs.map((doc) => makeDocument(doc));
 
   setHeaders({

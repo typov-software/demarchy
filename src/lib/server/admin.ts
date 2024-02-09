@@ -17,7 +17,9 @@ import {
   FEEDBACK,
   PROPOSALS,
   LIBRARIES,
-  DOCS
+  DOCS,
+  DISCUSSIONS,
+  APPLICATIONS
 } from '$lib/models/firestore';
 
 try {
@@ -86,8 +88,16 @@ export function adminMemberRef(organization_id: string, group_id: string) {
   return adminGroupRef(organization_id).doc(group_id).collection(MEMBERS);
 }
 
+export function adminGroupApplicationRef(organization_id: string, group_id: string) {
+  return adminGroupRef(organization_id).doc(group_id).collection(APPLICATIONS);
+}
+
 export function adminGroupFeedbackRef(organization_id: string, group_id: string) {
   return adminGroupRef(organization_id).doc(group_id).collection(FEEDBACK);
+}
+
+export function adminGroupDiscussionRef(organization_id: string, group_id: string) {
+  return adminGroupRef(organization_id).doc(group_id).collection(DISCUSSIONS);
 }
 
 export function adminGroupDocRef(organization_id: string, group_id: string) {

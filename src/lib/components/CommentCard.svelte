@@ -1,335 +1,120 @@
 <script lang="ts">
-  import SvelteMarkdown from 'svelte-markdown';
   import { inview } from 'svelte-inview';
   import { formatRelative } from 'date-fns';
-  import type { Comment, CommentContext, CommentProps } from '$lib/models/comments';
-  import {
-    REACTIONS,
-    REENFORCEMENTS,
-    REENFORCEMENT_TYPES,
-    type Reaction,
-    type ReactionProps,
-    type ReactionType,
-    type ReenforcementType
-  } from '$lib/models/reactions';
-  import { titleCase } from '$lib/utils/string';
-  import {
-    QueryDocumentSnapshot,
-    doc,
-    getDoc,
-    increment,
-    onSnapshot,
-    writeBatch,
-    type DocumentData,
-    serverTimestamp
-  } from 'firebase/firestore';
-  import { db } from '$lib/firebase';
-  import { onMount } from 'svelte';
+  import type { Comment, CommentContext } from '$lib/models/comments';
+  import { type Reaction, type ReactionTally } from '$lib/models/reactions';
+  import { doc as fdoc, getDoc, onSnapshot } from 'firebase/firestore';
+  import { db, user } from '$lib/firebase';
+  import { createEventDispatcher, onMount } from 'svelte';
   import { fade } from 'svelte/transition';
-  import HtmlRenderer from './HtmlRenderer.svelte';
   import { makeDocument } from '$lib/models/utils';
+  import BlocksEditor from './BlocksEditor.svelte';
+  import ReactionSelector from './ReactionSelector.svelte';
+  import SeenCounter from './SeenCounter.svelte';
+  import ProfileLink from './ProfileLink.svelte';
 
-  export let document: QueryDocumentSnapshot<DocumentData, CommentProps>;
+  const dispatch = createEventDispatcher();
+
+  export let comment: Comment;
   export let context: CommentContext;
   export let contextId: string;
-  export let userId: string;
+  export let threaded = false;
+  export let highlighted = false;
 
-  const reactionTypes = Object.keys(REACTIONS) as ReactionType[];
+  let userId = $user!.uid;
   let now = new Date();
 
-  let comment: Comment;
-  $: comment = makeDocument(document);
-  $: liveComment = { ...comment };
-  $: isAnonymous = liveComment.user_id === null;
-  let existingReaction: null | Reaction;
-  $: existingReaction = null;
-  $: thisReaction = existingReaction?.reaction;
-  $: thisReenforcement = existingReaction?.reenforcement;
+  let tally: null | ReactionTally = null;
+  $: tally;
+  $: tallyPath = `${comment.path}/tallies/reactions`;
+  $: tallyRef = fdoc(db, tallyPath);
 
-  $: commentRef = doc(db, liveComment.path);
-  $: reactionRef = doc(
-    db,
-    'organizations',
-    liveComment.organization_id,
-    'groups',
-    liveComment.group_id,
-    'feedback',
-    liveComment.id,
-    'reactions',
-    userId
-  );
+  $: isAnonymous = comment.user_id === null;
 
-  $: working = false;
+  let reaction: null | Reaction = null;
+  $: reaction;
+  $: reactionPath = `${comment.path}/reactions/${userId}`;
+  $: reactionRef = fdoc(db, reactionPath);
 
-  let unsubscribe: undefined | (() => void);
-  $: unsubscribe = undefined;
+  let disposers: Array<() => void> = [];
+  $: disposers;
 
   onMount(() => {
     return () => teardown();
   });
 
   async function setup() {
-    if (unsubscribe) {
-      unsubscribe();
-    }
-    unsubscribe = onSnapshot(commentRef, function onNext(snapshot) {
-      liveComment = {
-        ...liveComment,
-        ...makeDocument(snapshot)
-      };
-    });
-    const reactionDoc = await getDoc(reactionRef);
-    if (reactionDoc.exists()) {
-      existingReaction = makeDocument<Reaction>(reactionDoc);
-    } else {
-      existingReaction = null;
+    teardown();
+    disposers = [
+      onSnapshot(tallyRef, function onNext(snapshot) {
+        tally = makeDocument<ReactionTally>(snapshot);
+      })
+    ];
+    // We only need to fetch the reaction document once and don't need to subscribe to live updates done by the user
+    if (!reaction) {
+      const reactionDoc = await getDoc(reactionRef);
+      if (reactionDoc.exists()) {
+        reaction = makeDocument<Reaction>(reactionDoc);
+      } else {
+        reaction = null;
+      }
     }
   }
 
   function teardown() {
-    if (unsubscribe) {
+    for (let unsubscribe of disposers) {
       unsubscribe();
     }
-  }
-
-  async function markAsSeen() {
-    const reactionProps: Omit<ReactionProps, 'created_at'> = {
-      context,
-      context_id: contextId,
-      reaction: null,
-      reenforcement: null
-    };
-    const batch = writeBatch(db);
-    batch.set(reactionRef, {
-      ...reactionProps,
-      created_at: serverTimestamp(),
-      updated_at: serverTimestamp()
-    });
-    batch.update(commentRef, {
-      seen: increment(1),
-      updated_at: serverTimestamp()
-    });
-    working = true;
-    await batch.commit();
-    existingReaction = {
-      ...reactionProps,
-      id: userId,
-      path: reactionRef.path,
-      created_at: new Date(),
-      updated_at: new Date(),
-      archived_at: null
-    };
-    working = false;
-  }
-
-  async function onClickSeen() {
-    if (working) return;
-    working = true;
-    if (!existingReaction) {
-      await markAsSeen();
-    }
-    working = false;
-  }
-
-  function handleClickReaction(reactionType: ReactionType) {
-    return async () => {
-      const batch = writeBatch(db);
-      if (existingReaction?.reaction && existingReaction?.reaction === reactionType) {
-        // console.log('unreacting');
-        batch.update(commentRef, {
-          [existingReaction.reaction]: increment(-1),
-          updated_at: serverTimestamp()
-        });
-        batch.update(reactionRef, { reaction: null, updated_at: serverTimestamp() });
-        existingReaction.reaction = null;
-      } else if (existingReaction?.reaction) {
-        // console.log('changing reaction');
-        batch.update(commentRef, {
-          [reactionType]: increment(1),
-          [existingReaction.reaction]: increment(-1),
-          updated_at: serverTimestamp()
-        });
-        batch.update(reactionRef, { reaction: reactionType, updated_at: serverTimestamp() });
-        existingReaction.reaction = reactionType;
-      } else if (existingReaction) {
-        // console.log('adding reaction');
-        batch.update(commentRef, { [reactionType]: increment(1), updated_at: serverTimestamp() });
-        batch.update(reactionRef, { reaction: reactionType, updated_at: serverTimestamp() });
-        existingReaction.reaction = reactionType;
-      }
-      await batch.commit();
-    };
-  }
-
-  function handleClickReenforcement(reenforcementType: ReenforcementType) {
-    return async () => {
-      const batch = writeBatch(db);
-      if (
-        existingReaction?.reenforcement &&
-        existingReaction?.reenforcement === reenforcementType
-      ) {
-        // console.log('unreenforcing');
-        batch.update(commentRef, {
-          [existingReaction.reenforcement]: increment(-1),
-          updated_at: serverTimestamp()
-        });
-        batch.update(reactionRef, { reenforcement: null, updated_at: serverTimestamp() });
-        existingReaction.reenforcement = null;
-      } else if (existingReaction?.reenforcement) {
-        // console.log('changing reenforcement');
-        batch.update(commentRef, {
-          [reenforcementType]: increment(1),
-          [existingReaction.reenforcement]: increment(-1),
-          updated_at: serverTimestamp()
-        });
-        batch.update(reactionRef, {
-          reenforcement: reenforcementType,
-          updated_at: serverTimestamp()
-        });
-        existingReaction.reenforcement = reenforcementType;
-      } else if (existingReaction) {
-        // console.log('adding reenforcement');
-        batch.update(commentRef, {
-          [reenforcementType]: increment(1),
-          updated_at: serverTimestamp()
-        });
-        batch.update(reactionRef, {
-          reenforcement: reenforcementType,
-          updated_at: serverTimestamp()
-        });
-        existingReaction.reenforcement = reenforcementType;
-      }
-      await batch.commit();
-    };
+    disposers = [];
   }
 </script>
 
 <div
-  class="card card-bordered bg-base-200 rounded-md w-full"
+  class="card bg-base-200 w-full"
+  class:bg-base-300={highlighted}
   use:inview
   on:inview_enter={() => setup()}
   on:inview_leave={() => teardown()}
 >
-  <div class="card-body p-6">
-    <div class="flex items-center">
+  <div class="card-body py-3 px-0">
+    <div class="flex items-center pr-3 pl-4">
       <small class="text-left text-neutral flex-1">
         {#if isAnonymous}
           anonymous
-        {:else}
-          <a href={`/d/profiles/${liveComment.user_handle}`} class="link text-primary">
-            @{liveComment.user_handle}
-          </a>
+        {:else if comment.profile_handle}
+          <ProfileLink handle={comment.profile_handle} />
         {/if}
         said
-        {formatRelative(liveComment.created_at, now)}
+        {comment.created_at ? formatRelative(comment.created_at, now) : ''}
       </small>
 
-      <div class="flex flex-col pl-2">
-        <button
-          class="flex flex-row items-center btn btn-xs"
-          class:btn-filled={!existingReaction}
-          class:btn-neutral={!existingReaction}
-          class:btn-primary={existingReaction}
-          class:pointer-events-none={existingReaction}
-          on:click={onClickSeen}
-        >
-          {#if working}
-            <div class="loading loading-xs loading-spinner" />
-          {:else}
-            <span class="material-symbols-outlined text-base">
-              {existingReaction ? 'visibility' : 'visibility_off'}
-            </span>
+      <div class="flex pl-2">
+        {#if tally}
+          <SeenCounter
+            {context}
+            {contextId}
+            {reactionPath}
+            {reaction}
+            {tally}
+            on:seen={(r) => (reaction = r.detail)}
+          />
+          {#if threaded && reaction}
+            <button class="btn btn-xs ml-2" on:click={() => dispatch('reply', { comment })}>
+              {tally.replies || ''}
+              <span class="material-symbols-outlined">reply</span>
+            </button>
           {/if}
-          {liveComment.seen}
-        </button>
+        {/if}
       </div>
     </div>
 
-    <p class="markdown-body text-base w-full">
-      {#if liveComment.body}
-        <SvelteMarkdown source={liveComment.body} renderers={{ html: HtmlRenderer }} />
-      {/if}
-    </p>
+    <div class:mb-2={!reaction}>
+      <BlocksEditor blocks={comment.blocks ?? []} editable={false} />
+    </div>
 
-    {#if existingReaction}
-      <div class="flex flex-col items-end gap-2 pt-2">
-        <div class="flex flex-row-reverse flex-wrap" in:fade={{ duration: 300 }}>
-          {#each reactionTypes as reactionType}
-            {#if thisReaction && liveComment[reactionType] > 0}
-              <span
-                class="flex items-center border-2 rounded-full pr-2"
-                class:border-base-300={thisReaction !== reactionType}
-                class:border-accent={thisReaction === reactionType}
-              >
-                <button
-                  title={titleCase(reactionType)}
-                  class="btn btn-sm btn-circle btn-ghost text-xl"
-                  on:click={handleClickReaction(reactionType)}
-                >
-                  {REACTIONS[reactionType]}
-                </button>
-                <span
-                  class:text-neutral={thisReaction !== reactionType}
-                  class:text-base-content={thisReaction === reactionType}
-                  class="text-sm"
-                >
-                  {liveComment[reactionType]?.toLocaleString()}
-                </span>
-              </span>
-            {:else}
-              <span
-                class="flex flex-row-reverse items-center border-2 border-base-200 rounded-full"
-              >
-                <button
-                  title={titleCase(reactionType)}
-                  class="btn btn-sm text-xl btn-circle btn-ghost opacity-80 hover:opacity-100"
-                  on:click={handleClickReaction(reactionType)}
-                >
-                  {REACTIONS[reactionType]}
-                </button>
-              </span>
-            {/if}
-          {/each}
-        </div>
-
-        <div class="flex flex-row-reverse gap-1" in:fade={{ duration: 300, delay: 150 }}>
-          {#each REENFORCEMENT_TYPES as reenforcementType}
-            {#if thisReenforcement && liveComment[reenforcementType] > 0}
-              <button
-                title={titleCase(reenforcementType)}
-                class="btn btn-sm"
-                class:btn-outline={thisReenforcement !== reenforcementType}
-                class:btn-error={reenforcementType === 'shun'}
-                class:btn-warning={reenforcementType === 'demote'}
-                class:btn-info={reenforcementType === 'promote'}
-                class:btn-success={reenforcementType === 'endorse'}
-                on:click={handleClickReenforcement(reenforcementType)}
-              >
-                <span class="material-symbols-outlined">
-                  {REENFORCEMENTS[reenforcementType]}
-                </span>
-                <span>
-                  {liveComment[reenforcementType]}
-                </span>
-              </button>
-            {:else}
-              <button
-                title={titleCase(reenforcementType)}
-                class="btn btn-sm btn-circle opacity-80 hover:opacity-100 text-base-content"
-                class:btn-outline={thisReenforcement !== reenforcementType}
-                class:btn-error={reenforcementType === 'shun'}
-                class:btn-warning={reenforcementType === 'demote'}
-                class:btn-info={reenforcementType === 'promote'}
-                class:btn-success={reenforcementType === 'endorse'}
-                on:click={handleClickReenforcement(reenforcementType)}
-              >
-                <span class="material-symbols-outlined">
-                  {REENFORCEMENTS[reenforcementType]}
-                </span>
-              </button>
-            {/if}
-          {/each}
-        </div>
+    {#if reaction && tally}
+      <div class="flex flex-col items-end gap-2 px-3" in:fade={{ duration: 300 }}>
+        <ReactionSelector {reaction} {tally} />
       </div>
     {/if}
   </div>

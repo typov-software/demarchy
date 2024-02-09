@@ -7,12 +7,15 @@ import type { DocumentMeta } from './utils';
  */
 export interface GroupProps {
   name: string;
+  slug: string;
   description: string;
   // latest published library id
   library_id: string | null;
   organization_id: string;
-  created_at: Date;
-  created_by: string;
+  user_id: string;
+  profile_handle: string;
+
+  member_count: number;
 }
 
 export type Group = GroupProps & DocumentMeta;

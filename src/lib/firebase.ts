@@ -1,5 +1,14 @@
 import { initializeApp } from 'firebase/app';
-import { doc, getFirestore, initializeFirestore, onSnapshot } from 'firebase/firestore';
+import {
+  FirestoreError,
+  collection,
+  doc,
+  getFirestore,
+  initializeFirestore,
+  onSnapshot,
+  query,
+  where
+} from 'firebase/firestore';
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import { derived, writable, type Readable } from 'svelte/store';
@@ -14,6 +23,9 @@ import {
   PUBLIC_USE_EMULATORS
 } from '$env/static/public';
 import { makeDocument, type DocumentMeta } from './models/utils';
+import type { Voucher } from './models/vouchers';
+import type { Inbox } from './models/inboxes';
+import { working } from './stores/working';
 
 const firebaseConfig = {
   apiKey: PUBLIC_FB_API_KEY,
@@ -60,12 +72,24 @@ function userStore() {
     };
   }
 
+  let job: string | undefined = working.add();
+  const endJob = () => {
+    if (job) {
+      working.remove(job);
+      job = undefined;
+    }
+  };
+
   const { subscribe } = writable(auth?.currentUser ?? null, (set) => {
     unsubscribe = onAuthStateChanged(auth, (user) => {
       set(user);
+      endJob();
     });
 
-    return () => unsubscribe();
+    return () => {
+      endJob();
+      unsubscribe();
+    };
   });
 
   return {
@@ -84,22 +108,47 @@ export function docStore<T extends DocumentMeta>(path: string) {
 
   const docRef = doc(db, path);
 
-  const { subscribe } = writable<T | null>(null, (set) => {
-    unsubscribe = onSnapshot(docRef, (snapshot) => {
-      const data = makeDocument<T>(snapshot);
-      if (import.meta.env.DEV) {
-        console.debug(`[${path}]`, { data });
+  let job: string | undefined = working.add();
+  const endJob = () => {
+    if (job) {
+      working.remove(job);
+      job = undefined;
+    }
+  };
+  const { subscribe, set, update } = writable<T | null>(null, (set) => {
+    unsubscribe = onSnapshot(
+      docRef,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = makeDocument<T>(snapshot);
+          // if (import.meta.env.DEV) {
+          //   console.debug(`[${path}]`, { data });
+          // }
+          set(data);
+        } else {
+          set(null);
+        }
+        endJob();
+      },
+      function onError(error: FirestoreError) {
+        if (import.meta.env.DEV) {
+          console.warn('docStore error:', path);
+        }
+        console.error(error);
+        endJob();
       }
-      set(data);
-    });
+    );
 
     return () => {
+      endJob();
       unsubscribe();
     };
   });
 
   return {
     subscribe,
+    set,
+    update,
     ref: docRef,
     id: docRef.id
   };
@@ -108,6 +157,52 @@ export function docStore<T extends DocumentMeta>(path: string) {
 export const profile: Readable<Profile | null> = derived(user, ($user, set) => {
   if ($user) {
     return docStore<Profile>(`profiles/${$user.uid}`).subscribe(set);
+  } else {
+    set(null);
+  }
+});
+
+export const inbox: Readable<Inbox | null> = derived(user, ($user, set) => {
+  if ($user) {
+    return docStore<Inbox>(`inboxes/${$user.uid}`).subscribe(set);
+  } else {
+    set(null);
+  }
+});
+
+export const joinVoucher: Readable<Voucher | null> = derived(user, ($user, set) => {
+  if ($user) {
+    let job: string | undefined = working.add();
+    const endJob = () => {
+      if (job) {
+        working.remove(job);
+        job = undefined;
+      }
+    };
+    const unsubscribe = onSnapshot(
+      query(
+        collection(db, 'vouchers'),
+        where('user_id', '==', $user.uid),
+        where('type', '==', '/join')
+      ),
+      (snapshot) => {
+        if (snapshot.empty) {
+          set(null);
+        } else {
+          set(makeDocument<Voucher>(snapshot.docs[0]));
+        }
+        endJob();
+      },
+      function onError(error: FirestoreError) {
+        console.error(error);
+        endJob();
+      }
+    );
+
+    return () => {
+      endJob();
+      unsubscribe();
+    };
   } else {
     set(null);
   }

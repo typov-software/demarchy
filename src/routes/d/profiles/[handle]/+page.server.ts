@@ -4,7 +4,7 @@ import type { PageServerLoad } from './$types';
 import type { Profile } from '$lib/models/profiles';
 import { makeDocument } from '$lib/models/utils';
 
-export const load = (async ({ params }) => {
+export const load = (async ({ params, setHeaders }) => {
   const handle = params.handle;
   const snapshot = await adminProfileRef().where('handle', '==', handle).limit(1).get();
   const doc = snapshot.docs.at(0);
@@ -12,6 +12,9 @@ export const load = (async ({ params }) => {
     error(404, 'No profile with this handle');
   }
   const userProfile: Profile = makeDocument(doc);
+  setHeaders({
+    'cache-control': 'max-age=60'
+  });
   return {
     userProfile
   };

@@ -5,6 +5,8 @@
   import { checkValidSlug, slugify } from '$lib/utils/string';
   import AuthCheck from '$lib/components/AuthCheck.svelte';
   import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
+  import { enhance } from '$app/forms';
+  import { workingCallback } from '$lib/stores/working';
 
   export let data: PageData;
 
@@ -42,11 +44,11 @@
 </script>
 
 <AuthCheck>
-  <section class="hero min-h-screen h-full">
+  <section class="hero h-full flex-1">
     <div class="hero-content flex-col w-full min-h-full">
       <DemarchyLogo />
 
-      <form method="POST" class="flex flex-col gap-4">
+      <form method="POST" class="flex flex-col gap-4" use:enhance={workingCallback()}>
         <div>
           {#if !selectedVoucher}
             <label class="label" for="voucher_id">
@@ -64,7 +66,7 @@
             bind:value={voucher_id}
           >
             <option disabled selected value="">Choose an unused voucher</option>
-            {#each data.vouchers as voucher}
+            {#each data.vouchers as voucher (voucher.id)}
               <option value={voucher.id} class="text-sm">
                 {voucher.type}
                 ({voucher.id})
@@ -75,7 +77,6 @@
 
         <input
           disabled={!selectedVoucher}
-          class="input input-bordered w-full"
           type="text"
           name="name"
           id="name"
@@ -83,15 +84,16 @@
           autocomplete="off"
           on:input={checkSlugAvailability}
           bind:value={name}
+          class="input input-bordered w-full"
           class:input-error={!isValidName}
           class:input-success={isValidName}
         />
-        {#if name.length && !isValidName}
+        {#if isTouched && !isValidName}
           <p class="text-error text-sm">must be 3-32 characters long</p>
         {/if}
 
         <div>
-          {#if name.length}
+          {#if isTouched}
             <label for="slug" class="label">
               <span class="label-text">Suggested: {slugify(name)}</span>
             </label>

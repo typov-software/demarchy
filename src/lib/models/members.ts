@@ -7,7 +7,7 @@ import type { DocumentMeta } from './utils';
  * also be updated.
  */
 export interface MemberProps {
-  uid: string;
+  user_id: string;
   organization_id: string;
   group_id: string;
   role: RoleAccess;

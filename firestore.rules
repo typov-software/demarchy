@@ -2,12 +2,21 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    match /devlog_subscribers/{subId} {
+      allow read, write: if false;
+    }
+
+    match /voucher_requests/{reqId} {
+      allow read, write: if false;
+    }
+
     function isSignedIn() {
       return request.auth != null;
     }
 
-    function ownsResource(uid) {
-      return request.auth.uid == uid;
+    function ownsResource(userId) {
+      return request.auth.uid == userId;
     }
 
     // Each `configId` is a named identifier like 'plans' or 'features' and should be readable by any client
@@ -16,7 +25,7 @@ service cloud.firestore {
     }
 
     function isValidHandle(handle) {
-      let isOwner = ownsResource(request.resource.data.uid);
+      let isOwner = ownsResource(request.resource.data.user_id);
       let isValidLength = handle.size() >= 3 && handle.size() <= 32;
       let isValidDoc = getAfter(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.handle == handle;
       return isOwner && isValidLength && isValidDoc;
@@ -43,18 +52,15 @@ service cloud.firestore {
     }
 
     match /inboxes/{inboxId} {
-      allow read: if ownsResource(inboxId);
+      allow read, update: if ownsResource(inboxId);
 
-      match /notification/{notificationId} {
-        allow read: if ownsResource(inboxId);
-        allow update: if ownsResource(inboxId);
-        allow delete: if ownsResource(inboxId);
+      match /notifications/{notificationId} {
+        allow read, update, delete: if ownsResource(inboxId);
       }
     }
 
     match /vouchers/{voucherId} {
-      allow read: if ownsResource(resource.data.uid);
-      allow update: if ownsResource(resource.data.uid);
+      allow read, update: if ownsResource(resource.data.user_id);
     }
 
     // Each `settingsId` corresponds to a user's `uid`
@@ -68,6 +74,7 @@ service cloud.firestore {
       return isValidLength && isValidDoc;
     }
 
+    // slugs collection for organization slugs
     match /slugs/{slug} {
       allow read;
       allow create: if isValidSlug(slug);
@@ -121,8 +128,20 @@ service cloud.firestore {
         return org && (ws || ownsResource(id));
       }
 
+      function isValidGroupSlug(slug) {
+        let isValidLength = slug.size() >= 3 && slug.size() <= 32;
+        let isValidDoc = getAfter(/databases/$(database)/documents/organizations/$(organizationId)/groups/$(request.resource.data.group_id)).data.slug == slug;
+        return isValidLength && isValidDoc;
+      }
+
+      // slugs collection for organization groups
+      match /slugs/{slug} {
+        allow read;
+        allow create: if isValidGroupSlug(slug);
+      }
+
       match /invitations/{invitationId} {
-        allow read: if ownsResource(resource.data.user_id) || isGroupMemberOrHigher(resource.data.group_id);
+        allow read: if ownsResource(resource.data.user_id) || canReadOrg();
         allow create: if isGroupMemberOrHigher(resource.data.group_id);
         allow delete: if ownsResource(resource.data.created_by) || isGroupAdmin(resource.data.group_id);
       }
@@ -131,10 +150,26 @@ service cloud.firestore {
         allow read: if ownsResource(membershipId) && canReadOrg();
       }
 
+      function isValidGroup() {
+        let slug = request.resource.data.slug;
+        let createdValidSlug = existsAfter(/databases/$(database)/documents/organizations/$(organizationId)/slugs/$(slug));
+        return createdValidSlug;
+      }
+
       match /groups/{groupId} {
         allow read: if canReadOrg();
-        allow create: if isOrgMemberOrHigher();
+        allow create: if isOrgMemberOrHigher() && isValidGroup();
         allow update: if isGroupMemberOrHigher(groupId); 
+
+        match /applications/{applicationId} {
+          allow read: if canReadOrg();
+          allow update: if isGroupMemberOrHigher(groupId);
+          allow create: if canReadOrg();
+        } 
+
+        match /settings/{settingsId} {
+          allow read: if canReadOrg();
+        }
 
         match /members/{memberId} {
           allow read: if canReadOrg();
@@ -163,8 +198,43 @@ service cloud.firestore {
             allow update: if ownsResource(resource.data.user_id);
           }
 
+          match /reactions/{reactionId} {
+            allow read: if canReadOrg();
+            // allow write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+            allow write: if canReadOrg() && ownsResource(reactionId);
+          }
+
           match /tallies/{tallyId} {
-            allow read, write: if isGroupMemberOrHigher(groupId);
+            allow read: if canReadOrg();
+            // allow create, update: if isGroupMemberOrHigher(groupId);
+            allow write: if canReadOrg();
+          }
+
+          match /ballots/{ballotId} {
+            allow read: if canReadOrg();
+
+            match /votes/{voterId} {
+              allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(voterId);
+            }
+          }
+
+          match /comments/{commentId} {
+            allow read: if canReadOrg();
+            allow create: if isGroupMemberOrHigher(groupId);
+            // we let members update comment reaction counts directly
+            allow update: if isGroupMemberOrHigher(groupId);
+
+            match /tallies/{tallyId} {
+              allow read: if canReadOrg();
+              // allow create, update: if isGroupMemberOrHigher(groupId);
+              allow write: if canReadOrg();
+            }
+
+            match /reactions/{reactionId} {
+              allow read: if canReadOrg();
+              // allow write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+              allow write: if canReadOrg() && ownsResource(reactionId);
+            }
           }
         }
 
@@ -191,14 +261,59 @@ service cloud.firestore {
         }
 
         match /feedback/{commentId} {
-          allow read: if isGroupObsOrHigher(groupId);
+          allow read: if canReadOrg();
           allow create: if isGroupMemberOrHigher(groupId);
+          // There's currently no UI supporting feedback updates
           // allow update: if isGroupMemberOrHigher(groupId) && ownsResource(resource.data.user_id);
-          // we let members update comment reaction counts directly
-          allow update: if isGroupMemberOrHigher(groupId);
 
           match /reactions/{reactionId} {
-            allow read, write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+            allow read: if canReadOrg();
+            // allow write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+            allow write: if canReadOrg() && ownsResource(reactionId);
+          }
+
+          match /tallies/{tallyId} {
+            allow read: if canReadOrg();
+            // allow create, update: if isGroupMemberOrHigher(groupId);
+            allow write: if canReadOrg();
+          }
+        }
+        
+        match /discussions/{discussionId} {
+          allow read: if canReadOrg();
+          allow create: if isGroupMemberOrHigher(groupId);
+          // only authors can update the discussion
+          allow update: if ownsResource(resource.data.user_id);
+
+          match /tallies/{tallyId} {
+            allow read: if canReadOrg();
+            // allow create, update: if isGroupMemberOrHigher(groupId);
+            allow write: if canReadOrg();
+          }
+
+          match /reactions/{reactionId} {
+            allow read: if canReadOrg();
+            // allow write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+            allow write: if canReadOrg() && ownsResource(reactionId);
+          }
+
+          match /comments/{commentId} {
+            allow read: if canReadOrg();
+            allow create: if isGroupMemberOrHigher(groupId);
+            // we let members update comment reaction counts directly
+            allow update: if isGroupMemberOrHigher(groupId);
+
+            match /tallies/{tallyId} {
+              allow read: if canReadOrg();
+              // allow create, update: if isGroupMemberOrHigher(groupId);
+              allow write: if canReadOrg();
+            }
+
+            match /reactions/{reactionId} {
+              allow read: if canReadOrg();
+              // allow write: if isGroupMemberOrHigher(groupId) && ownsResource(reactionId);
+              allow write: if canReadOrg() && ownsResource(reactionId);
+            }
           }
         }
       }

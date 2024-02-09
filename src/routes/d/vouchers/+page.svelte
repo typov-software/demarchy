@@ -5,9 +5,10 @@
   export let data: PageData;
 </script>
 
-<BasicSection>
-  <ul class="w-full max-w-lg gap-4 flex flex-col">
-    {#each data.vouchers as voucher}
+<BasicSection otherClass="w-full items-stretch">
+  <h2 class="text-xl">Your Vouchers</h2>
+  <ul class="w-full max-w-lg gap-4 flex flex-col self-center">
+    {#each data.vouchers as voucher (voucher.id)}
       <li class="card bg-base-200">
         <div class="card-body">
           <div class="flex items-center">

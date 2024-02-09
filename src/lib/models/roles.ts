@@ -8,5 +8,5 @@ const roleNameMap: Record<RoleAccess, string> = {
 };
 
 export function getRoleName(role: RoleAccess) {
-  return roleNameMap[role] ?? 'None';
+  return roleNameMap[role] ?? 'No access';
 }

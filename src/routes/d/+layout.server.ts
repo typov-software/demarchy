@@ -5,9 +5,9 @@ import type { Organization } from '$lib/models/organizations';
 import type { Profile } from '$lib/models/profiles';
 
 export const load = (async ({ locals, fetch }) => {
-  const uid = locals.user_id;
-  if (!uid) {
-    redirect(301, '/login');
+  const user_id = locals.user_id;
+  if (!user_id) {
+    redirect(301, '/login?session=expired');
   }
 
   const res = await fetch('/api/d', { method: 'GET' });
