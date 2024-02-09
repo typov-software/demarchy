@@ -5,7 +5,14 @@
 
 <div class="toast toast-bottom z-10 w-full sm:w-auto">
   {#each $toast as alert (alert.uid)}
-    <div role="alert" class={`alert alert-${alert.level}`}>
+    <div
+      role="alert"
+      class="alert"
+      class:alert-info={alert.level === 'info'}
+      class:alert-success={alert.level === 'success'}
+      class:alert-warning={alert.level === 'warning'}
+      class:alert-error={alert.level === 'error'}
+    >
       <span class="material-symbols-outlined" class:text-info={alert.level === 'neutral'}>
         {#if alert.level === 'success'}
           check_circle
