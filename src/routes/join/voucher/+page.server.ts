@@ -3,31 +3,40 @@ import type { PageServerLoad } from './$types';
 import { adminVoucherRef, updatedTimestamps } from '$lib/server/admin';
 import { makeDocument } from '$lib/models/utils';
 import type { Voucher } from '$lib/models/vouchers';
-// import { RateLimiter } from 'sveltekit-rate-limiter/server';
-// import { LIMITER_KEY } from '$env/static/private';
+import { RateLimiter } from 'sveltekit-rate-limiter/server';
+import { LIMITER_KEY } from '$env/static/private';
 
 // See: https://github.com/ciscoheat/sveltekit-rate-limiter
-// const limiter = new RateLimiter({
-//   // A rate is defined as [number, unit]
-//   IP: [10, 'h'], // IP address limiter
-//   IPUA: [5, 'm'], // IP + User Agent limiter
-//   cookie: {
-//     // Cookie limiter
-//     name: 'voucher_limiter', // Unique cookie name for this limiter
-//     secret: LIMITER_KEY, // Use $env/static/private
-//     rate: [2, 'm'],
-//     preflight: true // Require preflight call (see load function)
-//   }
-// });
+const limiter = new RateLimiter({
+  // A rate is defined as [number, unit]
+  IP: [10, 'h'], // IP address limiter
+  IPUA: [5, 'm'], // IP + User Agent limiter
+  cookie: {
+    // Cookie limiter
+    name: 'voucher_limiter', // Unique cookie name for this limiter
+    secret: LIMITER_KEY, // Use $env/static/private
+    rate: [2, 'm'],
+    preflight: true // Require preflight call (see load function)
+  }
+});
 
 export const load = (async (event) => {
-  // await limiter.cookieLimiter?.preflight(event);
+  try {
+    console.log('Preflighting limiter event');
+    await limiter.cookieLimiter?.preflight(event);
+  } catch (e) {
+    console.error(e);
+  }
   return {};
 }) satisfies PageServerLoad;
 
 export const actions = {
   redeem: async (event) => {
-    // if (await limiter.isLimited(event)) error(429);
+    console.log('Check if limited');
+    if (await limiter.isLimited(event)) {
+      console.warn('limited', event);
+      error(429);
+    }
     const { request, locals } = event;
     const user_id = locals.user_id!;
     const formData = await request.formData();
