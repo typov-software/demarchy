@@ -1,5 +1,6 @@
 <script>
   import DemarchyLogo from './DemarchyLogo.svelte';
+  const version = __VERSION__;
 </script>
 
 <footer
@@ -8,8 +9,22 @@
   <aside class="flex flex-row items-center">
     <DemarchyLogo width={127} animate />
     <p class="text-sm ml-2 mt-1">
-      &copy; 2024
-      <a href="https://typov.com" target="_blank" rel="noopener noreferrer" class="link link-hover">
+      <a
+        href="https://github.com/typov-software/demarchy"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link link-hover"
+        title="Source code on Github"
+      >
+        {version}
+      </a>
+      <a
+        href="https://typov.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link link-hover"
+        title="Facilitated by typov"
+      >
         typov
       </a>
     </p>

@@ -22,6 +22,7 @@
       const batch = writeBatch(db);
       batch.update(inboxRef, {
         updated_at: serverTimestamp(),
+        [notification.category]: increment(-1),
         unread: increment(-1)
       });
       batch.update(notificationRef, {

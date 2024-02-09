@@ -1,14 +1,7 @@
 import type { ApplicationProps } from '$lib/models/applications';
-import { FieldValue } from 'firebase-admin/firestore';
-import {
-  adminDB,
-  adminGroupRef,
-  adminInboxRef,
-  adminNotificationRef,
-  createdTimestamps,
-  updatedTimestamps
-} from './admin';
+import { adminDB, adminGroupRef, createdTimestamps } from './admin';
 import type { ApplicationNotificationData, NotificationProps } from '$lib/models/notifications';
+import { prepareNotification } from './notification-actions';
 
 interface SubmitApplicationParams {
   user_id: string;
@@ -29,41 +22,25 @@ export async function submitApplication(params: SubmitApplicationParams) {
     group_id,
     text
   };
-
-  const applicationRef = adminGroupRef(organization_id)
-    .doc(group_id)
-    .collection('applications')
-    .doc(user_id);
-
-  const batch = adminDB.batch();
-  // create the application
-  batch.set(applicationRef, {
-    ...createdTimestamps(),
-    ...applicationProps
-  });
-
   const notificationData: ApplicationNotificationData = { text };
   const notificationProps: NotificationProps = {
+    category: 'applications',
     type: 'application',
     seen: 0,
     data: notificationData
   };
-  // create the notifcation
-  batch.create(adminNotificationRef(user_id).doc(), {
+
+  const batch = adminDB.batch();
+  // create the application
+  const applicationRef = adminGroupRef(organization_id)
+    .doc(group_id)
+    .collection('applications')
+    .doc(user_id);
+  batch.set(applicationRef, {
     ...createdTimestamps(),
-    ...notificationProps
+    ...applicationProps
   });
-  // increment unread count
-  batch.set(
-    adminInboxRef().doc(user_id),
-    {
-      ...updatedTimestamps(),
-      unread: FieldValue.increment(1)
-    },
-    {
-      merge: true
-    }
-  );
+  prepareNotification(notificationProps, user_id, batch);
   try {
     await batch.commit();
   } catch (e) {

@@ -1,19 +1,16 @@
 import { type Invitation, type InvitationProps } from '$lib/models/invitations';
-import { FieldValue } from 'firebase-admin/firestore';
 import {
   adminDB,
   adminGroupRef,
-  adminInboxRef,
   adminInvitationRef,
-  adminNotificationRef,
   adminOrganizationRef,
-  createdTimestamps,
-  updatedTimestamps
+  createdTimestamps
 } from './admin';
 import type { InvitationNotificationData, NotificationProps } from '$lib/models/notifications';
 import { makeDocument } from '$lib/models/utils';
 import type { Group } from '$lib/models/groups';
 import type { Organization } from '$lib/models/organizations';
+import { prepareNotification } from './notification-actions';
 
 export interface SendInvitationParams extends Omit<InvitationProps, 'rejected'> {
   organization_name: string;
@@ -42,7 +39,6 @@ export async function sendInvitation(
     return 'duplicate';
   }
 
-  const batch = adminDB.batch();
   const invitationRef = adminInvitationRef(organization_id).doc();
   const invitationProps: InvitationProps = {
     user_id,
@@ -54,20 +50,6 @@ export async function sendInvitation(
     role,
     rejected: false
   };
-  batch.create(invitationRef, {
-    ...createdTimestamps(),
-    ...invitationProps
-  });
-  batch.set(
-    adminInboxRef().doc(invited_user_id),
-    {
-      ...updatedTimestamps(),
-      unread: FieldValue.increment(1)
-    },
-    {
-      merge: true
-    }
-  );
   const inviteData: InvitationNotificationData = {
     invitation_id: invitationRef.id,
     organization_id,
@@ -78,14 +60,18 @@ export async function sendInvitation(
     invited_by_handle: profile_handle
   };
   const notificationProps: NotificationProps = {
+    category: 'invitations',
     type: 'invitation',
     seen: 0,
     data: inviteData
   };
-  batch.create(adminNotificationRef(invited_user_id).doc(), {
+
+  const batch = adminDB.batch();
+  batch.create(invitationRef, {
     ...createdTimestamps(),
-    ...notificationProps
+    ...invitationProps
   });
+  prepareNotification(notificationProps, invited_user_id, batch);
   try {
     await batch.commit();
   } catch (e) {
@@ -115,18 +101,6 @@ export async function resendInvitation(
   }
   const organization = makeDocument<Organization>(organizationDoc);
   const group = makeDocument<Group>(groupDoc);
-
-  const batch = adminDB.batch();
-  batch.set(
-    adminInboxRef().doc(invitation.invited_user_id),
-    {
-      ...updatedTimestamps(),
-      unread: FieldValue.increment(1)
-    },
-    {
-      merge: true
-    }
-  );
   const inviteData: InvitationNotificationData = {
     invitation_id: invitation.id,
     organization_id: invitation.organization_id,
@@ -137,14 +111,14 @@ export async function resendInvitation(
     invited_by_handle: invitation.profile_handle
   };
   const notificationProps: NotificationProps = {
+    category: 'invitations',
     type: 'invitation',
     seen: 0,
     data: inviteData
   };
-  batch.create(adminNotificationRef(invitation.invited_user_id).doc(), {
-    ...createdTimestamps(),
-    ...notificationProps
-  });
+
+  const batch = adminDB.batch();
+  prepareNotification(notificationProps, invitation.invited_user_id, batch);
   try {
     await batch.commit();
   } catch (e) {

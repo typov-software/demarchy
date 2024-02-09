@@ -35,6 +35,3 @@
     </div>
   {/each}
 </div>
-
-<style lang="scss">
-</style>

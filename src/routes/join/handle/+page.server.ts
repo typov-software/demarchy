@@ -3,15 +3,15 @@ import {
   adminDB,
   adminHandleRef,
   adminInboxRef,
-  adminNotificationRef,
   adminProfileRef,
   createdTimestamps,
   updatedTimestamps
 } from '$lib/server/admin';
 import { MEMBERS } from '$lib/models/firestore';
-import type { InboxProps } from '$lib/models/inboxes';
+import { makeEmptyInboxCategories, type InboxProps } from '$lib/models/inboxes';
 import type { ProfileProps } from '$lib/models/profiles';
 import type { NotificationProps, WelcomeNotificationData } from '$lib/models/notifications';
+import { prepareNotification } from '$lib/server/notification-actions';
 
 export const actions = {
   updateHandle: async ({ request, locals }) => {
@@ -37,30 +37,27 @@ export const actions = {
         handle,
         name: handle
       };
-      batch.create(adminProfileRef().doc(user_id), {
-        ...createdTimestamps(),
-        ...profileProps
-      });
-      const inboxRef = adminInboxRef().doc(user_id);
-      const inboxProps: InboxProps = {
-        unread: 1
-      };
-      batch.create(inboxRef, {
-        ...createdTimestamps(),
-        ...inboxProps
-      });
-      const welcomeRef = adminNotificationRef(inboxRef.id).doc();
       const welcomeNotification: NotificationProps<WelcomeNotificationData> = {
         seen: 0,
         type: 'welcome',
+        category: 'uncategorized',
         data: {
           profile_handle: handle
         }
       };
-      batch.create(welcomeRef, {
+      const inboxProps: InboxProps = {
+        ...makeEmptyInboxCategories(),
+        unread: 0
+      };
+      batch.create(adminProfileRef().doc(user_id), {
         ...createdTimestamps(),
-        ...welcomeNotification
+        ...profileProps
       });
+      batch.create(adminInboxRef().doc(user_id), {
+        ...createdTimestamps(),
+        ...inboxProps
+      });
+      prepareNotification(welcomeNotification, user_id, batch);
     } else {
       const profileProps: Partial<ProfileProps> = {
         handle

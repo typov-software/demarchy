@@ -24,6 +24,8 @@ import {
 } from '$env/static/public';
 import { makeDocument, type DocumentMeta } from './models/utils';
 import type { Voucher } from './models/vouchers';
+import type { Inbox } from './models/inboxes';
+import { working } from './stores/working';
 
 const firebaseConfig = {
   apiKey: PUBLIC_FB_API_KEY,
@@ -70,12 +72,24 @@ function userStore() {
     };
   }
 
+  let job: string | undefined = working.add();
+  const endJob = () => {
+    if (job) {
+      working.remove(job);
+      job = undefined;
+    }
+  };
+
   const { subscribe } = writable(auth?.currentUser ?? null, (set) => {
     unsubscribe = onAuthStateChanged(auth, (user) => {
       set(user);
+      endJob();
     });
 
-    return () => unsubscribe();
+    return () => {
+      endJob();
+      unsubscribe();
+    };
   });
 
   return {
@@ -94,6 +108,13 @@ export function docStore<T extends DocumentMeta>(path: string) {
 
   const docRef = doc(db, path);
 
+  let job: string | undefined = working.add();
+  const endJob = () => {
+    if (job) {
+      working.remove(job);
+      job = undefined;
+    }
+  };
   const { subscribe, set, update } = writable<T | null>(null, (set) => {
     unsubscribe = onSnapshot(
       docRef,
@@ -107,16 +128,19 @@ export function docStore<T extends DocumentMeta>(path: string) {
         } else {
           set(null);
         }
+        endJob();
       },
       function onError(error: FirestoreError) {
         if (import.meta.env.DEV) {
           console.warn('docStore error:', path);
         }
         console.error(error);
+        endJob();
       }
     );
 
     return () => {
+      endJob();
       unsubscribe();
     };
   });
@@ -138,8 +162,23 @@ export const profile: Readable<Profile | null> = derived(user, ($user, set) => {
   }
 });
 
+export const inbox: Readable<Inbox | null> = derived(user, ($user, set) => {
+  if ($user) {
+    return docStore<Inbox>(`inboxes/${$user.uid}`).subscribe(set);
+  } else {
+    set(null);
+  }
+});
+
 export const joinVoucher: Readable<Voucher | null> = derived(user, ($user, set) => {
   if ($user) {
+    let job: string | undefined = working.add();
+    const endJob = () => {
+      if (job) {
+        working.remove(job);
+        job = undefined;
+      }
+    };
     const unsubscribe = onSnapshot(
       query(
         collection(db, 'vouchers'),
@@ -152,13 +191,16 @@ export const joinVoucher: Readable<Voucher | null> = derived(user, ($user, set) 
         } else {
           set(makeDocument<Voucher>(snapshot.docs[0]));
         }
+        endJob();
       },
       function onError(error: FirestoreError) {
         console.error(error);
+        endJob();
       }
     );
 
     return () => {
+      endJob();
       unsubscribe();
     };
   } else {

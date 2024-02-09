@@ -64,6 +64,13 @@
           The <code>__session</code> cookie is used by Demarchy servers to keep users authenticated throughout
           the duration of their visit and expires after 5 days.
         </p>
+        <h3 class="text-lg font-bold py-2 mt-4">
+          <code>voucher_limiter</code>
+        </h3>
+        <p class="py-2">
+          The <code>voucher_limiter</code> cookie is used by Demarchy servers to prevent too many requests
+          from affecting services.
+        </p>
 
         <h2 id="storage" class="text-2xl font-bold py-2 mt-6">Web Storage</h2>
         <p class="py-2">

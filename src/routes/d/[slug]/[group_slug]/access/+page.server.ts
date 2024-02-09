@@ -4,13 +4,9 @@ import {
   adminDB,
   adminGroupApplicationRef,
   adminGroupRef,
-  adminInboxRef,
   adminInvitationRef,
   adminMemberRef,
-  adminMembershipRef,
-  adminNotificationRef,
-  createdTimestamps,
-  updatedTimestamps
+  adminMembershipRef
 } from '$lib/server/admin';
 import type { Member } from '$lib/models/members';
 import { error, redirect } from '@sveltejs/kit';
@@ -21,6 +17,7 @@ import type { NotificationProps, UninviteNotificationData } from '$lib/models/no
 import type { Application } from '$lib/models/applications';
 import { addDays } from 'date-fns';
 import { resendInvitation, sendInvitation } from '$lib/server/invitation-actions';
+import { prepareNotification } from '$lib/server/notification-actions';
 
 export const load = (async ({ url, parent }) => {
   const direction: OrderByDirection = (url.searchParams.get('direction') ??
@@ -193,26 +190,14 @@ export const actions = {
       group_name
     };
     const notificationProps: NotificationProps = {
+      category: 'invitations',
       type: 'uninvite',
       seen: 0,
       data: notificationData
     };
     const batch = adminDB.batch();
-    batch.create(adminNotificationRef(invitation.invited_user_id).doc(), {
-      ...createdTimestamps(),
-      ...notificationProps
-    });
-    batch.set(
-      adminInboxRef().doc(invitation.invited_user_id),
-      {
-        ...updatedTimestamps(),
-        unread: FieldValue.increment(1)
-      },
-      {
-        merge: true
-      }
-    );
     batch.delete(invitationRef);
+    prepareNotification(notificationProps, invitation.invited_user_id, batch);
     await batch.commit();
     return {};
   },
