@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { enhance } from '$app/forms';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import { workingCallback } from '$lib/stores/working';
   import type { PageData } from './$types';
 
   export let data: PageData;
@@ -27,6 +29,26 @@
               As member of {data.organization.name}, you can view this group's resources &mdash; but
               only full members of {data.group.name} may participate in feedback, discussions, and proposals.
             </p>
+            <form
+              id="submit-application"
+              method="post"
+              action="?/submitApplication"
+              class="hidden"
+              use:enhance={workingCallback({ invalidateAll: true })}
+            >
+              <input type="hidden" name="profile_handle" value={data.profile.handle} />
+              <input type="hidden" name="organization_id" value={data.organization.id} />
+              <input type="hidden" name="group_id" value={data.group.id} />
+              <input
+                type="hidden"
+                name="text"
+                value={`You requested an invitation to ${
+                  isOrgGroup
+                    ? data.organization.name
+                    : data.organization.name + ' > ' + data.group.name
+                }`}
+              />
+            </form>
             <button
               form={data.application ? '' : 'submit-application'}
               class="btn btn-success sm:self-center mt-4"
