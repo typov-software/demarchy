@@ -2,6 +2,7 @@
   import _get from 'lodash/get';
   import type { DocSummary, LibraryDirectory, LibraryShelf } from '$lib/models/libraries';
   import { getComparator, stableSort } from '$lib/utils/sorting';
+  import { page } from '$app/stores';
 
   export let dir: string;
   export let shelf: LibraryShelf;
@@ -27,7 +28,10 @@
 
     {#each docs as doc (doc.id)}
       <li>
-        <a href={`?library=${shelf.library_id}&doc=${doc.id}`}>
+        <a
+          href={`?library=${shelf.library_id}&doc=${doc.id}`}
+          class:active={$page.url.searchParams.get('doc') === doc.id}
+        >
           <span class="material-symbols-outlined">article</span>
           {doc.displayName}
         </a>
@@ -50,7 +54,10 @@
 
       {#each docs as doc (doc.id)}
         <li>
-          <a href={`?library=${shelf.library_id}&doc=${doc.id}`}>
+          <a
+            href={`?library=${shelf.library_id}&doc=${doc.id}`}
+            class:bg-primary={$page.url.searchParams.get('doc') === doc.id}
+          >
             <span class="material-symbols-outlined">article</span>
             {doc.displayName}
           </a>
