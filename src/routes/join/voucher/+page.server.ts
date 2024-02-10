@@ -18,14 +18,14 @@ const limiter = new RateLimiter({
     name: 'voucher_limiter', // Unique cookie name for this limiter
     secret: LIMITER_KEY, // Use $env/static/private
     rate: [2, 'm'],
-    preflight: false // Require preflight call (see load function)
+    preflight: true // Require preflight call (see load function)
   }
 });
 
 export const load = (async (event) => {
   try {
-    console.log('Preflighting limiter event', event.getClientAddress());
-    // await limiter.cookieLimiter?.preflight(event);
+    console.log([...event.request.headers.keys()]);
+    await limiter.cookieLimiter?.preflight(event);
   } catch (e) {
     console.error(e);
   }
@@ -34,24 +34,25 @@ export const load = (async (event) => {
 
 export const actions = {
   redeem: async (event) => {
-    console.log('Check if limited', event.getClientAddress());
+    console.log([...event.request.headers.keys()]);
     if (
       await limiter.isLimited({
-        ...event
-        // getClientAddress() {
-        //   const value = event.request.headers.get(ADDRESS_HEADER) ?? '';
-        //   if (ADDRESS_HEADER === 'x-forwarded-for') {
-        //     const addresses = value.split(',');
-        //     if (xff_depth < 1) {
-        //       throw new Error('XFF_DEPTH must be a positive integer');
-        //     }
-        //     if (xff_depth < addresses.length) {
-        //       throw new Error(`Depth mismath: expected ${xff_depth}, actually ${addresses.length}`);
-        //     }
-        //     return addresses[addresses.length - xff_depth].trim();
-        //   }
-        //   return value;
-        // }
+        ...event,
+        getClientAddress() {
+          const value = event.request.headers.get(ADDRESS_HEADER) ?? '';
+          if (ADDRESS_HEADER === 'x-forwarded-for') {
+            const addresses = value.split(',');
+            console.log({ value, addresses });
+            if (xff_depth < 1) {
+              throw new Error('XFF_DEPTH must be a positive integer');
+            }
+            if (xff_depth < addresses.length) {
+              throw new Error(`Depth mismath: expected ${xff_depth}, actually ${addresses.length}`);
+            }
+            return addresses[addresses.length - xff_depth].trim();
+          }
+          return value;
+        }
       })
     ) {
       console.warn('limited', event);
