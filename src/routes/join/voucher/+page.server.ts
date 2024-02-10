@@ -24,7 +24,7 @@ const limiter = new RateLimiter({
 
 export const load = (async (event) => {
   try {
-    console.log('Preflighting limiter event');
+    console.log('Preflighting limiter event', event.getClientAddress());
     await limiter.cookieLimiter?.preflight(event);
   } catch (e) {
     console.error(e);
