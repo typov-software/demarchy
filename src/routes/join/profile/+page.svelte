@@ -30,7 +30,7 @@
   }
 </script>
 
-<AuthCheck inline back="/join" condition={$joinVoucher !== null}>
+<AuthCheck inline back="/join" condition={$joinVoucher?.redeemed === true}>
   <p class="w-full max-w-sm text-left self-start pb-4">
     Choose how others will see
     <span class="d-anim-text-walk">you</span>

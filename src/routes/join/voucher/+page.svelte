@@ -10,7 +10,7 @@
 
 <AuthCheck inline back="/join">
   <div class="flex flex-col w-full items-start gap-4">
-    {#if !$joinVoucher}
+    {#if !$joinVoucher?.redeemed}
       <p class="text-left">An unredeemed voucher is required to join.</p>
       <form
         class="w-full flex flex-col sm:flex-row items-start sm:items-end gap-4"
@@ -45,7 +45,7 @@
     {/if}
   </div>
 
-  {#if $joinVoucher}
+  {#if $joinVoucher?.redeemed}
     <a href="/join/handle" class="btn btn-success self-end mt-4">
       Choose your handle
       <span class="material-symbols-outlined">navigate_next</span>
