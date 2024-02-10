@@ -6,7 +6,6 @@ export const handle = (async ({ event, resolve }) => {
     event = {
       ...event,
       getClientAddress() {
-        console.log('custom hook');
         const addresses = event.request.headers.get('x-forwarded-for') ?? '';
         if (Array.isArray(addresses)) {
           return addresses.join(',');

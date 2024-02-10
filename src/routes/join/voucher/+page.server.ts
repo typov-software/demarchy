@@ -32,7 +32,6 @@ export const load = (async (event) => {
 export const actions = {
   redeem: async (event) => {
     if (await limiter.isLimited(event)) {
-      console.warn('limited', event);
       error(429);
     }
     const { request, locals } = event;
