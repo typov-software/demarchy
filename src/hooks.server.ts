@@ -2,6 +2,20 @@ import { adminAuth } from '$lib/server/admin';
 import type { Handle } from '@sveltejs/kit';
 
 export const handle = (async ({ event, resolve }) => {
+  if (import.meta.env.PROD) {
+    event = {
+      ...event,
+      getClientAddress() {
+        console.log('custom hook');
+        const addresses = event.request.headers.get('x-forwarded-for') ?? '';
+        if (Array.isArray(addresses)) {
+          return addresses.join(',');
+        }
+        return addresses;
+      }
+    };
+  }
+
   const sessionCookie = event.cookies.get('__session');
   try {
     const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie!);

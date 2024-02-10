@@ -4,9 +4,7 @@ import { adminVoucherRef, updatedTimestamps } from '$lib/server/admin';
 import { makeDocument } from '$lib/models/utils';
 import type { Voucher } from '$lib/models/vouchers';
 import { RateLimiter } from 'sveltekit-rate-limiter/server';
-import { ADDRESS_HEADER, XFF_DEPTH, LIMITER_KEY } from '$env/static/private';
-
-const xff_depth = parseInt(XFF_DEPTH);
+import { LIMITER_KEY } from '$env/static/private';
 
 // See: https://github.com/ciscoheat/sveltekit-rate-limiter
 const limiter = new RateLimiter({
@@ -24,7 +22,6 @@ const limiter = new RateLimiter({
 
 export const load = (async (event) => {
   try {
-    console.log([...event.request.headers.keys()]);
     await limiter.cookieLimiter?.preflight(event);
   } catch (e) {
     console.error(e);
@@ -34,27 +31,7 @@ export const load = (async (event) => {
 
 export const actions = {
   redeem: async (event) => {
-    console.log([...event.request.headers.keys()]);
-    if (
-      await limiter.isLimited({
-        ...event,
-        getClientAddress() {
-          const value = event.request.headers.get(ADDRESS_HEADER) ?? '';
-          if (ADDRESS_HEADER === 'x-forwarded-for') {
-            const addresses = value.split(',');
-            console.log({ value, addresses });
-            if (xff_depth < 1) {
-              throw new Error('XFF_DEPTH must be a positive integer');
-            }
-            if (xff_depth < addresses.length) {
-              throw new Error(`Depth mismath: expected ${xff_depth}, actually ${addresses.length}`);
-            }
-            return addresses[addresses.length - xff_depth].trim();
-          }
-          return value;
-        }
-      })
-    ) {
+    if (await limiter.isLimited(event)) {
       console.warn('limited', event);
       error(429);
     }
