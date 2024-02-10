@@ -49,7 +49,7 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 w-full">
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 w-full">
     <div class="card bg-base-200 hover:bg-primary transition-colors">
       <a href={`/d/${$page.params.slug}/groups/new`} class="">
         <div class="card-body flex flex-col items-center justify-center">

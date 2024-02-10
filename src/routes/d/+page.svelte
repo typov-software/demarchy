@@ -155,7 +155,9 @@
             })}
           >
             <input type="hidden" name="type" value="/join" />
-            <button disabled={requestingVoucher} class="btn btn-secondary btn-outline"
+            <button
+              disabled={requestingVoucher}
+              class="btn btn-outline bg-base-100 border-secondary hover:btn-secondary"
               >Invite early adopter</button
             >
           </form>
@@ -177,7 +179,9 @@
             })}
           >
             <input type="hidden" name="type" value="/d/organizations/new" />
-            <button disabled={requestingVoucher} class="btn btn-primary btn-outline"
+            <button
+              disabled={requestingVoucher}
+              class="btn btn-outline bg-base-100 border-primary hover:btn-primary"
               >Create an organization</button
             >
           </form>
