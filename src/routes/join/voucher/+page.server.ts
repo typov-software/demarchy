@@ -18,14 +18,14 @@ const limiter = new RateLimiter({
     name: 'voucher_limiter', // Unique cookie name for this limiter
     secret: LIMITER_KEY, // Use $env/static/private
     rate: [2, 'm'],
-    preflight: true // Require preflight call (see load function)
+    preflight: false // Require preflight call (see load function)
   }
 });
 
 export const load = (async (event) => {
   try {
     console.log('Preflighting limiter event', event.getClientAddress());
-    await limiter.cookieLimiter?.preflight(event);
+    // await limiter.cookieLimiter?.preflight(event);
   } catch (e) {
     console.error(e);
   }
