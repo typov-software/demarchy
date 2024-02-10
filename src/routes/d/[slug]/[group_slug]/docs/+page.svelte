@@ -1,12 +1,18 @@
 <script lang="ts">
-  import { page } from '$app/stores';
   import BasicSection from '$lib/components/BasicSection.svelte';
   import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import { organizeLibrary, type LibraryShelf } from '$lib/models/libraries';
+  import { format } from 'date-fns';
   import type { PageData } from '../docs/$types';
+  import DocViewer from './DocViewer.svelte';
+  import LibraryMenuGroup from '$lib/components/LibraryMenuGroup.svelte';
 
   export let data: PageData;
 
-  $: docIds = data.library ? Object.keys(data.library.docs) : [];
+  let shelf: LibraryShelf;
+  $: shelf = data.library
+    ? organizeLibrary(data.library)
+    : { library_id: 'latest', docs: new Map([]), dirs: {} };
 </script>
 
 <BasicSection otherClass="!items-start">
@@ -20,7 +26,7 @@
       <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
         <ul class="menu w-60">
           <li>
-            <a href="{$page.url.pathname}/todo">
+            <a href="?">
               <span class="material-symbols-outlined">add</span>
               TODO
             </a>
@@ -30,26 +36,42 @@
     </div>
   </div>
 
-  {#if data.library && docIds.length}
-    <div class="flex flex-col w-full">
-      <table class="table w-full">
-        <thead>
-          <tr>
-            <th>{data.group.name} library</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each docIds as docId (docId)}
-            <tr>
-              <td>
-                <a href={$page.url.pathname + '/' + docId} class="link">
-                  <span>{data.library.docs[docId].name}</span>
-                </a>
-              </td>
-            </tr>
+  <div class="flex flex-col sm:flex-row w-full gap-4">
+    <div class="flex flex-col">
+      <div class="dropdown dropdown-bottom mb-2">
+        <div tabindex="0" role="button" class="btn btn-sm w-full">
+          {data.library?.id ?? ''}
+        </div>
+        <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
+          {#each data.versions as library (library.id)}
+            <li>
+              <a href={`?library=${library.id}`}>
+                {library.id}
+                {format(library.created_at, 'yyyy/MM/dd p')}
+              </a>
+            </li>
           {/each}
-        </tbody>
-      </table>
+        </ul>
+      </div>
+
+      <LibraryMenuGroup dir="" {shelf} />
     </div>
-  {/if}
+
+    <div class="sm:flex-1">
+      {#if data.doc}
+        <DocViewer doc={data.doc} />
+      {:else}
+        <p
+          class="text-center sm:text-left text-sm text-neutral flex items-center justify-center sm:justify-start gap-2 mt-1.5 w-full"
+        >
+          Choose a Version
+        </p>
+        <p
+          class="text-center sm:text-left text-sm text-neutral flex items-center justify-center sm:justify-start gap-2 mt-[1.75rem] w-full"
+        >
+          And a Doc
+        </p>
+      {/if}
+    </div>
+  </div>
 </BasicSection>

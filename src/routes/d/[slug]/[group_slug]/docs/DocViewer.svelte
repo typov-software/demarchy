@@ -8,8 +8,11 @@
   export let doc: Doc;
 </script>
 
-<div class="w-full p-0" in:fade={{ duration: 200 }}>
-  <div class="flex items-center text-xs px-4 py-2 mb-2 bg-base-300 gap-2">
+<div
+  class="w-full p-0 rounded-box overflow-hidden border-2 border-base-200"
+  in:fade={{ duration: 200 }}
+>
+  <div class="flex items-center text-xs px-4 py-2 mb-2 bg-base-200 gap-2">
     Created by <ProfileLink handle={doc.profile_handle} />
     on {format(doc.created_at, 'MMMM d, yyyy')}
   </div>
