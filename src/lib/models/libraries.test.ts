@@ -44,6 +44,7 @@ describe('library organization', () => {
       }
     });
     expect(organized).toEqual({
+      library_id: '',
       docs: new Map([
         [
           '',
