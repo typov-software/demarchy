@@ -3,6 +3,8 @@
 </script>
 
 <BasicSection otherClass="w-full items-stretch">
-  <h2 class="text-xl">Your Discussions</h2>
-  <p class="badge badge-warning badge-lg">Coming soon</p>
+  <div class="flex flex-col md:max-w-4xl md:self-center gap-4 w-full">
+    <h2 class="text-xl">Your Discussions</h2>
+    <p class="badge badge-warning badge-lg">Coming soon</p>
+  </div>
 </BasicSection>
