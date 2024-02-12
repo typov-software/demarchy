@@ -25,9 +25,11 @@
   <input type="hidden" name="action" value={action} />
   <button
     class="btn w-full"
+    class:btn-sm={action === 'abstain' || action === 'block'}
     class:btn-primary={action === 'accept'}
     class:btn-secondary={action === 'reject'}
     class:btn-neutral={action === 'abstain'}
+    class:border-neutral={action === 'abstain'}
     class:btn-ghost={action === 'block' && vote?.action !== 'block'}
     class:text-neutral={action === 'block' && vote?.action !== 'block'}
     class:btn-outline={action !== 'block' && vote?.action !== action}

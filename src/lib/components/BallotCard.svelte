@@ -30,14 +30,37 @@
 </script>
 
 <div class="card bg-base-200 w-full">
-  <div class="card-body p-8">
+  <div class="card-body">
     {#if ballot.context === 'proposals'}
-      <div class="card-title text-center items-center justify-center">
-        Should we accept these amendments to our library?
-      </div>
+      <div class="card-title">Ballot</div>
+      <p class="">Should we accept these amendments to our library?</p>
     {/if}
     <p>{ballot.description}</p>
-    <div class="card-actions flex-col sm:flex-row-reverse items-stretch sm:justify-center">
+    {#if $vote}
+      <div class="w-full h-3 flex bg-base-300 rounded-box overflow-hidden mb-4">
+        <div
+          class="w-full h-full bg-warning transition-all"
+          style:max-width={`${blockedRatio}%`}
+          title={`Blocked by ${blockedRatio}%`}
+        />
+        <div
+          class="w-full h-full bg-neutral transition-all"
+          style:max-width={`${abstainedRatio}%`}
+          title={`Abstained by ${abstainedRatio}%`}
+        />
+        <div
+          class="w-full h-full bg-secondary transition-all"
+          style:max-width={`${rejectedRatio}%`}
+          title={`Rejected by ${rejectedRatio}%`}
+        />
+        <div
+          class="w-full h-full bg-primary transition-all"
+          style:max-width={`${acceptedRatio}%`}
+          title={`Accepted by ${acceptedRatio}%`}
+        />
+      </div>
+    {/if}
+    <div class="card-actions flex-col items-stretch">
       <VoteButton
         action="accept"
         {contextPath}
@@ -67,30 +90,6 @@
         tally={$tally}
       />
     </div>
-    {#if $vote}
-      <div class="w-full h-3 flex bg-base-300 rounded-full overflow-hidden mt-5">
-        <div
-          class="w-full h-full bg-warning transition-all"
-          style:max-width={`${blockedRatio}%`}
-          title={`Blocked by ${blockedRatio}%`}
-        />
-        <div
-          class="w-full h-full bg-neutral transition-all"
-          style:max-width={`${abstainedRatio}%`}
-          title={`Abstained by ${abstainedRatio}%`}
-        />
-        <div
-          class="w-full h-full bg-secondary transition-all"
-          style:max-width={`${rejectedRatio}%`}
-          title={`Rejected by ${rejectedRatio}%`}
-        />
-        <div
-          class="w-full h-full bg-primary transition-all"
-          style:max-width={`${acceptedRatio}%`}
-          title={`Accepted by ${acceptedRatio}%`}
-        />
-      </div>
-    {/if}
     {#if ownsContext && canAdopt}
       {#if ballot.context === 'proposals'}
         <div class="flex justify-center mt-5">
