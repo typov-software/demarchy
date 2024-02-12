@@ -108,14 +108,16 @@ export function docStore<T extends DocumentMeta>(path: string) {
 
   const docRef = doc(db, path);
 
-  let job: string | undefined = working.add();
+  let job: string | undefined;
   const endJob = () => {
     if (job) {
       working.remove(job);
       job = undefined;
     }
   };
+
   const { subscribe, set, update } = writable<T | null>(null, (set) => {
+    job = working.add();
     unsubscribe = onSnapshot(
       docRef,
       (snapshot) => {
@@ -135,6 +137,7 @@ export function docStore<T extends DocumentMeta>(path: string) {
           console.warn('docStore error:', path);
         }
         console.error(error);
+        set(null);
         endJob();
       }
     );
