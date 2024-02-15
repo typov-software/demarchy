@@ -19,6 +19,7 @@ import type { Profile } from '$lib/models/profiles';
 import type { VoucherProps } from '$lib/models/vouchers';
 import type { OrganizationProps } from '$lib/models/organizations';
 import { SLUGS } from '$lib/models/firestore';
+import type { LibraryProps } from '$lib/models/libraries';
 
 interface CreateOrganizationParams {
   // Who is creating the org?
@@ -190,7 +191,28 @@ export async function createGroup(params: CreateGroupParams, batch?: WriteBatch)
       merge: true
     }
   );
+
+  // bootstrap libraries
+  const libraryRef = groupRef.collection('libraries').doc();
+  const libraryProps: LibraryProps = {
+    uid: libraryRef.id,
+    organization_id,
+    group_id: groupRef.id,
+    extends_library_id: null,
+    assets: {},
+    docs: {},
+    latest: true
+  };
+  batch.set(libraryRef, {
+    ...createdTimestamps(),
+    ...libraryProps
+  });
+  batch.set(groupRef.collection('libraries').doc('latest'), {
+    ...createdTimestamps(),
+    ...libraryProps
+  });
   await batch.commit();
+
   return {
     group_id: groupRef.id
   };

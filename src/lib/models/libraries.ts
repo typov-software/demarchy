@@ -1,6 +1,7 @@
 import _get from 'lodash/get';
 import _set from 'lodash/set';
 import type { DocumentMeta } from './utils';
+import type { Amendment } from './proposals';
 
 export interface DocSummary {
   id: string;
@@ -19,6 +20,7 @@ export interface LibraryProps {
   latest: boolean;
 
   docs: {
+    // key here is the full doc name
     [key: string]: DocSummary;
   };
 
@@ -35,7 +37,7 @@ export interface LibraryDirectory {
 
 export interface LibraryShelf {
   library_id: string;
-  docs: Map<string, DocSummary[]>;
+  rows: Map<string, DocSummary[]>;
   dirs: LibraryDirectory;
 }
 
@@ -44,9 +46,15 @@ export function addDocToShelf(doc: DocSummary, shelf: LibraryShelf): LibraryShel
   parts.pop(); // remove the doc name from array
   const path = parts.join('/'); // rejoin dir path
   // get the existing docs at this path
-  const row = shelf.docs.get(path) ?? [];
-  row.push(doc);
-  shelf.docs.set(path, row);
+  const row = shelf.rows.get(path) ?? [];
+  const idx = row.findIndex((d) => d.id === doc.id);
+  if (idx >= 0) {
+    // replace doc
+    row.splice(idx, 1, doc);
+  } else {
+    row.push(doc);
+  }
+  shelf.rows.set(path, row);
   if (parts.length) {
     // reformat path to something lodash expects
     const keypath = path.replaceAll('/', '.');
@@ -61,11 +69,24 @@ export function addDocToShelf(doc: DocSummary, shelf: LibraryShelf): LibraryShel
 export function organizeLibrary(library: Library): LibraryShelf {
   let shelf: LibraryShelf = {
     library_id: library.id,
-    docs: new Map([]),
+    rows: new Map([]),
     dirs: {}
   };
-  for (const id of Object.keys(library.docs)) {
-    shelf = addDocToShelf(library.docs[id], shelf);
+  for (const name of Object.keys(library.docs)) {
+    shelf = addDocToShelf(library.docs[name], shelf);
   }
   return shelf;
+}
+
+export function amendLibrary(source: Library, amendments: Amendment[]): Library {
+  const output: Library['docs'] = { ...source.docs };
+  for (const amendment of amendments) {
+    if (amendment.type !== 'destroy') {
+      output[amendment.doc.name] = { ...amendment.doc };
+    }
+  }
+  return {
+    ...source,
+    docs: output
+  };
 }

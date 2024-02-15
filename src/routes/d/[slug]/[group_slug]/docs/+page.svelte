@@ -5,14 +5,15 @@
   import { format } from 'date-fns';
   import type { PageData } from '../docs/$types';
   import DocViewer from './DocViewer.svelte';
-  import LibraryMenuGroup from '$lib/components/LibraryMenuGroup.svelte';
+  import LibraryViewerDirectory from '$lib/components/LibraryViewerDirectory.svelte';
 
   export let data: PageData;
 
   let shelf: LibraryShelf;
   $: shelf = data.library
     ? organizeLibrary(data.library)
-    : { library_id: 'latest', docs: new Map([]), dirs: {} };
+    : { library_id: 'latest', rows: new Map([]), dirs: {} };
+  $: console.log(shelf);
 </script>
 
 <BasicSection otherClass="!items-start">
@@ -54,7 +55,7 @@
         </ul>
       </div>
 
-      <LibraryMenuGroup dir="" {shelf} />
+      <LibraryViewerDirectory dir="" {shelf} />
     </div>
 
     <div class="sm:flex-1">

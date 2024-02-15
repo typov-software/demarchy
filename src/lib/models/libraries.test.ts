@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { organizeLibrary } from './libraries';
+import { amendLibrary, organizeLibrary } from './libraries';
 
 describe('library organization', () => {
   test('organizing a library directory', () => {
@@ -45,7 +45,7 @@ describe('library organization', () => {
     });
     expect(organized).toEqual({
       library_id: '',
-      docs: new Map([
+      rows: new Map([
         [
           '',
           [
@@ -95,6 +95,94 @@ describe('library organization', () => {
       dirs: {
         nested: { deeper: {} },
         another: { empty: { deep: {} } }
+      }
+    });
+  });
+});
+
+describe('amendLibrary()', () => {
+  test('extends the source library', () => {
+    const source = {
+      created_at: new Date(),
+      updated_at: new Date(),
+      archived_at: null,
+      id: 'latest',
+      uid: 'source',
+      path: '',
+      organization_id: '',
+      group_id: '',
+      extends_library_id: '',
+      latest: true,
+      assets: {},
+      docs: {
+        README: {
+          id: 'one',
+          name: 'README',
+          path: ''
+        },
+        toremove: {
+          id: 'remove',
+          name: 'toremove',
+          path: ''
+        }
+      }
+    };
+    expect(amendLibrary(source, [])).toEqual({
+      ...source
+    });
+
+    expect(
+      amendLibrary(source, [
+        {
+          type: 'create',
+          doc: {
+            id: 'two',
+            name: 'TWO',
+            path: ''
+          }
+        },
+        {
+          type: 'update',
+          doc: {
+            id: 'one-new',
+            name: 'README',
+            path: 'new/path'
+          },
+          update: {
+            doc: {
+              id: 'one',
+              name: 'README',
+              path: ''
+            }
+          }
+        },
+        {
+          type: 'destroy',
+          doc: {
+            id: 'remove',
+            name: 'toremove',
+            path: ''
+          }
+        }
+      ])
+    ).toEqual({
+      ...source,
+      docs: {
+        README: {
+          id: 'one-new',
+          name: 'README',
+          path: 'new/path'
+        },
+        TWO: {
+          id: 'two',
+          name: 'TWO',
+          path: ''
+        },
+        toremove: {
+          id: 'remove',
+          name: 'toremove',
+          path: ''
+        }
       }
     });
   });
