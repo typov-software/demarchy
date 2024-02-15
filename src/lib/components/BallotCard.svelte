@@ -117,7 +117,8 @@
           onStart() {
             adoptModal?.close();
           },
-          reset: true
+          reset: true,
+          invalidateAll: true
         })}
       >
         <input type="hidden" name="path" value={contextPath} />
