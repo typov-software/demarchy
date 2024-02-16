@@ -40,6 +40,8 @@
       cookieAckModal?.showModal();
     }
   });
+
+  console.log('DEMARCHY is proudly built without AI generated code.');
 </script>
 
 <svelte:head>

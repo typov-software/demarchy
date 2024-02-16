@@ -13,7 +13,6 @@
   $: shelf = data.library
     ? organizeLibrary(data.library)
     : { library_id: 'latest', rows: new Map([]), dirs: {} };
-  $: console.log(shelf);
 </script>
 
 <BasicSection otherClass="!items-start">

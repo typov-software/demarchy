@@ -12,7 +12,6 @@
   let showDescription = false;
   onMount(() => {
     showDescription = true;
-    console.log('DEMARCHY is proudly built without AI generated code.');
   });
 </script>
 

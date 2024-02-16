@@ -50,7 +50,7 @@
     showDetails = e.detail;
   }
 
-  function loadDoc(docName: string, docId?: string) {
+  function loadDoc(docName: string) {
     const originalSummary = library.docs[docName];
     if (originalSummary) {
       originalDoc = originalSummary;
@@ -63,11 +63,6 @@
     } else {
       proposalDoc = null;
     }
-    // If the proposal doc and original doc are the same, this is an adopted proposal
-    // if (proposalDoc?.id === originalDoc?.id) {
-    //   originalDoc = null;
-    // }
-    console.log('loaded', { docName, docId, originalDoc, proposalDoc });
   }
 
   function validateDocName(e: Event) {
@@ -100,7 +95,7 @@
 
   onMount(() => {
     if (viewingDocName) {
-      loadDoc(viewingDocName, viewingDocId ?? undefined);
+      loadDoc(viewingDocName);
     }
 
     return () => {
@@ -114,7 +109,7 @@
     const toDoc = to?.url.searchParams.get('doc_name');
     const toId = to?.url.searchParams.get('doc_id') ?? undefined;
     if (toDoc && (fromDoc !== toDoc || fromId !== toId)) {
-      loadDoc(toDoc, toId);
+      loadDoc(toDoc);
     } else if (!toDoc) {
       teardown();
     }
