@@ -28,7 +28,7 @@
     "@types/autosize": "^4.0.3",
     "@types/lodash": "^4.14.202",
     "@types/object-hash": "^3.0.6",
-    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^6.16.0",
     "autoprefixer": "^10.4.16",
     "daisyui": "^4.6.2",
