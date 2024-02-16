@@ -20,6 +20,7 @@
   import { makeDocument } from '$lib/models/utils';
   import { onMount } from 'svelte';
   import ProfileLink from './ProfileLink.svelte';
+  import { emptyString } from '$lib/utils/string';
 
   export let organizationId: string;
   export let groupId: string;
@@ -43,6 +44,12 @@
     }
   ];
   $: blocks;
+
+  $: allContent = blocks
+    .map((b) => b.content)
+    .join('')
+    .trim();
+  $: canSave = !emptyString(allContent);
 
   let parentComment: null | Comment = null;
   $: parentComment;
@@ -181,7 +188,9 @@
           bind:checked={anon}
         />
       </label>
-      <button class="btn btn-success btn-sm" on:click={onPublish}>Publish</button>
+      <button disabled={!canSave} class="btn btn-success btn-sm" on:click={onPublish}
+        >Publish</button
+      >
     </div>
   </div>
 </div>

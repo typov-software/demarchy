@@ -6,6 +6,7 @@
   import type { PageData } from './$types';
 
   export let data: PageData;
+  $: state = data.discussion.state;
 </script>
 
 <BasicSection>
@@ -30,8 +31,8 @@
   </div>
 
   <div class="w-full">
-    {#if data.discussion.state === 'draft' && data.can_write}
-      <DiscussionEditor discussion={data.discussion} />
+    {#if state === 'draft' && data.can_write}
+      <DiscussionEditor discussion={data.discussion} editable />
     {:else}
       <DiscussionViewer discussion={data.discussion} can_write={data.can_write} />
     {/if}
