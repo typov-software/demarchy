@@ -11,18 +11,18 @@
   import type { DocProps } from '$lib/models/docs';
 
   export let discussion: Discussion;
+  export let editable: boolean;
+
+  let closeModal: HTMLDialogElement;
+
   let doc = docStore<Discussion>(discussion.path);
+  $: doc;
 
-  $: blocks = [...($doc?.blocks ?? discussion.blocks)];
-
-  $: state = $doc ? $doc.state : discussion.state;
-  $: ownerId = discussion.user_id;
-
-  $: editable = state === 'draft';
+  $: blocks = $doc?.blocks?.slice() ?? discussion.blocks.slice();
+  $: state = $doc?.state ?? discussion.state;
   $: isOpen = state === 'open';
+  $: ownerId = discussion.user_id;
   $: ownsDiscussion = $user!.uid === ownerId;
-
-  let dropModal: HTMLDialogElement;
 
   async function saveBlocks(blocks: Block[]) {
     let nextBlocks = blocks.slice();
@@ -72,7 +72,7 @@
             <li>
               <button
                 class="flex items-center gap-2 text-warning w-full flex-1"
-                on:click={() => dropModal?.showModal()}
+                on:click={() => closeModal?.showModal()}
               >
                 <span class="material-symbols-outlined">undo</span>
                 Close discussion</button
@@ -88,7 +88,13 @@
       {#if editable && ownsDiscussion}
         <div class="card-actions pt-4 pb-2 px-4">
           <div class="flex-1" />
-          <form method="post" action="?/openDiscussion" use:enhance={workingCallback()}>
+          <form
+            method="post"
+            action="?/openDiscussion"
+            use:enhance={workingCallback({
+              invalidateAll: true
+            })}
+          >
             <input type="hidden" name="path" value={discussion.path} />
             <button class="btn btn-success btn-sm">
               <span class="material-symbols-outlined">present_to_all</span>
@@ -101,21 +107,21 @@
   </div>
 </div>
 
-<dialog id="close-proposal" class="modal" bind:this={dropModal}>
+<dialog id="close-discussion" class="modal" bind:this={closeModal}>
   <div class="modal-box">
     <h3 class="font-bold text-lg">Warning</h3>
     <p class="py-4">Are you sure you want to drop this discussion?</p>
 
     <div class="flex justify-end gap-2">
-      <button class="btn btn-info" on:click={() => dropModal.close()}>No, keep it open</button>
+      <button class="btn btn-info" on:click={() => closeModal.close()}>No, keep it open</button>
       <form
         method="post"
         action="?/dropDiscussion"
         use:enhance={workingCallback({
           onStart() {
-            dropModal?.close();
+            closeModal?.close();
           },
-          reset: true
+          invalidateAll: true
         })}
       >
         <input type="hidden" name="path" value={discussion.path} />
