@@ -28,6 +28,7 @@ export interface ProposalProps {
   created_at: Date;
   updated_at: Date;
 
+  library_id: string;
   amendments: Record<string, Amendment>;
   links: Record<string, LinkedResource>;
 }

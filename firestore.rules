@@ -192,6 +192,10 @@ service cloud.firestore {
           allow create: if isGroupMemberOrHigher(groupId);
           allow update: if ownsResource(resource.data.user_id);
 
+          match /libraries/{libraryId} {
+            allow read: if canReadOrg();
+          }
+
           match /docs/{docId} {
             allow read: if isGroupMemberOrHigher(groupId);
             allow create: if isGroupMemberOrHigher(groupId);

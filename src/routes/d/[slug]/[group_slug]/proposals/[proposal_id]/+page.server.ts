@@ -1,5 +1,6 @@
-import type { Doc } from '$lib/models/docs';
-import type { Proposal, ProposalProps } from '$lib/models/proposals';
+import uniq from 'lodash/uniq';
+import type { Doc, DocProps } from '$lib/models/docs';
+import type { Amendment, Proposal, ProposalProps } from '$lib/models/proposals';
 import {
   adminDB,
   adminGroupProposalRef,
@@ -9,7 +10,7 @@ import {
 } from '$lib/server/admin';
 import type { Actions, PageServerLoad } from './$types';
 import { makeDocument } from '$lib/models/utils';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { isGroupMemberOrHigher, verifyDocument } from '$lib/server/access';
 import type { Library, LibraryProps } from '$lib/models/libraries';
 import {
@@ -19,10 +20,11 @@ import {
   type BallotTallyProps
 } from '$lib/models/ballots';
 import { type Vote, type VoteAction, type VoteProps } from '$lib/models/votes';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { createEmptyReactions, createEmptyReinforcements } from '$lib/models/reactions';
 import type { Group } from '$lib/models/groups';
 import type { ProposalSettings } from '$lib/models/settings';
+import { DOCS, LIBRARIES } from '$lib/models/firestore';
 
 export const load = (async ({ params, parent }) => {
   const data = await parent();
@@ -30,6 +32,7 @@ export const load = (async ({ params, parent }) => {
   const proposalRef = adminGroupProposalRef(data.organization.id, data.group!.id).doc(proposalId);
   const proposalDoc = await proposalRef.get();
   const proposal = makeDocument<Proposal>(proposalDoc);
+
   let ballot: null | Ballot = null;
   if (proposal.state === 'open') {
     const ballotDoc = await proposalRef.collection('ballots').doc('consensus').get();
@@ -37,9 +40,21 @@ export const load = (async ({ params, parent }) => {
       ballot = makeDocument<Ballot>(ballotDoc);
     }
   }
+
+  let library: null | Library = null;
+  const libraryDoc = await adminGroupRef(data.organization.id)
+    .doc(data.group.id)
+    .collection(LIBRARIES)
+    .doc(proposal.library_id)
+    .get();
+  if (libraryDoc.exists) {
+    library = makeDocument<Library>(libraryDoc);
+  }
+
   return {
     proposal,
-    ballot
+    ballot,
+    library
   };
 }) satisfies PageServerLoad;
 
@@ -116,7 +131,7 @@ async function acceptProposal(
         ...createdTimestamps()
       });
       // Update next library doc map
-      nextLibraryProps.docs[amendment.doc.id] = {
+      nextLibraryProps.docs[amendment.doc.name] = {
         id: amendment.doc.id,
         path: destRef.path,
         name: createdDoc.name
@@ -142,15 +157,13 @@ async function acceptProposal(
         ...createdTimestamps()
       });
       // Update next library doc map
-      nextLibraryProps.docs[amendment.doc.id] = {
+      nextLibraryProps.docs[amendment.doc.name] = {
         id: amendment.doc.id,
         path: destRef.path,
         name: createdDoc.name
       };
-      // remove source doc from latest library
-      delete nextLibraryProps.docs[update.doc.id];
     } else if (amendment.type === 'destroy') {
-      delete nextLibraryProps.docs[amendment.doc.id];
+      delete nextLibraryProps.docs[amendment.doc.name];
     }
   }
 
@@ -183,6 +196,180 @@ async function acceptProposal(
 }
 
 export const actions = {
+  addDoc: async ({ request, params, locals }) => {
+    const formData = await request.formData();
+    const userId = locals.user_id!;
+    const name = formData.get('name') as string;
+    const profile_handle = formData.get('profile_handle') as string;
+    const organization_id = formData.get('organization_id') as string;
+    const group_id = formData.get('group_id') as string;
+    const docProps: DocProps = {
+      extends_doc_id: null,
+      contributors: [profile_handle],
+      user_id: userId,
+      profile_handle: profile_handle,
+      organization_id,
+      group_id,
+      name,
+      blocks: [
+        {
+          uid: crypto.randomUUID(),
+          type: 'text',
+          content: ''
+        }
+      ]
+    };
+    const proposalRef = adminGroupProposalRef(organization_id, group_id).doc(params.proposal_id);
+    const docRef = proposalRef.collection(DOCS).doc();
+    const amendment: Amendment = {
+      doc: {
+        id: docRef.id,
+        path: docRef.path,
+        name
+      },
+      type: 'create'
+    };
+    const proposalProps: Partial<ProposalProps> = {
+      amendments: { [docProps.name]: amendment }
+    };
+    const batch = adminDB.batch();
+    batch.set(
+      proposalRef,
+      {
+        ...updatedTimestamps(),
+        ...proposalProps
+      },
+      { merge: true }
+    );
+    batch.set(docRef, {
+      ...createdTimestamps(),
+      ...docProps
+    });
+    await batch.commit();
+    redirect(301, `?doc_name=${docProps.name}&doc_id=${amendment.doc.id}`);
+  },
+  removeAmendment: async ({ request, locals }) => {
+    const userId = locals.user_id!;
+    const formData = await request.formData();
+    const path = formData.get('path') as string;
+    const docName = formData.get('doc_name') as string;
+    await adminDB.runTransaction(async (tx): Promise<void> => {
+      const proposalDoc = await tx.get(adminDB.doc(path));
+      const proposal = makeDocument<Proposal>(proposalDoc);
+      if (!proposalDoc.exists || proposal.user_id !== userId) {
+        error(401, 'unauthorized');
+      }
+      const amendment = proposal.amendments[docName];
+      if (amendment.type === 'create' || amendment.type === 'update') {
+        tx.delete(adminDB.doc(amendment.doc.path));
+      }
+      delete proposal.amendments[docName];
+      tx.update(adminDB.doc(path), {
+        ...updatedTimestamps(),
+        ...proposal
+      });
+    });
+  },
+  editDoc: async ({ request, locals }) => {
+    const formData = await request.formData();
+    const user_id = locals.user_id!;
+    const profile_handle = formData.get('profile_handle') as string;
+    const proposal_path = formData.get('proposal_path') as string;
+    const source_path = formData.get('doc_path') as string;
+    const proposalDoc = await adminDB.doc(proposal_path).get();
+    const sourceDoc = await adminDB.doc(source_path).get();
+    if (!sourceDoc.exists || !proposalDoc.exists) {
+      error(401, 'unauthorized');
+    }
+    const proposal = makeDocument<Proposal>(proposalDoc);
+    if (proposal.user_id !== user_id) {
+      error(401, 'unauthorized');
+    }
+    const source = makeDocument<Doc>(sourceDoc);
+    const proposedDocRef = proposalDoc.ref.collection('docs').doc();
+    const proposedProps: DocProps = {
+      extends_doc_id: source.id,
+      user_id,
+      contributors: uniq([...source.contributors, profile_handle]),
+      organization_id: source.organization_id,
+      group_id: source.group_id,
+      profile_handle,
+      name: source.name,
+      blocks: source.blocks
+    };
+    const amendment: Amendment = {
+      type: 'update',
+      doc: {
+        id: proposedDocRef.id,
+        name: source.name,
+        path: proposedDocRef.path
+      },
+      update: {
+        doc: {
+          id: source.id,
+          name: source.name,
+          path: source.path
+        }
+      }
+    };
+    const proposalProps: Partial<ProposalProps> = {
+      amendments: { [amendment.doc.name]: amendment }
+    };
+    const batch = adminDB.batch();
+    batch.set(proposedDocRef, {
+      ...createdTimestamps(),
+      ...proposedProps,
+      created_at: Timestamp.fromDate(source.created_at)
+    });
+    batch.set(
+      proposalDoc.ref,
+      {
+        ...updatedTimestamps(),
+        ...proposalProps
+      },
+      { merge: true }
+    );
+    await batch.commit();
+    redirect(301, `?doc_name=${source.name}&doc_id=${amendment.doc.id}`);
+  },
+  destroyDoc: async ({ request, locals }) => {
+    const formData = await request.formData();
+    const user_id = locals.user_id!;
+    const proposal_path = formData.get('proposal_path') as string;
+    const source_path = formData.get('doc_path') as string;
+    const proposalDoc = await adminDB.doc(proposal_path).get();
+    const sourceDoc = await adminDB.doc(source_path).get();
+    if (!sourceDoc.exists || !proposalDoc.exists) {
+      error(401, 'unauthorized');
+    }
+    const proposal = makeDocument<Proposal>(proposalDoc);
+    if (proposal.user_id !== user_id) {
+      error(401, 'unauthorized');
+    }
+    const source = makeDocument<Doc>(sourceDoc);
+    const amendment: Amendment = {
+      doc: {
+        id: source.id,
+        name: source.name,
+        path: source.path
+      },
+      type: 'destroy'
+    };
+    const proposalProps: Partial<ProposalProps> = {
+      amendments: { [source.name]: amendment }
+    };
+    const batch = adminDB.batch();
+    batch.set(
+      proposalDoc.ref,
+      {
+        ...updatedTimestamps(),
+        ...proposalProps
+      },
+      { merge: true }
+    );
+    await batch.commit();
+    redirect(301, `?doc_name=${source.name}&doc_id=${source.id}`);
+  },
   openProposal: async ({ request, params, locals }) => {
     const formData = await request.formData();
     const userId = locals.user_id!;
@@ -330,5 +517,22 @@ export const actions = {
       });
     }
     await batch.commit();
+  },
+  updateProposal: async ({ request, locals }) => {
+    const user_id = locals.user_id!;
+    const formData = await request.formData();
+    const path = formData.get('path') as string;
+    const title = formData.get('title') as string;
+    const description = formData.get('description') as string;
+    const proposalDoc = await adminDB.doc(path).get();
+    const proposal = makeDocument<Proposal>(proposalDoc);
+    if (!proposalDoc.exists || proposal.user_id !== user_id) {
+      error(401, 'unauthorized');
+    }
+    await proposalDoc.ref.update({
+      ...updatedTimestamps(),
+      title,
+      description
+    });
   }
 } satisfies Actions;

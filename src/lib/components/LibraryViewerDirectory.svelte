@@ -6,14 +6,13 @@
 
   export let dir: string;
   export let shelf: LibraryShelf;
-
   let dirs: LibraryDirectory;
   let docs: (DocSummary & { displayName: string })[];
 
   $: dirs = dir === '' ? { ...shelf.dirs } : _get(shelf.dirs, dir.replaceAll('/', '.')) ?? {};
   $: dirnames = Object.keys(dirs).sort();
   $: docs = stableSort(
-    (shelf.docs.get(dir) ?? []).map((d) => ({ ...d, displayName: d.name.split('/').pop()! })),
+    (shelf.rows.get(dir) ?? []).map((d) => ({ ...d, displayName: d.name.split('/').pop()! })),
     getComparator('asc', 'displayName')
   );
 </script>
@@ -26,7 +25,7 @@
       </li>
     {/each}
 
-    {#each docs as doc (doc.id)}
+    {#each docs as doc (`${dir}-${doc.id}`)}
       <li>
         <a
           href={`?library=${shelf.library_id}&doc=${doc.id}`}
@@ -52,7 +51,7 @@
         </li>
       {/each}
 
-      {#each docs as doc (doc.id)}
+      {#each docs as doc (`${dir}-${doc.id}`)}
         <li>
           <a
             href={`?library=${shelf.library_id}&doc=${doc.id}`}

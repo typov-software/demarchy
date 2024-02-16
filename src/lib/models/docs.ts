@@ -2,15 +2,14 @@ import type { Block } from './blocks';
 import type { DocumentMeta } from './utils';
 
 export interface DocProps {
-  contributor_ids: string[];
+  // array of handles
+  contributors: string[];
   user_id: string;
   profile_handle: string;
+  organization_id: string;
   group_id: string;
+  extends_doc_id: string | null;
 
-  created_at: Date;
-  updated_at: Date;
-
-  // root_id: string;
   name: string;
   blocks: Block[];
 }

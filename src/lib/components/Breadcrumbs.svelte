@@ -107,7 +107,7 @@
               </a>
             </li>
             {#if config[route].divider}
-              <div class="divider p-0 my-2 min-h-0 h-0" />
+              <li />
             {/if}
           {/each}
         </ul>

@@ -2,6 +2,7 @@
   import type { Block } from '$lib/models/blocks';
   import { tick } from 'svelte';
   import BlockEditor from './BlockEditor.svelte';
+  import hash from 'object-hash';
 
   export let saveBlocks: undefined | ((blocks: Block[]) => Promise<void>) = undefined;
   export let editable = true;
@@ -19,7 +20,7 @@
     }
   }
 
-  function onAddBlock(index: number) {
+  async function onAddBlock(index: number) {
     const nextBlocks = blocks.slice();
     requestFocus = index;
     nextBlocks.splice(index, 0, {
@@ -84,7 +85,7 @@
   }
 </script>
 
-{#each blocks as block, index (block.uid)}
+{#each blocks as block, index (hash({ ...block, index }))}
   <BlockEditor
     focus={requestFocus === index}
     placeholder={index === 0 ? placeholder : ''}
