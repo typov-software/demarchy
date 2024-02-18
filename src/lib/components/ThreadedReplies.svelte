@@ -44,8 +44,8 @@
       parent = next.length ? `${next.at(-1)}_${id}` : id;
       parents = [...next, parent];
     }
-
-    goto(`?thread=${parent}`, {
+    $page.url.searchParams.set('thread', parent);
+    goto(`?${$page.url.searchParams.toString()}`, {
       // disabled scrolling the window to top
       noScroll: true
     });

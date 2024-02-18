@@ -88,6 +88,13 @@
     }
   }
 
+  function docSearchParams(doc_name: string, doc_id: string) {
+    $page.url.searchParams.set('doc_name', doc_name);
+    $page.url.searchParams.set('doc_id', doc_id);
+    console.log($page.url.searchParams.toString());
+    return $page.url.searchParams.toString();
+  }
+
   function teardown() {
     originalDoc = null;
     proposalDoc = null;
@@ -176,7 +183,7 @@
         {#if originalDoc}
           {#key originalDoc.id}
             <a
-              href={`?doc_name=${originalDoc.name}&doc_id=${originalDoc.id}`}
+              href={`?${docSearchParams(originalDoc.name, originalDoc.id)}`}
               class="tab"
               class:tab-active={viewingDocId === originalDoc.id}
             >
@@ -188,7 +195,7 @@
         {#if proposalDoc}
           {#key proposalDoc.id}
             <a
-              href={`?doc_name=${proposalDoc.name}&doc_id=${proposalDoc.id}`}
+              href={`?${docSearchParams(proposalDoc.name, proposalDoc.id)}`}
               class="tab"
               class:tab-active={viewingDocId === proposalDoc.id}
             >

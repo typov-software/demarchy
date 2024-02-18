@@ -11,12 +11,18 @@
   export let proposal: Proposal;
 
   let removeDialog: HTMLDialogElement;
+
+  function docSearchParams(doc_name: string, doc_id: string) {
+    $page.url.searchParams.set('doc_name', doc_name);
+    $page.url.searchParams.set('doc_id', doc_id);
+    return $page.url.searchParams.toString();
+  }
 </script>
 
 <li class="flex flex-row">
   <a
     data-sveltekit-noscroll
-    href={`?doc_name=${doc.name}&doc_id=${doc.id}`}
+    href={`?${docSearchParams(doc.name, doc.id)}`}
     class="flex-1"
     class:active={$page.url.searchParams.get('doc') === doc.name}
     class:text-success={amendment?.type === 'create'}

@@ -12,6 +12,7 @@
   import type { Reaction, ReactionTally } from '$lib/models/reactions';
   import ReactionSelector from '$lib/components/ReactionSelector.svelte';
   import SeenCounter from '$lib/components/SeenCounter.svelte';
+  import ThreadedReplies from '$lib/components/ThreadedReplies.svelte';
 
   export let data: PageData;
 
@@ -179,6 +180,18 @@
           profile={data.profile}
           library={data.library}
         />
+      {/if}
+
+      {#if reaction && tally}
+        <div>
+          <ThreadedReplies
+            can_write={data.can_write}
+            organizationId={data.organization.id}
+            groupId={data.group.id}
+            contextId={data.proposal.id}
+            context="proposals"
+          />
+        </div>
       {/if}
     </div>
   </BasicSection>
