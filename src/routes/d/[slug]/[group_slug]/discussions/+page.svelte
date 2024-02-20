@@ -68,7 +68,8 @@
         <div tabindex="0" role="button" class="btn btn-sm btn-square btn-primary">
           <span class="material-symbols-outlined">more_vert</span>
         </div>
-        <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+        <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+        <div tabindex="0" class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
           <ul class="menu w-60">
             <li>
               <button on:click={() => draftDiscussion()} disabled={$working.length > 0}>

@@ -52,7 +52,8 @@
                 <div tabindex="0" role="button" class="btn btn-sm btn-square btn-neutral">
                   <span class="material-symbols-outlined">more_vert</span>
                 </div>
-                <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+                <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                <div tabindex="0" class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
                   <ul class="menu w-60">
                     <li>
                       <a href="?modal=invite" title="Invite someone">
@@ -81,7 +82,8 @@
                     <button tabindex="0" class="btn btn-sm btn-square btn-ghost">
                       <span class="material-symbols-outlined">more_vert</span>
                     </button>
-                    <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+                    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                    <div tabindex="0" class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
                       <ul class="menu w-64">
                         <li>
                           <form
@@ -172,7 +174,8 @@
                     <button tabindex="0" class="btn btn-sm btn-square btn-ghost">
                       <span class="material-symbols-outlined">more_vert</span>
                     </button>
-                    <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+                    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                    <div tabindex="0" class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
                       <ul class="menu w-64">
                         <li>
                           <form
@@ -233,7 +236,8 @@
             <div tabindex="0" role="button" class="btn btn-square btn-sm btn-ghost">
               <span class="material-symbols-outlined">sort</span>
             </div>
-            <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+            <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+            <div tabindex="0" class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
               <ul class="menu w-40">
                 <li><button on:click={onSort('handle', 'asc')}>Handle ASC</button></li>
                 <li><button on:click={onSort('handle', 'desc')}>Handle DESC</button></li>
@@ -246,7 +250,8 @@
               <div tabindex="0" role="button" class="btn btn-sm btn-square btn-neutral">
                 <span class="material-symbols-outlined">more_vert</span>
               </div>
-              <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+              <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+              <div tabindex="0" class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
                 <ul class="menu w-60">
                   {#if !data.invitations.length}
                     <li>

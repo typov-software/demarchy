@@ -180,7 +180,9 @@
           >
             <span class="material-symbols-outlined">thumbs_up_down</span>
           </div>
+          <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
           <ul
+            tabindex="0"
             class="dropdown-content z-40 shadow bg-base-300 flex flex-row flex-wrap justify-center align-center gap-1 rounded-box p-1"
             style:width="10rem"
           >
@@ -215,7 +217,9 @@
           >
             <span class="material-symbols-outlined">add_reaction</span>
           </div>
+          <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
           <ul
+            tabindex="0"
             class="dropdown-content z-40 shadow bg-base-300 flex flex-row flex-wrap justify-center align-center gap-1 rounded-box p-1"
             style:width="16rem"
           >

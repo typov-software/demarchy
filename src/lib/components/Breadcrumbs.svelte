@@ -84,7 +84,11 @@
         {:else}
           <div role="button" tabindex="0" class="btn btn-sm btn-warning">Go to</div>
         {/if}
-        <ul class="menu w-48 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
+        <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+        <ul
+          tabindex="0"
+          class="menu w-48 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3"
+        >
           <li>
             <a
               href={root + group.slug}
