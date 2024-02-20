@@ -95,9 +95,8 @@
     {#if ownsContext && canAdopt}
       {#if ballot.context === 'proposals'}
         <div class="flex justify-center mt-5">
-          <button
-            class="btn btn-lg rounded-full btn-success"
-            on:click={() => adoptModal.showModal()}>Adopt amendments</button
+          <button class="btn rounded-full btn-success" on:click={() => adoptModal.showModal()}
+            >Adopt amendments</button
           >
         </div>
       {/if}
