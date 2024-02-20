@@ -58,6 +58,7 @@
           <div class="card bg-base-200">
             <div class="card-body p-6 pb-4">
               <form
+                class="hidden"
                 id="update-proposal"
                 method="post"
                 action="?/updateProposal"
@@ -67,38 +68,40 @@
                 })}
               >
                 <input type="hidden" name="path" value={data.proposal.path} />
-                <div class="card-title flex flex-row gap-4 items-center mb-2">
-                  {#if data.proposal.state === 'adopted'}
-                    <mark class="badge badge-lg badge-accent">Adopted</mark>
-                  {/if}
-                  <input
-                    disabled={!editable}
-                    class="input w-full bg-base-200 focus:bg-base-100 px-2 py-1 min-h-0 h-auto disabled:text-base-content disabled:cursor-text"
-                    type="text"
-                    name="title"
-                    placeholder="Title"
-                    bind:value={title}
-                  />
-                  {#if isOpen && tally}
-                    <SeenCounter
-                      context="proposals"
-                      contextId={data.proposal.id}
-                      {reaction}
-                      {reactionPath}
-                      {tally}
-                    />
-                  {/if}
-                </div>
-                <textarea
-                  bind:value={description}
-                  use:autosize
-                  disabled={!editable}
-                  class="textarea w-full bg-base-200 focus:bg-base-100 px-2 py-1 disabled:text-base-content disabled:cursor-text"
-                  name="description"
-                  placeholder="Describe the intentions and changes of this proposal"
-                  rows={1}
-                />
               </form>
+              <div class="card-title flex flex-row gap-4 items-center mb-2">
+                {#if data.proposal.state === 'adopted'}
+                  <mark class="badge badge-lg badge-accent">Adopted</mark>
+                {/if}
+                <input
+                  form="update-proposal"
+                  disabled={!editable}
+                  class="input w-full bg-base-200 focus:bg-base-100 px-2 py-1 min-h-0 h-auto disabled:text-base-content disabled:cursor-text"
+                  type="text"
+                  name="title"
+                  placeholder="Title"
+                  bind:value={title}
+                />
+                {#if isOpen && tally}
+                  <SeenCounter
+                    context="proposals"
+                    contextId={data.proposal.id}
+                    {reaction}
+                    {reactionPath}
+                    {tally}
+                  />
+                {/if}
+              </div>
+              <textarea
+                form="update-proposal"
+                bind:value={description}
+                use:autosize
+                disabled={!editable}
+                class="textarea w-full bg-base-200 focus:bg-base-100 px-2 py-1 disabled:text-base-content disabled:cursor-text"
+                name="description"
+                placeholder="Describe the intentions and changes of this proposal"
+                rows={1}
+              />
 
               <div class="card-actions justify-end">
                 {#if editable}
