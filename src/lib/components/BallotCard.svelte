@@ -26,7 +26,9 @@
   $: blockedRatio = $tally?.block ? ($tally.block / group.member_count) * 100 : 0;
 
   $: canAdopt =
-    ($tally?.accept ?? 0) / group.member_count >= proposalSettings.acceptance_threshold_ratio;
+    $tally?.accept &&
+    $tally.accept > 0 &&
+    $tally.accept / group.member_count >= proposalSettings.acceptance_threshold_ratio;
 </script>
 
 <div class="card bg-base-200 w-full">
