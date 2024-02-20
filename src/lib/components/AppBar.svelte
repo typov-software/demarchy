@@ -41,7 +41,11 @@
           <div tabindex="0" role="button" class="btn-sm btn">Select organization</div>
         {/if}
 
-        <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box -left-5">
+        <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+        <ul
+          tabindex="0"
+          class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box -left-5"
+        >
           {#each organizations as org (org.id)}
             <li>
               <a href={'/d/' + org.slug} title={org.name}>{org.name}</a>

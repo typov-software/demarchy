@@ -56,7 +56,8 @@
         <div role="button" tabindex="0" class="btn btn-sm" class:btn-success={group}>
           {group ? group.name : 'Select group'}
         </div>
-        <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
+        <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+        <ul tabindex="0" class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
           <li>
             <a href={root} title="All groups" class="text-neutral hover:text-base-content">
               See all groups
@@ -83,7 +84,11 @@
         {:else}
           <div role="button" tabindex="0" class="btn btn-sm btn-warning">Go to</div>
         {/if}
-        <ul class="menu w-48 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3">
+        <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+        <ul
+          tabindex="0"
+          class="menu w-48 dropdown-content z-[1] shadow bg-base-300 rounded-box left-3"
+        >
           <li>
             <a
               href={root + group.slug}

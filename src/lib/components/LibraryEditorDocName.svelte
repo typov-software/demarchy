@@ -46,7 +46,11 @@
     <div tabindex="0" role="button" class="px-2">
       <span class="material-symbols-outlined text-base text-neutral">more_horiz</span>
     </div>
-    <ul class="menu menu-sm dropdown-content z-[1] bg-base-300 rounded-box shadow w-56">
+    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+    <ul
+      tabindex="0"
+      class="menu menu-sm dropdown-content z-[1] bg-base-300 rounded-box shadow w-56"
+    >
       <li>
         <form
           id={`${doc.id}-destroy-doc`}

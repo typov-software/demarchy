@@ -137,7 +137,8 @@
           <div role="button" tabindex="0" class="btn btn-square btn-ghost btn-sm">
             <span class="material-symbols-outlined">post_add</span>
           </div>
-          <div class="dropdown-content p-4 z-[1] bg-base-200 rounded-box shadow">
+          <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+          <div tabindex="0" class="dropdown-content p-4 z-[1] bg-base-200 rounded-box shadow">
             <form
               method="post"
               action="?/addDoc"

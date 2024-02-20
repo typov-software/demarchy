@@ -24,7 +24,8 @@
       <div tabindex="0" role="button" class="btn btn-sm btn-square btn-primary">
         <span class="material-symbols-outlined">more_vert</span>
       </div>
-      <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+      <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+      <div tabindex="0" class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
         <ul class="menu w-60">
           <li>
             <a href="?">
@@ -43,7 +44,8 @@
         <div tabindex="0" role="button" class="btn btn-sm w-full">
           {data.library?.id ?? ''}
         </div>
-        <ul class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
+        <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+        <ul tabindex="0" class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
           {#each data.versions as library (library.id)}
             <li>
               <a href={`?library=${library.id}`}>

@@ -15,7 +15,8 @@
       <div tabindex="0" role="button" class="btn btn-square btn-sm btn-primary">
         <span class="material-symbols-outlined">more_vert</span>
       </div>
-      <div class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
+      <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+      <div tabindex="0" class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
         <ul class="menu w-60">
           <li>
             <a href="{$page.url.pathname}/todo" title="TODO">

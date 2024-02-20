@@ -118,13 +118,16 @@
 
     {#if !focused && editable}
       <div class="dropdown dropdown-top dropdown-end">
-        <button
+        <div
+          tabindex="0"
+          role="button"
           class="options-btn btn btn-sm btn-square shadow-none rounded-lg h-auto absolute z-20 right-0 px-1 w-auto opacity-0"
           style:top="-0.2rem"
         >
           <span class="material-symbols-outlined text-neutral text-lg">drag_indicator</span>
-        </button>
-        <div class="dropdown-content z-30 shadow bg-base-300">
+        </div>
+        <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+        <div tabindex="0" class="dropdown-content z-30 shadow bg-base-300">
           <ul class="menu menu-sm px-0 w-80">
             <li>
               <button

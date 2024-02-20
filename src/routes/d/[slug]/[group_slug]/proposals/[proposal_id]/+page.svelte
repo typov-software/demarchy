@@ -107,7 +107,11 @@
                       <span class="material-symbols-outlined">present_to_all</span>
                       Open Proposal
                     </div>
-                    <div class="dropdown-content p-4 z-[1] bg-base-300 rounded-box shadow w-72">
+                    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                    <div
+                      tabindex="0"
+                      class="dropdown-content p-4 z-[1] bg-base-300 rounded-box shadow w-72"
+                    >
                       <form
                         method="post"
                         action="?/openProposal"

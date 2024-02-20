@@ -78,10 +78,11 @@
       {/if}
       {#if ownsDiscussion && isOpen && !editable}
         <div class="dropdown dropdown-bottom dropdown-end">
-          <button class="btn btn-square btn-sm"
-            ><span class="material-symbols-outlined">more_vert</span></button
-          >
-          <ul class="dropdown-content w-60 menu z-[1] shadow bg-base-100 rounded-box">
+          <div tabindex="0" role="button" class="btn btn-square btn-sm">
+            <span class="material-symbols-outlined">more_vert</span>
+          </div>
+          <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+          <ul tabindex="0" class="dropdown-content w-60 menu z-[1] shadow bg-base-100 rounded-box">
             <li>
               <button
                 class="flex items-center gap-2 text-warning w-full flex-1"
