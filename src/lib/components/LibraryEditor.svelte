@@ -109,12 +109,9 @@
     };
   });
 
-  afterNavigate(({ from, to }) => {
-    const fromDoc = from?.url.searchParams.get('doc_name');
-    const fromId = from?.url.searchParams.get('doc_id');
+  afterNavigate(({ to }) => {
     const toDoc = to?.url.searchParams.get('doc_name');
-    const toId = to?.url.searchParams.get('doc_id') ?? undefined;
-    if (toDoc && (fromDoc !== toDoc || fromId !== toId)) {
+    if (toDoc) {
       loadDoc(toDoc);
     } else if (!toDoc) {
       teardown();
