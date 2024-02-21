@@ -147,12 +147,13 @@
 
 <div class="card bg-base-200 w-full">
   <div
-    class="card-body px-0 pt-5 pb-4"
+    class="card-body px-0 pb-4"
     class:pt-2={parentComment}
+    class:pt-5={!parentComment}
     class:opacity-60={$working.length !== 0}
   >
     {#if parentComment}
-      <div class="rounded-t-box">
+      <div>
         <small class="text-neutral px-3 italic"
           >Replying to
           {#if !parentComment.user_id}
