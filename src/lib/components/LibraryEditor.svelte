@@ -17,7 +17,7 @@
   import { format } from 'date-fns';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
-  import { afterNavigate } from '$app/navigation';
+  import { afterNavigate, goto } from '$app/navigation';
   import DocEditor from './DocEditor.svelte';
 
   export let organization: Organization;
@@ -88,11 +88,10 @@
     }
   }
 
-  function docSearchParams(doc_name: string, doc_id: string) {
-    $page.url.searchParams.set('doc_name', doc_name);
-    $page.url.searchParams.set('doc_id', doc_id);
-    console.log($page.url.searchParams.toString());
-    return $page.url.searchParams.toString();
+  function handleLoadDoc(name: string, id: string) {
+    $page.url.searchParams.set('doc_name', name);
+    $page.url.searchParams.set('doc_id', id);
+    goto(`?${$page.url.searchParams.toString()}`);
   }
 
   function teardown() {
@@ -182,28 +181,28 @@
       <div role="tablist" class="tabs tabs-boxed flex flex-row w-full justify-start p-2 gap-2">
         {#if originalDoc}
           {#key originalDoc.id}
-            <a
-              href={`?${docSearchParams(originalDoc.name, originalDoc.id)}`}
+            <button
               class="tab"
               class:tab-active={viewingDocId === originalDoc.id}
+              on:click={() => originalDoc && handleLoadDoc(originalDoc.name, originalDoc.id)}
             >
               <span class="material-symbols-outlined text-base mr-1">article</span>
               Original
-            </a>
+            </button>
           {/key}
         {/if}
         {#if proposalDoc}
           {#key proposalDoc.id}
-            <a
-              href={`?${docSearchParams(proposalDoc.name, proposalDoc.id)}`}
+            <button
               class="tab"
               class:tab-active={viewingDocId === proposalDoc.id}
+              on:click={() => proposalDoc && handleLoadDoc(proposalDoc.name, proposalDoc.id)}
             >
               {#if profile.id === proposal.user_id}
                 <span class="material-symbols-outlined text-base mr-1">edit_note</span>
               {/if}
               Proposal
-            </a>
+            </button>
           {/key}
         {:else if originalDoc}
           <div class="flex-1" />

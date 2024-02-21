@@ -31,7 +31,7 @@
     const searchParams = $page.url.searchParams;
     searchParams.set('sortBy', field);
     searchParams.set('direction', direction);
-    await goto(`${$page.url.pathname}?${searchParams.toString()}`, { invalidateAll: true });
+    await goto(`?${searchParams.toString()}`, { invalidateAll: true });
   }
 </script>
 
