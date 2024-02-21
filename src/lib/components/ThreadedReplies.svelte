@@ -61,8 +61,6 @@
   class="pt-4 gap-4 flex h-full"
   style:min-height="50vh"
   class:overflow-x-auto={parents.length}
-  class:max-w-3xl={!parents.length}
-  class:mx-auto={!parents.length}
 >
   <Replies
     {can_write}
@@ -73,7 +71,6 @@
     {contextId}
     parent={null}
     depth={0}
-    threadedColumns={parents.length}
     {highlighted}
     on:reply={handleReply}
   />
@@ -88,7 +85,6 @@
       {contextId}
       {parent}
       depth={index + 1}
-      threadedColumns={parents.length}
       {highlighted}
       on:reply={handleReply}
     />

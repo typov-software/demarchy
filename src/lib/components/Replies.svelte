@@ -34,7 +34,6 @@
 
   export let threaded = false;
   export let highlighted: string[] = [];
-  export let threadedColumns: number = 0;
   export let maxResults = 5;
 
   let baseQuery: Query;
@@ -162,11 +161,7 @@
   });
 </script>
 
-<div
-  class:w-full={!threadedColumns}
-  class:min-w-[85vw]={threadedColumns}
-  class:sm:min-w-[45vw]={threadedColumns}
->
+<div class:w-full={!threaded} class:min-w-[85vw]={threaded} class:sm:min-w-[45vw]={threaded}>
   <div bind:this={containerEl} class="flex flex-col items-center gap-4 w-full">
     {#if can_write && showForm && userHandle}
       <div class="w-full">
