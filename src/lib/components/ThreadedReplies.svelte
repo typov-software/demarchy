@@ -10,6 +10,7 @@
   export let groupId: string;
   export let contextId: string;
   export let context: CommentContext;
+  export let pinnable = false;
 
   let scrollingEl: HTMLDivElement;
   $: thread = $page.url.searchParams.get('thread');
@@ -72,7 +73,10 @@
     parent={null}
     depth={0}
     {highlighted}
+    {pinnable}
     on:reply={handleReply}
+    on:pin:clarification
+    on:pin:concern
   />
 
   {#each parents as parent, index (parent)}
@@ -86,7 +90,10 @@
       {parent}
       depth={index + 1}
       {highlighted}
+      {pinnable}
       on:reply={handleReply}
+      on:pin:clarification
+      on:pin:concern
     />
   {/each}
 </div>
