@@ -20,8 +20,10 @@
   export let contextId: string;
   export let threaded = false;
   export let highlighted = false;
+  export let pinnable = false;
 
   let userId = $user!.uid;
+  let isOwner = userId === comment.user_id;
   let now = new Date();
 
   let tally: null | ReactionTally = null;
@@ -88,7 +90,7 @@
         {comment.created_at ? formatRelative(comment.created_at, now) : ''}
       </small>
 
-      <div class="flex pl-2">
+      <div class="flex pl-2 gap-2">
         {#if tally}
           <SeenCounter
             {context}
@@ -99,11 +101,50 @@
             on:seen={(r) => (reaction = r.detail)}
           />
           {#if threaded && reaction}
-            <button class="btn btn-xs ml-2" on:click={() => dispatch('reply', { comment })}>
+            <button class="btn btn-xs btn-neutral" on:click={() => dispatch('reply', { comment })}>
               {tally.replies || ''}
               <span class="material-symbols-outlined">reply</span>
             </button>
           {/if}
+        {/if}
+        {#if isOwner}
+          <div class="dropdown dropdown-end">
+            <div
+              tabindex="0"
+              role="button"
+              class="btn btn-xs btn-outline border-neutral hover:bg-neutral hover:border-neutral"
+            >
+              <span class="material-symbols-outlined">more_horiz</span>
+            </div>
+            <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+            <ul
+              tabindex="0"
+              class="dropdown-content menu w-72 z-[1] shadow rounded-box"
+              class:bg-base-200={highlighted}
+              class:bg-base-300={!highlighted}
+            >
+              {#if pinnable}
+                <li>
+                  <button
+                    class="hover:text-warning"
+                    on:click={() => dispatch('pin:clarification', comment)}
+                  >
+                    <span class="material-symbols-outlined">push_pin</span>
+                    Pin for Clarification
+                  </button>
+                </li>
+                <li>
+                  <button
+                    class="hover:text-warning"
+                    on:click={() => dispatch('pin:concern', comment)}
+                  >
+                    <span class="material-symbols-outlined">push_pin</span>
+                    Pin as Concern
+                  </button>
+                </li>
+              {/if}
+            </ul>
+          </div>
         {/if}
       </div>
     </div>

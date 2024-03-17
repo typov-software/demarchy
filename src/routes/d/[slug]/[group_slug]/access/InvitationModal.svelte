@@ -95,8 +95,6 @@
         groupMember: groupMembers.find((m) => m.id === profile.id) ?? null
       }));
 
-      console.log(results);
-
       searching = false;
     }, 500);
   }

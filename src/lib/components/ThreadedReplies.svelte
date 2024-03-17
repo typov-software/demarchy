@@ -10,6 +10,7 @@
   export let groupId: string;
   export let contextId: string;
   export let context: CommentContext;
+  export let pinnable = false;
 
   let scrollingEl: HTMLDivElement;
   $: thread = $page.url.searchParams.get('thread');
@@ -44,8 +45,8 @@
       parent = next.length ? `${next.at(-1)}_${id}` : id;
       parents = [...next, parent];
     }
-
-    goto(`?thread=${parent}`, {
+    $page.url.searchParams.set('thread', parent);
+    goto(`?${$page.url.searchParams.toString()}`, {
       // disabled scrolling the window to top
       noScroll: true
     });
@@ -61,8 +62,6 @@
   class="pt-4 gap-4 flex h-full"
   style:min-height="50vh"
   class:overflow-x-auto={parents.length}
-  class:max-w-3xl={!parents.length}
-  class:mx-auto={!parents.length}
 >
   <Replies
     {can_write}
@@ -73,9 +72,11 @@
     {contextId}
     parent={null}
     depth={0}
-    threadedColumns={parents.length}
     {highlighted}
+    {pinnable}
     on:reply={handleReply}
+    on:pin:clarification
+    on:pin:concern
   />
 
   {#each parents as parent, index (parent)}
@@ -88,9 +89,11 @@
       {contextId}
       {parent}
       depth={index + 1}
-      threadedColumns={parents.length}
       {highlighted}
+      {pinnable}
       on:reply={handleReply}
+      on:pin:clarification
+      on:pin:concern
     />
   {/each}
 </div>

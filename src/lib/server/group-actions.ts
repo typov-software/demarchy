@@ -124,7 +124,6 @@ export async function createGroup(params: CreateGroupParams, batch?: WriteBatch)
   const membershipRef = adminMembershipRef(organization_id).doc(user_id);
   const memberRef = adminMemberRef(organization_id, groupRef.id).doc(user_id);
   const proposalSettingsRef = groupRef.collection('settings').doc('proposals');
-  console.log({ slug, organization_id });
   const slugRef = adminOrganizationRef().doc(organization_id).collection(SLUGS).doc(slug);
 
   // Create the slug document for this group

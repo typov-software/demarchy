@@ -17,7 +17,7 @@
   import { format } from 'date-fns';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
-  import { afterNavigate } from '$app/navigation';
+  import { afterNavigate, goto } from '$app/navigation';
   import DocEditor from './DocEditor.svelte';
 
   export let organization: Organization;
@@ -50,7 +50,7 @@
     showDetails = e.detail;
   }
 
-  function loadDoc(docName: string, docId?: string) {
+  function loadDoc(docName: string) {
     const originalSummary = library.docs[docName];
     if (originalSummary) {
       originalDoc = originalSummary;
@@ -63,11 +63,6 @@
     } else {
       proposalDoc = null;
     }
-    // If the proposal doc and original doc are the same, this is an adopted proposal
-    // if (proposalDoc?.id === originalDoc?.id) {
-    //   originalDoc = null;
-    // }
-    console.log('loaded', { docName, docId, originalDoc, proposalDoc });
   }
 
   function validateDocName(e: Event) {
@@ -93,6 +88,12 @@
     }
   }
 
+  function handleLoadDoc(name: string, id: string) {
+    $page.url.searchParams.set('doc_name', name);
+    $page.url.searchParams.set('doc_id', id);
+    goto(`?${$page.url.searchParams.toString()}`);
+  }
+
   function teardown() {
     originalDoc = null;
     proposalDoc = null;
@@ -100,7 +101,7 @@
 
   onMount(() => {
     if (viewingDocName) {
-      loadDoc(viewingDocName, viewingDocId ?? undefined);
+      loadDoc(viewingDocName);
     }
 
     return () => {
@@ -108,13 +109,10 @@
     };
   });
 
-  afterNavigate(({ from, to }) => {
-    const fromDoc = from?.url.searchParams.get('doc_name');
-    const fromId = from?.url.searchParams.get('doc_id');
+  afterNavigate(({ to }) => {
     const toDoc = to?.url.searchParams.get('doc_name');
-    const toId = to?.url.searchParams.get('doc_id') ?? undefined;
-    if (toDoc && (fromDoc !== toDoc || fromId !== toId)) {
-      loadDoc(toDoc, toId);
+    if (toDoc) {
+      loadDoc(toDoc);
     } else if (!toDoc) {
       teardown();
     }
@@ -180,28 +178,28 @@
       <div role="tablist" class="tabs tabs-boxed flex flex-row w-full justify-start p-2 gap-2">
         {#if originalDoc}
           {#key originalDoc.id}
-            <a
-              href={`?doc_name=${originalDoc.name}&doc_id=${originalDoc.id}`}
+            <button
               class="tab"
               class:tab-active={viewingDocId === originalDoc.id}
+              on:click={() => originalDoc && handleLoadDoc(originalDoc.name, originalDoc.id)}
             >
               <span class="material-symbols-outlined text-base mr-1">article</span>
               Original
-            </a>
+            </button>
           {/key}
         {/if}
         {#if proposalDoc}
           {#key proposalDoc.id}
-            <a
-              href={`?doc_name=${proposalDoc.name}&doc_id=${proposalDoc.id}`}
+            <button
               class="tab"
               class:tab-active={viewingDocId === proposalDoc.id}
+              on:click={() => proposalDoc && handleLoadDoc(proposalDoc.name, proposalDoc.id)}
             >
               {#if profile.id === proposal.user_id}
                 <span class="material-symbols-outlined text-base mr-1">edit_note</span>
               {/if}
               Proposal
-            </a>
+            </button>
           {/key}
         {:else if originalDoc}
           <div class="flex-1" />

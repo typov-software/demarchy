@@ -12,6 +12,7 @@
   import ReactionSelector from '$lib/components/ReactionSelector.svelte';
   import ThreadedReplies from '$lib/components/ThreadedReplies.svelte';
   import ProfileLink from '$lib/components/ProfileLink.svelte';
+  import type { Comment } from '$lib/models/comments';
 
   export let can_write: boolean;
   export let discussion: Discussion;
@@ -39,6 +40,14 @@
 
   // Modal refs
   let dropModal: HTMLDialogElement;
+
+  function handlePinClarification(e: CustomEvent<Comment>) {
+    console.log('clarification', e.detail);
+  }
+
+  function handlePinConcern(e: CustomEvent<Comment>) {
+    console.log('concern', e.detail);
+  }
 </script>
 
 <div class="flex flex-col items-center">
@@ -128,6 +137,9 @@
     groupId={discussion.group_id}
     contextId={discussion.id}
     context="discussions"
+    pinnable
+    on:pin:clarification={handlePinClarification}
+    on:pin:concern={handlePinConcern}
   />
 {/if}
 

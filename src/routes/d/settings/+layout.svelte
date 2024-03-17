@@ -2,7 +2,6 @@
   import { page } from '$app/stores';
   import BasicSection from '$lib/components/BasicSection.svelte';
   $: subroute = $page.url.pathname.split('/').at(-1);
-  $: console.log({ subroute });
 </script>
 
 <BasicSection otherClass="w-full items-stretch">

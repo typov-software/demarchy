@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import type { DocSummary } from '$lib/models/libraries';
   import type { Amendment, Proposal } from '$lib/models/proposals';
@@ -11,17 +12,23 @@
   export let proposal: Proposal;
 
   let removeDialog: HTMLDialogElement;
+
+  function handleLoadDoc() {
+    $page.url.searchParams.set('doc_name', doc.name);
+    $page.url.searchParams.set('doc_id', doc.id);
+    goto(`?${$page.url.searchParams.toString()}`);
+  }
 </script>
 
 <li class="flex flex-row">
-  <a
+  <button
     data-sveltekit-noscroll
-    href={`?doc_name=${doc.name}&doc_id=${doc.id}`}
     class="flex-1"
     class:active={$page.url.searchParams.get('doc') === doc.name}
     class:text-success={amendment?.type === 'create'}
     class:text-warning={amendment?.type === 'update'}
     class:text-error={amendment?.type === 'destroy'}
+    on:click={handleLoadDoc}
   >
     <span class="material-symbols-outlined">article</span>
     {doc.displayName}
@@ -41,7 +48,7 @@
         {/if}
       </span>
     {/if}
-  </a>
+  </button>
   <div class="dropdown dropdown-end sm:dropdown-start px-0">
     <div tabindex="0" role="button" class="px-2">
       <span class="material-symbols-outlined text-base text-neutral">more_horiz</span>

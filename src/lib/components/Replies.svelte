@@ -1,7 +1,7 @@
 <script lang="ts">
   import CommentCard from '$lib/components/CommentCard.svelte';
   import { db, profile, user } from '$lib/firebase';
-  import { createEventDispatcher, onMount, tick } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import {
     orderBy,
     collection,
@@ -15,14 +15,12 @@
     Query,
     where
   } from 'firebase/firestore';
-  import type { CommentContext, Comment, CommentProps } from '$lib/models/comments';
+  import type { CommentContext, CommentProps } from '$lib/models/comments';
   import { inview } from 'svelte-inview';
   import { fly } from 'svelte/transition';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import CommentEditor from '$lib/components/CommentEditor.svelte';
   import { makeDocument } from '$lib/models/utils';
-
-  const dispatch = createEventDispatcher();
 
   export let can_write: boolean;
   export let organizationId: string;
@@ -34,8 +32,8 @@
 
   export let threaded = false;
   export let highlighted: string[] = [];
-  export let threadedColumns: number = 0;
   export let maxResults = 5;
+  export let pinnable = false;
 
   let baseQuery: Query;
   let comments: QueryDocumentSnapshot<DocumentData, CommentProps>[] = [];
@@ -139,11 +137,6 @@
     unsubscribe = undefined;
   }
 
-  // forward comment reply event to parent components
-  function handleReply(e: CustomEvent<{ comment: Comment }>) {
-    dispatch('reply', { comment: e.detail.comment });
-  }
-
   onMount(() => {
     setup();
     return () => teardown();
@@ -162,11 +155,7 @@
   });
 </script>
 
-<div
-  class:w-full={!threadedColumns}
-  class:min-w-[85vw]={threadedColumns}
-  class:sm:min-w-[45vw]={threadedColumns}
->
+<div class:w-full={!threaded} class:min-w-[85vw]={threaded} class:sm:min-w-[45vw]={threaded}>
   <div bind:this={containerEl} class="flex flex-col items-center gap-4 w-full">
     {#if can_write && showForm && userHandle}
       <div class="w-full">
@@ -194,7 +183,10 @@
               contextId={contextId ?? comment.id}
               {threaded}
               highlighted={highlighted.includes(comment.id)}
-              on:reply={handleReply}
+              {pinnable}
+              on:reply
+              on:pin:clarification
+              on:pin:concern
             />
           </li>
         {/each}
@@ -217,7 +209,10 @@
             contextId={contextId ?? comment.id}
             {threaded}
             highlighted={highlighted.includes(comment.id)}
-            on:reply={handleReply}
+            {pinnable}
+            on:reply
+            on:pin:clarification
+            on:pin:concern
           />
         </li>
       {/each}
