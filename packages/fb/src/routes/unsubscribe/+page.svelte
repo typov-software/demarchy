@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { enhance } from '$app/forms';
-  import { page } from '$app/stores';
-  import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
-  import { emptyString } from '$lib/utils/string';
-  import HeroCanvas from '../HeroCanvas.svelte';
+  import { enhance } from "$app/forms";
+  import { page } from "$app/stores";
+  import DemarchyLogo from "$lib/components/DemarchyLogo.svelte";
+  import { emptyString } from "$lib/utils/string";
+  import HeroCanvas from "../HeroCanvas.svelte";
 
-  let email = $page.url.searchParams.get('email') ?? '';
-  let list = $page.url.searchParams.get('list') ?? '';
+  let email = $page.url.searchParams.get("email") ?? "";
+  let list = $page.url.searchParams.get("list") ?? "";
 
   $: email, list;
 

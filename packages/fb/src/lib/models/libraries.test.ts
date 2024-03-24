@@ -1,93 +1,93 @@
-import { describe, expect, test } from 'vitest';
-import { amendLibrary, organizeLibrary } from './libraries';
+import { describe, expect, test } from "vitest";
+import { amendLibrary, organizeLibrary } from "./libraries";
 
-describe('library organization', () => {
-  test('organizing a library directory', () => {
+describe("library organization", () => {
+  test("organizing a library directory", () => {
     const organized = organizeLibrary({
       created_at: new Date(),
       updated_at: new Date(),
       archived_at: null,
-      id: '',
-      uid: '',
-      path: '',
-      organization_id: '',
-      group_id: '',
-      extends_library_id: '',
+      id: "",
+      uid: "",
+      path: "",
+      organization_id: "",
+      group_id: "",
+      extends_library_id: "",
       latest: false,
       assets: {},
       docs: {
         one: {
-          id: 'one',
-          name: 'README',
-          path: ''
+          id: "one",
+          name: "README",
+          path: ""
         },
         two: {
-          id: 'two',
-          name: 'nested/ONCE',
-          path: ''
+          id: "two",
+          name: "nested/ONCE",
+          path: ""
         },
         three: {
-          id: 'three',
-          name: 'nested/deeper/TWICE',
-          path: ''
+          id: "three",
+          name: "nested/deeper/TWICE",
+          path: ""
         },
         four: {
-          id: 'four',
-          name: 'another/empty/deep/FOUR',
-          path: ''
+          id: "four",
+          name: "another/empty/deep/FOUR",
+          path: ""
         },
         five: {
-          id: 'five',
-          name: 'another/empty/deep/FIVE',
-          path: ''
+          id: "five",
+          name: "another/empty/deep/FIVE",
+          path: ""
         }
       }
     });
     expect(organized).toEqual({
-      library_id: '',
+      library_id: "",
       rows: new Map([
         [
-          '',
+          "",
           [
             {
-              id: 'one',
-              name: 'README',
-              path: ''
+              id: "one",
+              name: "README",
+              path: ""
             }
           ]
         ],
         [
-          'nested',
+          "nested",
           [
             {
-              id: 'two',
-              name: 'nested/ONCE',
-              path: ''
+              id: "two",
+              name: "nested/ONCE",
+              path: ""
             }
           ]
         ],
         [
-          'nested/deeper',
+          "nested/deeper",
           [
             {
-              id: 'three',
-              name: 'nested/deeper/TWICE',
-              path: ''
+              id: "three",
+              name: "nested/deeper/TWICE",
+              path: ""
             }
           ]
         ],
         [
-          'another/empty/deep',
+          "another/empty/deep",
           [
             {
-              id: 'four',
-              name: 'another/empty/deep/FOUR',
-              path: ''
+              id: "four",
+              name: "another/empty/deep/FOUR",
+              path: ""
             },
             {
-              id: 'five',
-              name: 'another/empty/deep/FIVE',
-              path: ''
+              id: "five",
+              name: "another/empty/deep/FIVE",
+              path: ""
             }
           ]
         ]
@@ -100,30 +100,30 @@ describe('library organization', () => {
   });
 });
 
-describe('amendLibrary()', () => {
-  test('extends the source library', () => {
+describe("amendLibrary()", () => {
+  test("extends the source library", () => {
     const source = {
       created_at: new Date(),
       updated_at: new Date(),
       archived_at: null,
-      id: 'latest',
-      uid: 'source',
-      path: '',
-      organization_id: '',
-      group_id: '',
-      extends_library_id: '',
+      id: "latest",
+      uid: "source",
+      path: "",
+      organization_id: "",
+      group_id: "",
+      extends_library_id: "",
       latest: true,
       assets: {},
       docs: {
         README: {
-          id: 'one',
-          name: 'README',
-          path: ''
+          id: "one",
+          name: "README",
+          path: ""
         },
         toremove: {
-          id: 'remove',
-          name: 'toremove',
-          path: ''
+          id: "remove",
+          name: "toremove",
+          path: ""
         }
       }
     };
@@ -134,34 +134,34 @@ describe('amendLibrary()', () => {
     expect(
       amendLibrary(source, [
         {
-          type: 'create',
+          type: "create",
           doc: {
-            id: 'two',
-            name: 'TWO',
-            path: ''
+            id: "two",
+            name: "TWO",
+            path: ""
           }
         },
         {
-          type: 'update',
+          type: "update",
           doc: {
-            id: 'one-new',
-            name: 'README',
-            path: 'new/path'
+            id: "one-new",
+            name: "README",
+            path: "new/path"
           },
           update: {
             doc: {
-              id: 'one',
-              name: 'README',
-              path: ''
+              id: "one",
+              name: "README",
+              path: ""
             }
           }
         },
         {
-          type: 'destroy',
+          type: "destroy",
           doc: {
-            id: 'remove',
-            name: 'toremove',
-            path: ''
+            id: "remove",
+            name: "toremove",
+            path: ""
           }
         }
       ])
@@ -169,19 +169,19 @@ describe('amendLibrary()', () => {
       ...source,
       docs: {
         README: {
-          id: 'one-new',
-          name: 'README',
-          path: 'new/path'
+          id: "one-new",
+          name: "README",
+          path: "new/path"
         },
         TWO: {
-          id: 'two',
-          name: 'TWO',
-          path: ''
+          id: "two",
+          name: "TWO",
+          path: ""
         },
         toremove: {
-          id: 'remove',
-          name: 'toremove',
-          path: ''
+          id: "remove",
+          name: "toremove",
+          path: ""
         }
       }
     });

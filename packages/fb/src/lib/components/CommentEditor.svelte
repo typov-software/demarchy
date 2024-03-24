@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Block } from '$lib/models/blocks';
+  import type { Block } from "$lib/models/blocks";
   import {
     doc,
     collection,
@@ -7,20 +7,20 @@
     writeBatch,
     increment,
     getDoc
-  } from 'firebase/firestore';
-  import BlocksEditor from './BlocksEditor.svelte';
-  import { db } from '$lib/firebase';
-  import type { Comment, CommentContext, CommentProps } from '$lib/models/comments';
+  } from "firebase/firestore";
+  import BlocksEditor from "./BlocksEditor.svelte";
+  import { db } from "$lib/firebase";
+  import type { Comment, CommentContext, CommentProps } from "$lib/models/comments";
   import {
     createEmptyReactions,
     createEmptyReinforcements,
     type ReactionTallyProps
-  } from '$lib/models/reactions';
-  import { working } from '$lib/stores/working';
-  import { makeDocument } from '$lib/models/utils';
-  import { onMount } from 'svelte';
-  import ProfileLink from './ProfileLink.svelte';
-  import { emptyString } from '$lib/utils/string';
+  } from "$lib/models/reactions";
+  import { working } from "$lib/stores/working";
+  import { makeDocument } from "$lib/models/utils";
+  import { onMount } from "svelte";
+  import ProfileLink from "./ProfileLink.svelte";
+  import { emptyString } from "$lib/utils/string";
 
   export let organizationId: string;
   export let groupId: string;
@@ -39,15 +39,15 @@
   let blocks: Block[] = [
     {
       uid: crypto.randomUUID(),
-      content: '',
-      type: 'text'
+      content: "",
+      type: "text"
     }
   ];
   $: blocks;
 
   $: allContent = blocks
     .map((b) => b.content)
-    .join('')
+    .join("")
     .trim();
   $: canSave = !emptyString(allContent);
 
@@ -61,7 +61,7 @@
   });
 
   async function getParentComment() {
-    const parentId = parent?.split('_').pop();
+    const parentId = parent?.split("_").pop();
     if (parentId) {
       const parentRef = doc(db, collectionPath, parentId);
       const parentDoc = await getDoc(parentRef);
@@ -83,7 +83,7 @@
       organization_id: organizationId,
       group_id: groupId,
       user_id: anon ? null : userId,
-      profile_handle: anon ? 'anonymous' : userHandle,
+      profile_handle: anon ? "anonymous" : userHandle,
       context_id: contextId,
       context,
       parent,
@@ -100,9 +100,9 @@
     // new doc ref at location
     const commentRef = doc(collection(db, collectionPath));
     // new tally ref on fresh comment
-    const tallyRef = doc(db, collectionPath, commentRef.id, 'tallies', 'reactions');
+    const tallyRef = doc(db, collectionPath, commentRef.id, "tallies", "reactions");
     const contextPath = `/organizations/${organizationId}/groups/${groupId}/${context}/${contextId}`;
-    const contextTallyRef = doc(db, contextPath, 'tallies', 'reactions');
+    const contextTallyRef = doc(db, contextPath, "tallies", "reactions");
 
     const batch = writeBatch(db);
     batch.set(commentRef, {
@@ -116,7 +116,7 @@
       updated_at: serverTimestamp()
     });
 
-    if (context !== 'feedback') {
+    if (context !== "feedback") {
       batch.update(contextTallyRef, {
         replies: increment(1),
         updated_at: serverTimestamp()
@@ -125,8 +125,8 @@
 
     if (parent) {
       // Get the last id segment
-      const parentId = parent.split('_').pop()!;
-      const parentTalliesRef = doc(db, collectionPath, parentId, 'tallies', 'reactions');
+      const parentId = parent.split("_").pop()!;
+      const parentTalliesRef = doc(db, collectionPath, parentId, "tallies", "reactions");
       batch.update(parentTalliesRef, {
         replies: increment(1),
         updated_at: serverTimestamp()
@@ -137,8 +137,8 @@
     blocks = [
       {
         uid: crypto.randomUUID(),
-        content: '',
-        type: 'text'
+        content: "",
+        type: "text"
       }
     ];
     working.remove(job);

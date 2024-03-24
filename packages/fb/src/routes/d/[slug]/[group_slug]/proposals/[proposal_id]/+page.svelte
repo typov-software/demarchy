@@ -1,23 +1,23 @@
 <script lang="ts">
-  import BasicSection from '$lib/components/BasicSection.svelte';
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import type { PageData } from './$types';
-  import BallotCard from '$lib/components/BallotCard.svelte';
-  import LibraryEditor from '$lib/components/LibraryEditor.svelte';
-  import { enhance } from '$app/forms';
-  import { workingCallback } from '$lib/stores/working';
-  import { autosize } from '$lib/stores/use-autosize';
-  import { doc } from 'firebase/firestore';
-  import { db, docStore } from '$lib/firebase';
-  import type { Reaction, ReactionTally } from '$lib/models/reactions';
-  import ReactionSelector from '$lib/components/ReactionSelector.svelte';
-  import SeenCounter from '$lib/components/SeenCounter.svelte';
-  import ThreadedReplies from '$lib/components/ThreadedReplies.svelte';
+  import BasicSection from "$lib/components/BasicSection.svelte";
+  import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
+  import type { PageData } from "./$types";
+  import BallotCard from "$lib/components/BallotCard.svelte";
+  import LibraryEditor from "$lib/components/LibraryEditor.svelte";
+  import { enhance } from "$app/forms";
+  import { workingCallback } from "$lib/stores/working";
+  import { autosize } from "$lib/stores/use-autosize";
+  import { doc } from "firebase/firestore";
+  import { db, docStore } from "$lib/firebase";
+  import type { Reaction, ReactionTally } from "$lib/models/reactions";
+  import ReactionSelector from "$lib/components/ReactionSelector.svelte";
+  import SeenCounter from "$lib/components/SeenCounter.svelte";
+  import ThreadedReplies from "$lib/components/ThreadedReplies.svelte";
 
   export let data: PageData;
 
-  $: editable = data.profile.id === data.proposal.user_id && data.proposal.state === 'draft';
-  $: isOpen = data.proposal.state === 'open';
+  $: editable = data.profile.id === data.proposal.user_id && data.proposal.state === "draft";
+  $: isOpen = data.proposal.state === "open";
 
   let reactionPath = `${data.proposal.path}/reactions/${data.profile.id}`;
   let reactionRef = doc(db, reactionPath);
@@ -71,7 +71,7 @@
                 <input type="hidden" name="path" value={data.proposal.path} />
               </form>
               <div class="card-title flex flex-row gap-4 items-center mb-2">
-                {#if data.proposal.state === 'adopted'}
+                {#if data.proposal.state === "adopted"}
                   <mark class="badge badge-lg badge-accent">Adopted</mark>
                 {/if}
                 <input
@@ -154,9 +154,9 @@
               <summary class="collapse-title">
                 <mark
                   class="badge"
-                  class:bg-success={amendment.type === 'create'}
-                  class:bg-warning={amendment.type === 'update'}
-                  class:bg-error={amendment.type === 'destroy'}
+                  class:bg-success={amendment.type === "create"}
+                  class:bg-warning={amendment.type === "update"}
+                  class:bg-error={amendment.type === "destroy"}
                 >
                   {amendment.type}
                 </mark>

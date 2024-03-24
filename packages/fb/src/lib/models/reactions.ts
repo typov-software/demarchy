@@ -1,46 +1,46 @@
-import type { CommentContext } from './comments';
-import type { DocumentMeta } from './utils';
+import type { CommentContext } from "./comments";
+import type { DocumentMeta } from "./utils";
 
 export type ReactionType =
-  | 'joy'
-  | 'sadness'
-  | 'disappointment'
-  | 'anger'
-  | 'frustration'
-  | 'cool'
-  | 'neutral'
-  | 'confusion'
-  | 'fear'
-  | 'disgust'
-  | 'love'
-  | 'laughter'
-  | 'gratitude'
-  | 'sarcasm';
+  | "joy"
+  | "sadness"
+  | "disappointment"
+  | "anger"
+  | "frustration"
+  | "cool"
+  | "neutral"
+  | "confusion"
+  | "fear"
+  | "disgust"
+  | "love"
+  | "laughter"
+  | "gratitude"
+  | "sarcasm";
 
-export type ReinforcementType = 'endorse' | 'promote' | 'demote' | 'shun';
-export const REINFORCEMENT_TYPES: ReinforcementType[] = ['shun', 'demote', 'promote', 'endorse'];
+export type ReinforcementType = "endorse" | "promote" | "demote" | "shun";
+export const REINFORCEMENT_TYPES: ReinforcementType[] = ["shun", "demote", "promote", "endorse"];
 export const REINFORCEMENTS: Record<ReinforcementType, string> = Object.freeze({
-  endorse: 'stars',
-  promote: 'thumb_up',
-  demote: 'thumb_down',
-  shun: 'crisis_alert'
+  endorse: "stars",
+  promote: "thumb_up",
+  demote: "thumb_down",
+  shun: "crisis_alert"
 });
 
 export const REACTIONS: Record<ReactionType, string> = Object.freeze({
-  love: '😍',
-  joy: '😄',
-  laughter: '😂',
-  gratitude: '🤗',
-  sarcasm: '😉',
-  cool: '😎',
-  neutral: '😐',
-  confusion: '😕',
-  disappointment: '😞',
-  sadness: '😢',
-  fear: '😨',
-  frustration: '😖',
-  anger: '😡',
-  disgust: '🤢'
+  love: "😍",
+  joy: "😄",
+  laughter: "😂",
+  gratitude: "🤗",
+  sarcasm: "😉",
+  cool: "😎",
+  neutral: "😐",
+  confusion: "😕",
+  disappointment: "😞",
+  sadness: "😢",
+  fear: "😨",
+  frustration: "😖",
+  anger: "😡",
+  disgust: "🤢"
 });
 
 export function createEmptyReactions() {

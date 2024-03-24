@@ -1,9 +1,9 @@
-import type { DocSummary } from './libraries';
-import type { DocumentMeta } from './utils';
+import type { DocSummary } from "./libraries";
+import type { DocumentMeta } from "./utils";
 
 export interface Amendment {
   doc: DocSummary;
-  type: 'create' | 'update' | 'destroy';
+  type: "create" | "update" | "destroy";
   update?: {
     doc: DocSummary;
     // from_library: string;
@@ -11,7 +11,7 @@ export interface Amendment {
 }
 
 export interface LinkedResource {
-  resource_type: 'comment' | 'discussion' | 'feedback' | 'proposal';
+  resource_type: "comment" | "discussion" | "feedback" | "proposal";
   resource_id: string;
 }
 
@@ -20,7 +20,7 @@ export interface ProposalProps {
   profile_handle: string;
   group_id: string;
 
-  state: 'draft' | 'open' | 'dropped' | 'adopted' | 'archived';
+  state: "draft" | "open" | "dropped" | "adopted" | "archived";
 
   title: string;
   description: string;

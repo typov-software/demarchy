@@ -1,4 +1,4 @@
-import type { Actions } from '@sveltejs/kit';
+import type { Actions } from "@sveltejs/kit";
 import {
   adminDB,
   adminHandleRef,
@@ -6,23 +6,23 @@ import {
   adminProfileRef,
   createdTimestamps,
   updatedTimestamps
-} from '$lib/server/admin';
-import { MEMBERS } from '$lib/models/firestore';
-import { makeEmptyInboxCategories, type InboxProps } from '$lib/models/inboxes';
-import type { ProfileProps } from '$lib/models/profiles';
-import type { NotificationProps, WelcomeNotificationData } from '$lib/models/notifications';
-import { prepareNotification } from '$lib/server/notification-actions';
+} from "$lib/server/admin";
+import { MEMBERS } from "$lib/models/firestore";
+import { makeEmptyInboxCategories, type InboxProps } from "$lib/models/inboxes";
+import type { ProfileProps } from "$lib/models/profiles";
+import type { NotificationProps, WelcomeNotificationData } from "$lib/models/notifications";
+import { prepareNotification } from "$lib/server/notification-actions";
 
 export const actions = {
   updateHandle: async ({ request, locals }) => {
     const user_id = locals.user_id!;
     const formData = await request.formData();
-    const handle = formData.get('handle') as string;
+    const handle = formData.get("handle") as string;
 
     // find all member docs and update name
-    const memberDocs = await adminDB.collectionGroup(MEMBERS).where('user_id', '==', user_id).get();
+    const memberDocs = await adminDB.collectionGroup(MEMBERS).where("user_id", "==", user_id).get();
     // Get previous handle records for deletion (should only have 1 but this is a precaution)
-    const previousHandles = await adminHandleRef().where('user_id', '==', user_id).get();
+    const previousHandles = await adminHandleRef().where("user_id", "==", user_id).get();
     const newUser = previousHandles.docs.length === 0;
 
     const batch = adminDB.batch();
@@ -39,8 +39,8 @@ export const actions = {
       };
       const welcomeNotification: NotificationProps<WelcomeNotificationData> = {
         seen: 0,
-        type: 'welcome',
-        category: 'uncategorized',
+        type: "welcome",
+        category: "uncategorized",
         data: {
           profile_handle: handle
         }

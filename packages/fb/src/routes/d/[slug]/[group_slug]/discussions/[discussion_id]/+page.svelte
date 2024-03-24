@@ -1,9 +1,9 @@
 <script lang="ts">
-  import BasicSection from '$lib/components/BasicSection.svelte';
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import DiscussionEditor from '../DiscussionEditor.svelte';
-  import DiscussionViewer from '../DiscussionViewer.svelte';
-  import type { PageData } from './$types';
+  import BasicSection from "$lib/components/BasicSection.svelte";
+  import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
+  import DiscussionEditor from "../DiscussionEditor.svelte";
+  import DiscussionViewer from "../DiscussionViewer.svelte";
+  import type { PageData } from "./$types";
 
   export let data: PageData;
   $: state = data.discussion.state;
@@ -32,7 +32,7 @@
   </div>
 
   <div class="w-full">
-    {#if state === 'draft' && data.can_write}
+    {#if state === "draft" && data.can_write}
       <DiscussionEditor discussion={data.discussion} editable />
     {:else}
       <DiscussionViewer discussion={data.discussion} can_write={data.can_write} />

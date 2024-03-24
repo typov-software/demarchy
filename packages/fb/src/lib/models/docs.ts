@@ -1,5 +1,5 @@
-import type { Block } from './blocks';
-import type { DocumentMeta } from './utils';
+import type { Block } from "./blocks";
+import type { DocumentMeta } from "./utils";
 
 export interface DocProps {
   // array of handles

@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import BasicSection from '$lib/components/BasicSection.svelte';
-  import type { PageData } from './$types';
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import GroupCard from './GroupCard.svelte';
+  import { page } from "$app/stores";
+  import BasicSection from "$lib/components/BasicSection.svelte";
+  import type { PageData } from "./$types";
+  import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
+  import GroupCard from "./GroupCard.svelte";
 
   export let data: PageData;
   $: orgGroup = data.groups.find((group) => group.id === data.organization.id)!;

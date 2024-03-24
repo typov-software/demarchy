@@ -1,28 +1,28 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import DemarchyFooter from '$lib/components/DemarchyFooter.svelte';
-  import { applyStoredTheme } from '$lib/stores/themes';
-  import { afterUpdate } from 'svelte';
-  import '../app.scss';
+  import { page } from "$app/stores";
+  import DemarchyFooter from "$lib/components/DemarchyFooter.svelte";
+  import { applyStoredTheme } from "$lib/stores/themes";
+  import { afterUpdate } from "svelte";
+  import "../app.scss";
 
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     applyStoredTheme();
   }
 
   $: renderFooter = [
-    '/',
-    '/about',
-    '/documentation',
-    '/join',
-    '/join/voucher',
-    '/join/handle',
-    '/join/profile',
-    '/login',
-    '/pricing',
-    '/privacy',
-    '/security',
-    '/terms'
-  ].includes($page.route.id ?? '');
+    "/",
+    "/about",
+    "/documentation",
+    "/join",
+    "/join/voucher",
+    "/join/handle",
+    "/join/profile",
+    "/login",
+    "/pricing",
+    "/privacy",
+    "/security",
+    "/terms"
+  ].includes($page.route.id ?? "");
 
   let cookieAckModal: HTMLDialogElement;
 
@@ -32,16 +32,16 @@
 
   function acknowledge() {
     close();
-    sessionStorage.setItem('cookie-ack', JSON.stringify({ ack: true, timestamp: Date.now() }));
+    sessionStorage.setItem("cookie-ack", JSON.stringify({ ack: true, timestamp: Date.now() }));
   }
 
   afterUpdate(() => {
-    if ($page.route.id !== '/privacy' && !sessionStorage.getItem('cookie-ack')) {
+    if ($page.route.id !== "/privacy" && !sessionStorage.getItem("cookie-ack")) {
       cookieAckModal?.showModal();
     }
   });
 
-  console.log('DEMARCHY is proudly built without AI generated code.');
+  console.log("DEMARCHY is proudly built without AI generated code.");
 </script>
 
 <svelte:head>

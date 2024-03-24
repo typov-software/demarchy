@@ -1,9 +1,9 @@
-import type { Alert } from '$lib/models/alerts';
-import { writable } from 'svelte/store';
+import type { Alert } from "$lib/models/alerts";
+import { writable } from "svelte/store";
 
 export function toastStore() {
   const alerts = writable<Alert[]>([]);
-  const add = (props: Omit<Alert, 'uid'>) => {
+  const add = (props: Omit<Alert, "uid">) => {
     const uid = crypto.randomUUID();
     const alert: Alert = {
       timeout_ms: 6000,

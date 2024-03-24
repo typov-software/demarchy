@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import BasicSection from '$lib/components/BasicSection.svelte';
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import type { DiscussionProps } from '$lib/models/discussions';
-  import { collection, doc, serverTimestamp, writeBatch } from 'firebase/firestore';
-  import type { PageData } from './$types';
-  import { db } from '$lib/firebase';
-  import { goto } from '$app/navigation';
-  import { working } from '$lib/stores/working';
-  import { formatRelative } from 'date-fns';
+  import { page } from "$app/stores";
+  import BasicSection from "$lib/components/BasicSection.svelte";
+  import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
+  import type { DiscussionProps } from "$lib/models/discussions";
+  import { collection, doc, serverTimestamp, writeBatch } from "firebase/firestore";
+  import type { PageData } from "./$types";
+  import { db } from "$lib/firebase";
+  import { goto } from "$app/navigation";
+  import { working } from "$lib/stores/working";
+  import { formatRelative } from "date-fns";
   import {
     createEmptyReactions,
     createEmptyReinforcements,
     type ReactionTallyProps
-  } from '$lib/models/reactions';
+  } from "$lib/models/reactions";
 
   export let data: PageData;
 
@@ -26,8 +26,8 @@
       user_id: data.profile.id,
       profile_handle: data.profile.handle,
 
-      blocks: [{ uid: crypto.randomUUID(), content: 'New discussion', type: 'text' }],
-      state: 'draft'
+      blocks: [{ uid: crypto.randomUUID(), content: "New discussion", type: "text" }],
+      state: "draft"
     };
     const tallyProps: ReactionTallyProps = {
       ...createEmptyReactions(),
@@ -97,7 +97,7 @@
             <tr>
               <td class="w-full max-w-[0]">
                 <a
-                  href={$page.url.pathname + '/' + discussion.id}
+                  href={$page.url.pathname + "/" + discussion.id}
                   class="link link-hover block truncate italic"
                 >
                   {discussion.blocks[0].content}
@@ -127,7 +127,7 @@
             <tr>
               <td class="w-full max-w-[0]">
                 <a
-                  href={$page.url.pathname + '/' + discussion.id}
+                  href={$page.url.pathname + "/" + discussion.id}
                   class="link link-hover block truncate italic"
                 >
                   {discussion.blocks[0].content}

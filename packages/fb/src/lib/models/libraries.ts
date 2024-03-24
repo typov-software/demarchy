@@ -1,7 +1,7 @@
-import _get from 'lodash/get';
-import _set from 'lodash/set';
-import type { DocumentMeta } from './utils';
-import type { Amendment } from './proposals';
+import _get from "lodash/get";
+import _set from "lodash/set";
+import type { DocumentMeta } from "./utils";
+import type { Amendment } from "./proposals";
 
 export interface DocSummary {
   id: string;
@@ -42,9 +42,9 @@ export interface LibraryShelf {
 }
 
 export function addDocToShelf(doc: DocSummary, shelf: LibraryShelf): LibraryShelf {
-  const parts = doc.name.split('/');
+  const parts = doc.name.split("/");
   parts.pop(); // remove the doc name from array
-  const path = parts.join('/'); // rejoin dir path
+  const path = parts.join("/"); // rejoin dir path
   // get the existing docs at this path
   const row = shelf.rows.get(path) ?? [];
   const idx = row.findIndex((d) => d.id === doc.id);
@@ -57,7 +57,7 @@ export function addDocToShelf(doc: DocSummary, shelf: LibraryShelf): LibraryShel
   shelf.rows.set(path, row);
   if (parts.length) {
     // reformat path to something lodash expects
-    const keypath = path.replaceAll('/', '.');
+    const keypath = path.replaceAll("/", ".");
     // get existings dirs at this path
     const existing = _get(shelf.dirs, keypath) ?? {};
     // ensure this path exists while keeping other nested dirs
@@ -79,9 +79,9 @@ export function organizeLibrary(library: Library): LibraryShelf {
 }
 
 export function amendLibrary(source: Library, amendments: Amendment[]): Library {
-  const output: Library['docs'] = { ...source.docs };
+  const output: Library["docs"] = { ...source.docs };
   for (const amendment of amendments) {
-    if (amendment.type !== 'destroy') {
+    if (amendment.type !== "destroy") {
       output[amendment.doc.name] = { ...amendment.doc };
     }
   }

@@ -1,5 +1,5 @@
-import type { SubmitFunction } from '@sveltejs/kit';
-import { writable } from 'svelte/store';
+import type { SubmitFunction } from "@sveltejs/kit";
+import { writable } from "svelte/store";
 
 export function workingStore() {
   const jobs = writable<string[]>([]);

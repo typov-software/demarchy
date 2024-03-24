@@ -1,6 +1,6 @@
-import type { NotificationProps } from '$lib/models/notifications';
-import { FieldValue, type WriteBatch } from 'firebase-admin/firestore';
-import { adminInboxRef, adminNotificationRef, createdTimestamps, updatedTimestamps } from './admin';
+import type { NotificationProps } from "$lib/models/notifications";
+import { FieldValue, type WriteBatch } from "firebase-admin/firestore";
+import { adminInboxRef, adminNotificationRef, createdTimestamps, updatedTimestamps } from "./admin";
 
 export function prepareNotification(
   notificationProps: NotificationProps<unknown>,

@@ -1,13 +1,13 @@
 <script lang="ts">
-  import type { Organization } from '$lib/models/organizations';
-  import type { Profile } from '$lib/models/profiles';
-  import { onMount } from 'svelte';
-  import UserNav from './UserNav.svelte';
-  import { doc, onSnapshot } from 'firebase/firestore';
-  import { db, user } from '$lib/firebase';
-  import type { Inbox } from '$lib/models/inboxes';
-  import DemarchyDLoader from './DemarchyDLoader.svelte';
-  import { makeDocument } from '$lib/models/utils';
+  import type { Organization } from "$lib/models/organizations";
+  import type { Profile } from "$lib/models/profiles";
+  import { onMount } from "svelte";
+  import UserNav from "./UserNav.svelte";
+  import { doc, onSnapshot } from "firebase/firestore";
+  import { db, user } from "$lib/firebase";
+  import type { Inbox } from "$lib/models/inboxes";
+  import DemarchyDLoader from "./DemarchyDLoader.svelte";
+  import { makeDocument } from "$lib/models/utils";
 
   export let organization: Organization | undefined;
   export let organizations: Organization[];
@@ -17,7 +17,7 @@
   let inbox: Inbox | undefined;
 
   onMount(() => {
-    const inboxRef = doc(db, 'inboxes', $user!.uid);
+    const inboxRef = doc(db, "inboxes", $user!.uid);
     const unsubscribe = onSnapshot(inboxRef, (snapshot) => {
       inbox = makeDocument<Inbox>(snapshot);
     });
@@ -48,7 +48,7 @@
         >
           {#each organizations as org (org.id)}
             <li>
-              <a href={'/d/' + org.slug} title={org.name}>{org.name}</a>
+              <a href={"/d/" + org.slug} title={org.name}>{org.name}</a>
             </li>
           {/each}
         </ul>

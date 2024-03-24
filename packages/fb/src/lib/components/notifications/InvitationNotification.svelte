@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { enhance } from '$app/forms';
-  import type { Notification, InvitationNotificationData } from '$lib/models/notifications';
-  import { workingCallback } from '$lib/stores/working';
-  import { createEventDispatcher } from 'svelte';
-  import ProfileLink from '../ProfileLink.svelte';
+  import { enhance } from "$app/forms";
+  import type { Notification, InvitationNotificationData } from "$lib/models/notifications";
+  import { workingCallback } from "$lib/stores/working";
+  import { createEventDispatcher } from "svelte";
+  import ProfileLink from "../ProfileLink.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -79,7 +79,7 @@
           invalidateAll: true,
           onEnd() {
             rejectModal.close();
-            dispatch('deleted', notification);
+            dispatch("deleted", notification);
           }
         })}
       >

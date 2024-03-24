@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Doc } from '$lib/models/docs';
-  import DocViewer from './DocViewer.svelte';
+  import type { Doc } from "$lib/models/docs";
+  import DocViewer from "./DocViewer.svelte";
 
   export let doc: Doc;
 </script>

@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { AuthProvider } from '$lib/models/profiles';
+  import type { AuthProvider } from "$lib/models/profiles";
 
   export let pid: AuthProvider;
 </script>
 
-{#if pid === 'google.com'}
+{#if pid === "google.com"}
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M19.7201 12.1821C19.7201 11.6148 19.6692 11.0693 19.5746 10.5457H12.04V13.6402H16.3455C16.16 14.6402 15.5964 15.4875 14.7492 16.0548V18.0621H17.3346C18.8473 16.6694 19.7201 14.6184 19.7201 12.1821Z"
@@ -23,7 +23,7 @@
       fill="#E94235"
     />
   </svg>
-{:else if pid === 'github.com'}
+{:else if pid === "github.com"}
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       fill-rule="evenodd"
@@ -32,14 +32,14 @@
       class="fill-base-content"
     />
   </svg>
-{:else if pid === 'microsoft.com'}
+{:else if pid === "microsoft.com"}
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M11.5789 4H4V11.5789H11.5789V4Z" fill="#F25022" />
     <path d="M11.5789 12.4211H4V20.0001H11.5789V12.4211Z" fill="#00A4EF" />
     <path d="M20 4H12.4211V11.5789H20V4Z" fill="#7FBA00" />
     <path d="M20 12.4211H12.4211V20.0001H20V12.4211Z" fill="#FFB900" />
   </svg>
-{:else if pid === 'apple.com'}
+{:else if pid === "apple.com"}
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M12.2078 6.15385C12.9844 6.15385 13.9578 5.60458 14.5375 4.87222C15.0625 4.20852 15.4453 3.28163 15.4453 2.35474C15.4453 2.22886 15.4344 2.10299 15.4125 2C14.5484 2.03433 13.5094 2.60648 12.8859 3.37317C12.3937 3.95677 11.9453 4.87222 11.9453 5.81055C11.9453 5.94787 11.9672 6.08519 11.9781 6.13096C12.0328 6.1424 12.1203 6.15385 12.2078 6.15385ZM9.47344 20C10.5344 20 11.0047 19.2562 12.3281 19.2562C13.6734 19.2562 13.9688 19.9771 15.15 19.9771C16.3094 19.9771 17.0859 18.8557 17.8188 17.7572C18.6391 16.4984 18.9781 15.2626 19 15.2053C18.9234 15.1825 16.7031 14.2327 16.7031 11.5664C16.7031 9.25493 18.4531 8.2136 18.5516 8.1335C17.3922 6.39415 15.6313 6.34838 15.15 6.34838C13.8484 6.34838 12.7875 7.17228 12.1203 7.17228C11.3984 7.17228 10.4469 6.39415 9.32031 6.39415C7.17656 6.39415 5 8.24793 5 11.7495C5 13.9237 5.80937 16.2238 6.80469 17.7114C7.65781 18.9701 8.40156 20 9.47344 20Z"

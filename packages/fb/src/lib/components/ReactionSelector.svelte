@@ -7,11 +7,11 @@
     type ReactionTally,
     type ReactionType,
     type ReinforcementType
-  } from '$lib/models/reactions';
-  import { titleCase } from '$lib/utils/string';
-  import { doc as fdoc, increment, serverTimestamp, writeBatch } from 'firebase/firestore';
-  import { db } from '$lib/firebase';
-  import { createEventDispatcher } from 'svelte';
+  } from "$lib/models/reactions";
+  import { titleCase } from "$lib/utils/string";
+  import { doc as fdoc, increment, serverTimestamp, writeBatch } from "firebase/firestore";
+  import { db } from "$lib/firebase";
+  import { createEventDispatcher } from "svelte";
 
   export let reaction: Reaction;
   export let tally: ReactionTally;
@@ -61,7 +61,7 @@
         reaction.reaction = reactionType;
       }
       await batch.commit();
-      dispatch('reacted', reaction);
+      dispatch("reacted", reaction);
     };
   }
 
@@ -107,7 +107,7 @@
         reaction.reinforcement = reinforcementType;
       }
       await batch.commit();
-      dispatch('reacted', reaction);
+      dispatch("reacted", reaction);
     };
   }
 </script>
@@ -146,13 +146,13 @@
               title={titleCase(reinforcementType)}
               class="btn btn-xs rounded-full pl-2 pr-1 gap-2 btn-neutral"
               class:btn-error={reaction.reinforcement === reinforcementType &&
-                reinforcementType === 'shun'}
+                reinforcementType === "shun"}
               class:btn-warning={reaction.reinforcement === reinforcementType &&
-                reinforcementType === 'demote'}
+                reinforcementType === "demote"}
               class:btn-info={reaction.reinforcement === reinforcementType &&
-                reinforcementType === 'promote'}
+                reinforcementType === "promote"}
               class:btn-success={reaction.reinforcement === reinforcementType &&
-                reinforcementType === 'endorse'}
+                reinforcementType === "endorse"}
               on:click={handleClickReinforcement(reinforcementType)}
             >
               <span class="text-xs">
@@ -191,10 +191,10 @@
                 <button
                   title={titleCase(reinforcementType)}
                   class="btn btn-sm rounded-full px-1"
-                  class:btn-error={reinforcementType === 'shun'}
-                  class:btn-warning={reinforcementType === 'demote'}
-                  class:btn-info={reinforcementType === 'promote'}
-                  class:btn-success={reinforcementType === 'endorse'}
+                  class:btn-error={reinforcementType === "shun"}
+                  class:btn-warning={reinforcementType === "demote"}
+                  class:btn-info={reinforcementType === "promote"}
+                  class:btn-success={reinforcementType === "endorse"}
                   on:click={handleClickReinforcement(reinforcementType)}
                 >
                   <span class="material-symbols-outlined">

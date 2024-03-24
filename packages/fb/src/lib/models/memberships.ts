@@ -1,5 +1,5 @@
-import type { RoleAccess } from './roles';
-import type { DocumentMeta } from './utils';
+import type { RoleAccess } from "./roles";
+import type { DocumentMeta } from "./utils";
 
 /**
  * The `id` for this document is a Firebase User id. This document is only
@@ -23,7 +23,7 @@ export interface MembershipProps {
    * A membership standing accounts for the fees due for each organization member. Members have
    * full access on 'ok' and have reduced privileges on 'pause'.
    */
-  standing: 'ok' | 'pause';
+  standing: "ok" | "pause";
 }
 
 export type Membership = MembershipProps & DocumentMeta;

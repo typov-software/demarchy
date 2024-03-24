@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { enhance } from '$app/forms';
-  import { docStore } from '$lib/firebase';
-  import { type Ballot, type BallotTally } from '$lib/models/ballots';
-  import type { Group } from '$lib/models/groups';
-  import type { ProposalSettings } from '$lib/models/settings';
-  import type { Vote } from '$lib/models/votes';
-  import { workingCallback } from '$lib/stores/working';
-  import VoteButton from './VoteButton.svelte';
+  import { enhance } from "$app/forms";
+  import { docStore } from "$lib/firebase";
+  import { type Ballot, type BallotTally } from "$lib/models/ballots";
+  import type { Group } from "$lib/models/groups";
+  import type { ProposalSettings } from "$lib/models/settings";
+  import type { Vote } from "$lib/models/votes";
+  import { workingCallback } from "$lib/stores/working";
+  import VoteButton from "./VoteButton.svelte";
 
   export let ballot: Ballot;
   export let proposalSettings: ProposalSettings;
@@ -33,7 +33,7 @@
 
 <div class="card bg-base-200 w-full">
   <div class="card-body">
-    {#if ballot.context === 'proposals'}
+    {#if ballot.context === "proposals"}
       <div class="card-title">Ballot</div>
       <p class="">Should we accept these amendments to our library?</p>
     {/if}
@@ -93,7 +93,7 @@
       />
     </div>
     {#if ownsContext && canAdopt}
-      {#if ballot.context === 'proposals'}
+      {#if ballot.context === "proposals"}
         <div class="flex justify-center mt-5">
           <button class="btn rounded-full btn-success" on:click={() => adoptModal.showModal()}
             >Adopt amendments</button

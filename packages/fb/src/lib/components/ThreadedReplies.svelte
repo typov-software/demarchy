@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import type { Comment, CommentContext } from '$lib/models/comments';
-  import { tick } from 'svelte';
-  import Replies from './Replies.svelte';
+  import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
+  import type { Comment, CommentContext } from "$lib/models/comments";
+  import { tick } from "svelte";
+  import Replies from "./Replies.svelte";
 
   export let can_write: boolean;
   export let organizationId: string;
@@ -13,12 +13,12 @@
   export let pinnable = false;
 
   let scrollingEl: HTMLDivElement;
-  $: thread = $page.url.searchParams.get('thread');
-  $: highlighted = thread?.split('_') ?? [];
+  $: thread = $page.url.searchParams.get("thread");
+  $: highlighted = thread?.split("_") ?? [];
 
   let parents: string[] = [];
   $: parents =
-    thread?.split('_').reduce((acc, val, i) => {
+    thread?.split("_").reduce((acc, val, i) => {
       if (acc.length) {
         acc.push(`${acc[i - 1]}_${val}`);
       } else {
@@ -45,13 +45,13 @@
       parent = next.length ? `${next.at(-1)}_${id}` : id;
       parents = [...next, parent];
     }
-    $page.url.searchParams.set('thread', parent);
+    $page.url.searchParams.set("thread", parent);
     goto(`?${$page.url.searchParams.toString()}`, {
       // disabled scrolling the window to top
       noScroll: true
     });
     await tick();
-    scrollingEl.scrollTo({ left: scrollingEl.scrollWidth, behavior: 'smooth' });
+    scrollingEl.scrollTo({ left: scrollingEl.scrollWidth, behavior: "smooth" });
     // smooth scrolling with after using `goto` doesn't work as expected
     window.scrollTo({ top: scrollingEl.offsetTop });
   }

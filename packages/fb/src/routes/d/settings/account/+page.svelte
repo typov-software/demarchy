@@ -1,11 +1,11 @@
 <script lang="ts">
-  import type { AuthProvider } from '$lib/models/profiles';
-  import { OAuthProvider, linkWithPopup, unlink } from 'firebase/auth';
-  import type { PageData } from './$types';
-  import { user } from '$lib/firebase';
-  import { invalidateAll } from '$app/navigation';
-  import { getProviders } from '$lib/utils/client-auth';
-  import AuthIcons from '$lib/components/AuthIcons.svelte';
+  import type { AuthProvider } from "$lib/models/profiles";
+  import { OAuthProvider, linkWithPopup, unlink } from "firebase/auth";
+  import type { PageData } from "./$types";
+  import { user } from "$lib/firebase";
+  import { invalidateAll } from "$app/navigation";
+  import { getProviders } from "$lib/utils/client-auth";
+  import AuthIcons from "$lib/components/AuthIcons.svelte";
 
   export let data: PageData;
 
@@ -21,7 +21,7 @@
           // successfully linked, reload page data
           await invalidateAll();
         } else {
-          console.error('unexpected state');
+          console.error("unexpected state");
         }
       } catch (error: unknown) {
         console.error(error);

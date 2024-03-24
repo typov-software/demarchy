@@ -1,4 +1,4 @@
-import type { WriteBatch } from 'firebase-admin/firestore';
+import type { WriteBatch } from "firebase-admin/firestore";
 import {
   adminDB,
   adminGroupRef,
@@ -9,17 +9,17 @@ import {
   adminSlugRef,
   createdTimestamps,
   updatedTimestamps
-} from './admin';
-import type { GroupProps } from '$lib/models/groups';
-import type { MembershipProps } from '$lib/models/memberships';
-import type { MemberProps } from '$lib/models/members';
-import type { ProposalSettingsProps } from '$lib/models/settings';
-import { makeDocument } from '$lib/models/utils';
-import type { Profile } from '$lib/models/profiles';
-import type { VoucherProps } from '$lib/models/vouchers';
-import type { OrganizationProps } from '$lib/models/organizations';
-import { SLUGS } from '$lib/models/firestore';
-import type { LibraryProps } from '$lib/models/libraries';
+} from "./admin";
+import type { GroupProps } from "$lib/models/groups";
+import type { MembershipProps } from "$lib/models/memberships";
+import type { MemberProps } from "$lib/models/members";
+import type { ProposalSettingsProps } from "$lib/models/settings";
+import { makeDocument } from "$lib/models/utils";
+import type { Profile } from "$lib/models/profiles";
+import type { VoucherProps } from "$lib/models/vouchers";
+import type { OrganizationProps } from "$lib/models/organizations";
+import { SLUGS } from "$lib/models/firestore";
+import type { LibraryProps } from "$lib/models/libraries";
 
 interface CreateOrganizationParams {
   // Who is creating the org?
@@ -71,8 +71,8 @@ export async function createOrganization(params: CreateOrganizationParams) {
       profile_name,
       organization_id: orgRef.id,
       // Manually set organization group reserved names
-      name: 'Organization',
-      slug: 'org',
+      name: "Organization",
+      slug: "org",
       description: `Main group for ${name}`,
       creatingOrgGroup: true
     },
@@ -123,7 +123,7 @@ export async function createGroup(params: CreateGroupParams, batch?: WriteBatch)
 
   const membershipRef = adminMembershipRef(organization_id).doc(user_id);
   const memberRef = adminMemberRef(organization_id, groupRef.id).doc(user_id);
-  const proposalSettingsRef = groupRef.collection('settings').doc('proposals');
+  const proposalSettingsRef = groupRef.collection("settings").doc("proposals");
   const slugRef = adminOrganizationRef().doc(organization_id).collection(SLUGS).doc(slug);
 
   // Create the slug document for this group
@@ -157,9 +157,9 @@ export async function createGroup(params: CreateGroupParams, batch?: WriteBatch)
     user_id,
     organization_id,
     roles: {
-      [groupRef.id]: 'mem'
+      [groupRef.id]: "mem"
     },
-    standing: 'ok'
+    standing: "ok"
   };
   batch.set(
     membershipRef,
@@ -176,7 +176,7 @@ export async function createGroup(params: CreateGroupParams, batch?: WriteBatch)
     user_id,
     group_id: groupRef.id,
     organization_id,
-    role: 'mem',
+    role: "mem",
     name: profile_name,
     handle: profile_handle
   };
@@ -192,7 +192,7 @@ export async function createGroup(params: CreateGroupParams, batch?: WriteBatch)
   );
 
   // bootstrap libraries
-  const libraryRef = groupRef.collection('libraries').doc();
+  const libraryRef = groupRef.collection("libraries").doc();
   const libraryProps: LibraryProps = {
     uid: libraryRef.id,
     organization_id,
@@ -206,7 +206,7 @@ export async function createGroup(params: CreateGroupParams, batch?: WriteBatch)
     ...createdTimestamps(),
     ...libraryProps
   });
-  batch.set(groupRef.collection('libraries').doc('latest'), {
+  batch.set(groupRef.collection("libraries").doc("latest"), {
     ...createdTimestamps(),
     ...libraryProps
   });

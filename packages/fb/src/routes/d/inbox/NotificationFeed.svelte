@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { afterNavigate, beforeNavigate } from '$app/navigation';
-  import NotificationCard from '$lib/components/NotificationCard.svelte';
-  import { db, user } from '$lib/firebase';
-  import type { InboxCategory } from '$lib/models/inboxes';
-  import type { NotificationProps } from '$lib/models/notifications';
-  import { makeDocument } from '$lib/models/utils';
+  import { afterNavigate, beforeNavigate } from "$app/navigation";
+  import NotificationCard from "$lib/components/NotificationCard.svelte";
+  import { db, user } from "$lib/firebase";
+  import type { InboxCategory } from "$lib/models/inboxes";
+  import type { NotificationProps } from "$lib/models/notifications";
+  import { makeDocument } from "$lib/models/utils";
   import {
     query,
     type DocumentData,
@@ -17,10 +17,10 @@
     collection,
     where,
     onSnapshot
-  } from 'firebase/firestore';
-  import { onMount, tick } from 'svelte';
-  import { inview } from 'svelte-inview';
-  import { fly } from 'svelte/transition';
+  } from "firebase/firestore";
+  import { onMount, tick } from "svelte";
+  import { inview } from "svelte-inview";
+  import { fly } from "svelte/transition";
 
   export let maxResults = 5;
   export let category: null | InboxCategory;
@@ -52,13 +52,13 @@
     if (after) {
       const q = query(
         baseQuery,
-        orderBy('created_at', 'desc'),
+        orderBy("created_at", "desc"),
         startAfter(after),
         limit(maxResults)
       );
       snapshot = await getDocs(q);
     } else {
-      const q = query(baseQuery, orderBy('created_at', 'desc'), limit(maxResults));
+      const q = query(baseQuery, orderBy("created_at", "desc"), limit(maxResults));
       snapshot = await getDocs(q);
     }
     const moreNotifications = snapshot.docs.slice() as QueryDocumentSnapshot<
@@ -78,7 +78,7 @@
     }
     settingUp = true;
     if (category) {
-      baseQuery = query(collection(db, collectionPath), where('category', '==', category));
+      baseQuery = query(collection(db, collectionPath), where("category", "==", category));
     } else {
       baseQuery = query(collection(db, collectionPath));
     }
@@ -87,14 +87,14 @@
     let q: Query;
     // Build query for new notifcations that come in, sorted by ascending
     if (after) {
-      q = query(baseQuery, orderBy('created_at', 'asc'), startAfter(after));
+      q = query(baseQuery, orderBy("created_at", "asc"), startAfter(after));
     } else {
-      q = query(baseQuery, orderBy('created_at', 'asc'));
+      q = query(baseQuery, orderBy("created_at", "asc"));
     }
     unsubscribe = await onSnapshot(q, (snapshot) => {
       const newNotifications = snapshot
         .docChanges()
-        .filter((c) => c.type === 'added')
+        .filter((c) => c.type === "added")
         .map((c) => c.doc)
         .slice() as QueryDocumentSnapshot<DocumentData, NotificationProps<unknown>>[];
       if (newNotifications.length) {
@@ -121,7 +121,7 @@
   });
 
   beforeNavigate(({ from, to }) => {
-    if (from?.url.searchParams.get('category') !== to?.url.searchParams.get('category')) {
+    if (from?.url.searchParams.get("category") !== to?.url.searchParams.get("category")) {
       teardown();
     }
   });

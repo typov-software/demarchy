@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { beforeUpdate, onMount } from 'svelte';
-  import type { LayoutData } from './$types';
-  import { useOrganization } from '$lib/stores/organization';
+  import { beforeUpdate, onMount } from "svelte";
+  import type { LayoutData } from "./$types";
+  import { useOrganization } from "$lib/stores/organization";
 
   export let data: LayoutData;
 

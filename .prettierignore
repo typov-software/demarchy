@@ -1,9 +1,9 @@
 .DS_Store
 node_modules
-/build
-/.svelte-kit
+build
+.svelte-kit
 /package
-/emulator-data
+emulator-data
 .env
 .env.*
 !.env.example

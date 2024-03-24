@@ -1,12 +1,12 @@
-import { redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
-import { adminAuth } from '$lib/server/admin';
-import { SUPPORTED_PROVIDER_IDS, type AuthProvider } from '$lib/models/profiles';
+import { redirect } from "@sveltejs/kit";
+import type { PageServerLoad } from "./$types";
+import { adminAuth } from "$lib/server/admin";
+import { SUPPORTED_PROVIDER_IDS, type AuthProvider } from "$lib/models/profiles";
 
 export const load = (async ({ locals }) => {
   const user_id = locals.user_id;
   if (!user_id) {
-    redirect(301, '/login');
+    redirect(301, "/login");
   }
 
   const user = await adminAuth.getUser(user_id);

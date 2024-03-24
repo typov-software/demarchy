@@ -1,7 +1,7 @@
-import type { Profile } from '$lib/models/profiles';
-import { makeDocument } from '$lib/models/utils';
-import { adminProfileRef } from '$lib/server/admin';
-import type { LayoutServerLoad } from './$types';
+import type { Profile } from "$lib/models/profiles";
+import { makeDocument } from "$lib/models/utils";
+import { adminProfileRef } from "$lib/server/admin";
+import type { LayoutServerLoad } from "./$types";
 
 export const load = (async ({ locals }) => {
   let profile: Profile | null = null;

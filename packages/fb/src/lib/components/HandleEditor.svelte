@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { db } from '$lib/firebase';
-  import { HANDLES } from '$lib/models/firestore';
-  import { checkValidHandle, emptyString } from '$lib/utils/string';
-  import { doc, getDoc } from 'firebase/firestore';
-  import ProfileLink from './ProfileLink.svelte';
-  import { working } from '$lib/stores/working';
+  import { db } from "$lib/firebase";
+  import { HANDLES } from "$lib/models/firestore";
+  import { checkValidHandle, emptyString } from "$lib/utils/string";
+  import { doc, getDoc } from "firebase/firestore";
+  import ProfileLink from "./ProfileLink.svelte";
+  import { working } from "$lib/stores/working";
 
   export let showLoading = true;
   export let currentHandle: string;

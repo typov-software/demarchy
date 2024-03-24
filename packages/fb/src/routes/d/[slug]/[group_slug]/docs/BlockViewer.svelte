@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { Block } from '$lib/models/blocks';
-  import SvelteMarkdown from 'svelte-markdown';
-  import HtmlRenderer from '$lib/components/HtmlRenderer.svelte';
+  import type { Block } from "$lib/models/blocks";
+  import SvelteMarkdown from "svelte-markdown";
+  import HtmlRenderer from "$lib/components/HtmlRenderer.svelte";
 
   export let block: Block;
 </script>

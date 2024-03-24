@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { db, user } from '$lib/firebase';
-  import type { CommentContext } from '$lib/models/comments';
-  import type { Reaction, ReactionProps, ReactionTally } from '$lib/models/reactions';
-  import { writeBatch, doc as fdoc, serverTimestamp, increment } from 'firebase/firestore';
-  import { createEventDispatcher } from 'svelte';
+  import { db, user } from "$lib/firebase";
+  import type { CommentContext } from "$lib/models/comments";
+  import type { Reaction, ReactionProps, ReactionTally } from "$lib/models/reactions";
+  import { writeBatch, doc as fdoc, serverTimestamp, increment } from "firebase/firestore";
+  import { createEventDispatcher } from "svelte";
 
   export let context: CommentContext;
   export let contextId: string;
@@ -37,7 +37,7 @@
       updated_at: serverTimestamp()
     });
     await batch.commit();
-    dispatch('seen', {
+    dispatch("seen", {
       ...reactionProps,
       id: $user!.uid,
       path: reactionRef.path,
@@ -58,12 +58,12 @@
   on:click={handleClickSeen}
   title="Mark as seen"
 >
-  {tally.seen || ''}
+  {tally.seen || ""}
   {#if looking}
     <div class="loading loading-xs loading-spinner" />
   {:else}
     <span class="material-symbols-outlined text-base">
-      {reaction ? 'visibility' : 'visibility_off'}
+      {reaction ? "visibility" : "visibility_off"}
     </span>
   {/if}
 </button>

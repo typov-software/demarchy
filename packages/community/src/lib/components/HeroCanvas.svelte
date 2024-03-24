@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { fade } from 'svelte/transition';
+  import { onMount } from "svelte";
+  import { fade } from "svelte/transition";
 
   let canvasEl: HTMLCanvasElement;
-  const colors = ['#2563eb', '#e11d48', '#d946ef'];
+  const colors = ["#2563eb", "#e11d48", "#d946ef"];
   const speed = 0.5;
 
   class Particle {
@@ -66,17 +66,17 @@
     }
     canvasEl.height = innerHeight * devicePixelRatio;
     canvasEl.width = innerWidth * devicePixelRatio;
-    canvasEl.style.width = innerWidth + 'px';
-    canvasEl.style.height = innerHeight + 'px';
-    canvasEl.getContext('2d')?.scale(devicePixelRatio, devicePixelRatio);
+    canvasEl.style.width = innerWidth + "px";
+    canvasEl.style.height = innerHeight + "px";
+    canvasEl.getContext("2d")?.scale(devicePixelRatio, devicePixelRatio);
   }
 
   function draw() {
-    const ctx = canvasEl?.getContext('2d');
+    const ctx = canvasEl?.getContext("2d");
     const { innerHeight, innerWidth } = window;
     if (!ctx) return;
 
-    ctx.globalCompositeOperation = 'destination-over';
+    ctx.globalCompositeOperation = "destination-over";
     ctx.clearRect(0, 0, innerWidth * devicePixelRatio, innerHeight * devicePixelRatio);
 
     particles.forEach((p) => p.update(ctx));
@@ -85,7 +85,7 @@
   }
 
   onMount(() => {
-    addEventListener('resize', () => setSize());
+    addEventListener("resize", () => setSize());
     setSize();
     requestAnimationFrame(draw);
   });

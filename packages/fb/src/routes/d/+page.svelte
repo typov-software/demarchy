@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { enhance } from '$app/forms';
-  import AppToast from '$lib/components/AppToast.svelte';
-  import BasicSection from '$lib/components/BasicSection.svelte';
-  import ProfileLink from '$lib/components/ProfileLink.svelte';
-  import { toast } from '$lib/stores/toast';
-  import { workingCallback } from '$lib/stores/working';
-  import { emptyString } from '$lib/utils/string';
-  import type { PageData } from './$types';
+  import { enhance } from "$app/forms";
+  import AppToast from "$lib/components/AppToast.svelte";
+  import BasicSection from "$lib/components/BasicSection.svelte";
+  import ProfileLink from "$lib/components/ProfileLink.svelte";
+  import { toast } from "$lib/stores/toast";
+  import { workingCallback } from "$lib/stores/working";
+  import { emptyString } from "$lib/utils/string";
+  import type { PageData } from "./$types";
 
   export let data: PageData;
 
   $: requestingInvite = false;
   $: requestingVoucher = false;
   $: subscribing = false;
-  $: email = '';
+  $: email = "";
 </script>
 
 <BasicSection otherClass="w-full items-stretch">
@@ -49,7 +49,7 @@
             onEnd() {
               requestingInvite = false;
               toast.add({
-                level: 'info',
+                level: "info",
                 content: `Your request to join has be received`
               });
             }
@@ -102,9 +102,9 @@
             onEnd() {
               subscribing = false;
               toast.add({
-                level: 'success',
+                level: "success",
                 content:
-                  'Thanks for subscribing to the Devlog! You can [unsubscribe](/unsubscribe) at any time.'
+                  "Thanks for subscribing to the Devlog! You can [unsubscribe](/unsubscribe) at any time."
               });
             }
           })}
@@ -148,8 +148,8 @@
               onEnd() {
                 requestingVoucher = false;
                 toast.add({
-                  level: 'info',
-                  content: 'Voucher requested'
+                  level: "info",
+                  content: "Voucher requested"
                 });
               }
             })}
@@ -172,8 +172,8 @@
               onEnd() {
                 requestingVoucher = false;
                 toast.add({
-                  level: 'info',
-                  content: 'Voucher requested'
+                  level: "info",
+                  content: "Voucher requested"
                 });
               }
             })}

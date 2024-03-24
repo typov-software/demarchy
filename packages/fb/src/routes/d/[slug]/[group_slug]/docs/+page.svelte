@@ -1,18 +1,18 @@
 <script lang="ts">
-  import BasicSection from '$lib/components/BasicSection.svelte';
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import { organizeLibrary, type LibraryShelf } from '$lib/models/libraries';
-  import { format } from 'date-fns';
-  import type { PageData } from '../docs/$types';
-  import DocViewer from './DocViewer.svelte';
-  import LibraryViewerDirectory from '$lib/components/LibraryViewerDirectory.svelte';
+  import BasicSection from "$lib/components/BasicSection.svelte";
+  import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
+  import { organizeLibrary, type LibraryShelf } from "$lib/models/libraries";
+  import { format } from "date-fns";
+  import type { PageData } from "../docs/$types";
+  import DocViewer from "./DocViewer.svelte";
+  import LibraryViewerDirectory from "$lib/components/LibraryViewerDirectory.svelte";
 
   export let data: PageData;
 
   let shelf: LibraryShelf;
   $: shelf = data.library
     ? organizeLibrary(data.library)
-    : { library_id: 'latest', rows: new Map([]), dirs: {} };
+    : { library_id: "latest", rows: new Map([]), dirs: {} };
 </script>
 
 <BasicSection otherClass="!items-start">
@@ -41,7 +41,7 @@
     <div class="flex flex-col">
       <div class="dropdown dropdown-bottom mb-2">
         <div tabindex="0" role="button" class="btn btn-sm w-full">
-          {data.library?.id ?? ''}
+          {data.library?.id ?? ""}
         </div>
         <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
         <ul tabindex="0" class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
@@ -49,7 +49,7 @@
             <li>
               <a href={`?library=${library.id}`}>
                 {library.id}
-                {format(library.created_at, 'yyyy/MM/dd p')}
+                {format(library.created_at, "yyyy/MM/dd p")}
               </a>
             </li>
           {/each}

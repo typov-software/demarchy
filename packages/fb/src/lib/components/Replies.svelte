@@ -1,7 +1,7 @@
 <script lang="ts">
-  import CommentCard from '$lib/components/CommentCard.svelte';
-  import { db, profile, user } from '$lib/firebase';
-  import { onMount, tick } from 'svelte';
+  import CommentCard from "$lib/components/CommentCard.svelte";
+  import { db, profile, user } from "$lib/firebase";
+  import { onMount, tick } from "svelte";
   import {
     orderBy,
     collection,
@@ -14,13 +14,13 @@
     onSnapshot,
     Query,
     where
-  } from 'firebase/firestore';
-  import type { CommentContext, CommentProps } from '$lib/models/comments';
-  import { inview } from 'svelte-inview';
-  import { fly } from 'svelte/transition';
-  import { afterNavigate, beforeNavigate } from '$app/navigation';
-  import CommentEditor from '$lib/components/CommentEditor.svelte';
-  import { makeDocument } from '$lib/models/utils';
+  } from "firebase/firestore";
+  import type { CommentContext, CommentProps } from "$lib/models/comments";
+  import { inview } from "svelte-inview";
+  import { fly } from "svelte/transition";
+  import { afterNavigate, beforeNavigate } from "$app/navigation";
+  import CommentEditor from "$lib/components/CommentEditor.svelte";
+  import { makeDocument } from "$lib/models/utils";
 
   export let can_write: boolean;
   export let organizationId: string;
@@ -59,7 +59,7 @@
   function getCollectionPath() {
     const groupPath = `/organizations/${organizationId}/groups/${groupId}`;
     let path = groupPath;
-    if (context === 'feedback') {
+    if (context === "feedback") {
       path = `${groupPath}/feedback`;
     } else {
       path = `${groupPath}/${context}/${contextId}/comments`;
@@ -77,13 +77,13 @@
     if (after) {
       const q = query(
         baseQuery,
-        orderBy('created_at', 'desc'),
+        orderBy("created_at", "desc"),
         startAfter(after),
         limit(maxResults)
       );
       snapshot = await getDocs(q);
     } else {
-      const q = query(baseQuery, orderBy('created_at', 'desc'), limit(maxResults));
+      const q = query(baseQuery, orderBy("created_at", "desc"), limit(maxResults));
       snapshot = await getDocs(q);
     }
     const moreComments = snapshot.docs.slice() as QueryDocumentSnapshot<
@@ -103,20 +103,20 @@
     }
     settingUp = true;
     collectionPath = getCollectionPath();
-    baseQuery = query(collection(db, collectionPath), where('parent', '==', parent));
+    baseQuery = query(collection(db, collectionPath), where("parent", "==", parent));
     await getPage();
     const after = comments.slice().shift();
     let q: Query;
     // Build query for new comments that come in, sorted by ascending
     if (after) {
-      q = query(baseQuery, orderBy('created_at', 'asc'), startAfter(after));
+      q = query(baseQuery, orderBy("created_at", "asc"), startAfter(after));
     } else {
-      q = query(baseQuery, orderBy('created_at', 'asc'));
+      q = query(baseQuery, orderBy("created_at", "asc"));
     }
     unsubscribe = await onSnapshot(q, (snapshot) => {
       const newComments = snapshot
         .docChanges()
-        .filter((c) => c.type === 'added')
+        .filter((c) => c.type === "added")
         .map((c) => c.doc)
         .slice() as QueryDocumentSnapshot<DocumentData, CommentProps>[];
       if (newComments.length) {

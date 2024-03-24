@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { Block } from '$lib/models/blocks';
-  import { tick } from 'svelte';
-  import BlockEditor from './BlockEditor.svelte';
-  import hash from 'object-hash';
+  import type { Block } from "$lib/models/blocks";
+  import { tick } from "svelte";
+  import BlockEditor from "./BlockEditor.svelte";
+  import hash from "object-hash";
 
   export let saveBlocks: undefined | ((blocks: Block[]) => Promise<void>) = undefined;
   export let editable = true;
-  export let placeholder = '';
+  export let placeholder = "";
   export let blocks: Block[];
   $: blocks;
 
@@ -25,8 +25,8 @@
     requestFocus = index;
     nextBlocks.splice(index, 0, {
       uid: crypto.randomUUID(),
-      content: '',
-      type: 'text'
+      content: "",
+      type: "text"
     });
     blocks = [...nextBlocks];
     // no need to save doc here, its just an empty block
@@ -88,7 +88,7 @@
 {#each blocks as block, index (hash({ ...block, index }))}
   <BlockEditor
     focus={requestFocus === index}
-    placeholder={index === 0 ? placeholder : ''}
+    placeholder={index === 0 ? placeholder : ""}
     {index}
     {block}
     {editable}

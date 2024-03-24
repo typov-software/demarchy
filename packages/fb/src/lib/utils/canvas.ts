@@ -8,8 +8,8 @@ export interface Crop {
 export const createImage = (url: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const image = new Image();
-    image.addEventListener('load', () => resolve(image));
-    image.addEventListener('error', (error) => reject(error));
+    image.addEventListener("load", () => resolve(image));
+    image.addEventListener("error", (error) => reject(error));
     image.src = url;
   });
 
@@ -38,8 +38,8 @@ export async function getCroppedImg(
   rotation = 0
 ): Promise<Blob | null> {
   const image = await createImage(imageSrc);
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
 
   if (!ctx) {
     return null;
@@ -85,7 +85,7 @@ export async function getCroppedImg(
   return new Promise((resolve) => {
     scaledCanvas.toBlob((file) => {
       resolve(file);
-    }, 'image/jpeg');
+    }, "image/jpeg");
   });
 }
 
@@ -95,11 +95,11 @@ function scaleCanvasToSquare(
 ): {
   canvas: HTMLCanvasElement;
 } {
-  const newCanvas = document.createElement('canvas');
-  const context = newCanvas.getContext('2d');
+  const newCanvas = document.createElement("canvas");
+  const context = newCanvas.getContext("2d");
 
   if (!context) {
-    console.error('Canvas 2D context not available');
+    console.error("Canvas 2D context not available");
     return { canvas };
   }
 

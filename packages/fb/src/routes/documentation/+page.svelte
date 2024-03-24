@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ComingSoon from '$lib/components/ComingSoon.svelte';
+  import ComingSoon from "$lib/components/ComingSoon.svelte";
 </script>
 
 <ComingSoon title="Documentation" canvas />

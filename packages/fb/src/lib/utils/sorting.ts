@@ -1,4 +1,4 @@
-import _get from 'lodash/get';
+import _get from "lodash/get";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type StringAny = Record<string, any>;
@@ -9,12 +9,12 @@ export function descendingComparator(a: StringAny, b: StringAny, orderBy: string
   let bval = _get(b, orderBy);
   if (aval instanceof Date) {
     aval = aval.getTime();
-  } else if (typeof aval === 'string') {
+  } else if (typeof aval === "string") {
     aval = aval.toLowerCase();
   }
   if (bval instanceof Date) {
     bval = bval.getTime();
-  } else if (typeof bval === 'string') {
+  } else if (typeof bval === "string") {
     bval = bval.toLowerCase();
   }
   if (bval < aval || aval === undefined) {
@@ -26,8 +26,8 @@ export function descendingComparator(a: StringAny, b: StringAny, orderBy: string
   return 0;
 }
 
-export function getComparator(order: 'asc' | 'desc', orderBy: string): Comparator {
-  return order === 'desc'
+export function getComparator(order: "asc" | "desc", orderBy: string): Comparator {
+  return order === "desc"
     ? (a: StringAny, b: StringAny) => descendingComparator(a, b, orderBy)
     : (a: StringAny, b: StringAny) => -descendingComparator(a, b, orderBy);
 }

@@ -1,22 +1,22 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import { type OrderByDirection } from 'firebase/firestore';
-  import type { PageData } from './$types';
-  import { goto } from '$app/navigation';
-  import BasicSection from '$lib/components/BasicSection.svelte';
-  import { enhance } from '$app/forms';
-  import { working, workingCallback } from '$lib/stores/working';
-  import { user } from '$lib/firebase';
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import ProfileLink from '$lib/components/ProfileLink.svelte';
-  import { formatRelative } from 'date-fns';
-  import { pluralize } from '$lib/utils/string';
-  import InvitationModal from './InvitationModal.svelte';
+  import { page } from "$app/stores";
+  import { type OrderByDirection } from "firebase/firestore";
+  import type { PageData } from "./$types";
+  import { goto } from "$app/navigation";
+  import BasicSection from "$lib/components/BasicSection.svelte";
+  import { enhance } from "$app/forms";
+  import { working, workingCallback } from "$lib/stores/working";
+  import { user } from "$lib/firebase";
+  import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
+  import ProfileLink from "$lib/components/ProfileLink.svelte";
+  import { formatRelative } from "date-fns";
+  import { pluralize } from "$lib/utils/string";
+  import InvitationModal from "./InvitationModal.svelte";
 
   export let data: PageData;
 
   $: group = data.group!;
-  $: context = group.id === data.organization.id ? 'organization' : 'group';
+  $: context = group.id === data.organization.id ? "organization" : "group";
 
   let numMembers = data.members.length ?? 0;
   let isOnlyMember = numMembers === 1 && data.members.at(0)?.id === $user?.uid;
@@ -29,8 +29,8 @@
 
   async function setSort(field: string, direction: OrderByDirection) {
     const searchParams = $page.url.searchParams;
-    searchParams.set('sortBy', field);
-    searchParams.set('direction', direction);
+    searchParams.set("sortBy", field);
+    searchParams.set("direction", direction);
     await goto(`?${searchParams.toString()}`, { invalidateAll: true });
   }
 </script>
@@ -104,7 +104,7 @@
                             Resend
                           </button>
                         </li>
-                        {#if data.role === 'mod' || invitation.user_id === $user?.uid}
+                        {#if data.role === "mod" || invitation.user_id === $user?.uid}
                           <li>
                             <form
                               id={`uninvite-${invitation.invited_user_id}`}
@@ -133,7 +133,7 @@
                               disabled={invitation.user_id !== $user?.uid}
                               class="w-full"
                             >
-                              {invitation.rejected ? 'Remove' : 'Uninvite'}
+                              {invitation.rejected ? "Remove" : "Uninvite"}
                             </button>
                           </li>
                         {/if}
@@ -230,7 +230,7 @@
       <div class="card-body px-0 py-4">
         <div class="card-title w-full pl-4 pr-2">
           <span class="flex-1"
-            >{group.member_count.toLocaleString()} {pluralize('Member', group.member_count)}</span
+            >{group.member_count.toLocaleString()} {pluralize("Member", group.member_count)}</span
           >
           <div class="dropdown dropdown-end mr-1">
             <div tabindex="0" role="button" class="btn btn-square btn-sm btn-ghost">
@@ -239,8 +239,8 @@
             <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
             <div tabindex="0" class="dropdown-content z-[1] shadow bg-base-300 rounded-box">
               <ul class="menu w-40">
-                <li><button on:click={onSort('handle', 'asc')}>Handle ASC</button></li>
-                <li><button on:click={onSort('handle', 'desc')}>Handle DESC</button></li>
+                <li><button on:click={onSort("handle", "asc")}>Handle ASC</button></li>
+                <li><button on:click={onSort("handle", "desc")}>Handle DESC</button></li>
               </ul>
             </div>
           </div>
@@ -308,7 +308,7 @@
 </BasicSection>
 
 <InvitationModal
-  open={$page.url.searchParams.get('modal') === 'invite'}
+  open={$page.url.searchParams.get("modal") === "invite"}
   organization={data.organization}
   group={data.group}
 />

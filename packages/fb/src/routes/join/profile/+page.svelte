@@ -1,17 +1,17 @@
 <script lang="ts">
-  import AuthCheck from '$lib/components/AuthCheck.svelte';
-  import ProfilePhotoEditor from '$lib/components/ProfilePhotoEditor.svelte';
-  import { db, joinVoucher, user } from '$lib/firebase';
-  import { emptyString } from '$lib/utils/string';
-  import { doc, setDoc } from 'firebase/firestore';
-  import type { PageData } from './$types';
-  import { invalidateAll } from '$app/navigation';
+  import AuthCheck from "$lib/components/AuthCheck.svelte";
+  import ProfilePhotoEditor from "$lib/components/ProfilePhotoEditor.svelte";
+  import { db, joinVoucher, user } from "$lib/firebase";
+  import { emptyString } from "$lib/utils/string";
+  import { doc, setDoc } from "firebase/firestore";
+  import type { PageData } from "./$types";
+  import { invalidateAll } from "$app/navigation";
 
   export let data: PageData;
 
   $: updatingName = false;
-  $: profileName = data.profile?.name ?? '';
-  $: name = profileName ?? '';
+  $: profileName = data.profile?.name ?? "";
+  $: name = profileName ?? "";
   $: disabled =
     updatingName || !data.profile || (!emptyString(profileName) && profileName === name);
   $: user_id = $user?.uid;
@@ -20,7 +20,7 @@
     if (updatingName) return;
     updatingName = true;
     try {
-      await setDoc(doc(db, 'profiles', user_id!), { name }, { merge: true });
+      await setDoc(doc(db, "profiles", user_id!), { name }, { merge: true });
       await invalidateAll();
     } catch (e) {
       console.error(e);
@@ -61,7 +61,7 @@
         <ProfilePhotoEditor profileId={user_id} />
       {/if}
       <img
-        src={data.profile?.photo_url ?? '/user.png'}
+        src={data.profile?.photo_url ?? "/user.png"}
         alt="photo_url"
         class="mx-auto w-full max-w-xs mb-4 avatar rounded-full"
       />

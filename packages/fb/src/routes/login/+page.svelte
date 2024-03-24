@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import AuthProviders from '$lib/components/AuthProviders.svelte';
-  import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
-  import { auth, db, profile, user } from '$lib/firebase';
-  import { type AuthProvider } from '$lib/models/profiles';
-  import { getProviders } from '$lib/utils/client-auth';
-  import { signInWithPopup, signOut } from 'firebase/auth';
-  import { doc, getDoc } from 'firebase/firestore';
-  import { onMount } from 'svelte';
-  import HeroCanvas from '../HeroCanvas.svelte';
+  import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
+  import AuthProviders from "$lib/components/AuthProviders.svelte";
+  import DemarchyLogo from "$lib/components/DemarchyLogo.svelte";
+  import { auth, db, profile, user } from "$lib/firebase";
+  import { type AuthProvider } from "$lib/models/profiles";
+  import { getProviders } from "$lib/utils/client-auth";
+  import { signInWithPopup, signOut } from "firebase/auth";
+  import { doc, getDoc } from "firebase/firestore";
+  import { onMount } from "svelte";
+  import HeroCanvas from "../HeroCanvas.svelte";
 
   const providers = getProviders();
 
-  $: expired = $page.url.searchParams.get('session') === 'expired';
+  $: expired = $page.url.searchParams.get("session") === "expired";
 
   let fetchingProfile: boolean = true;
   $: fetchingProfile = true;
@@ -28,23 +28,23 @@
     const provider = providers[pid];
     const credential = await signInWithPopup(auth, provider);
     const idToken = await credential.user.getIdToken();
-    await fetch('/api/session', {
-      method: 'POST',
+    await fetch("/api/session", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({ idToken })
     });
     const profileExists = (await getDoc(doc(db, `profiles/${credential.user.uid}`))).exists();
     if (!profileExists) {
-      await goto('/join/voucher');
+      await goto("/join/voucher");
     } else {
-      await goto('/d');
+      await goto("/d");
     }
   }
 
   async function endSession() {
-    await fetch('/api/session', { method: 'DELETE' });
+    await fetch("/api/session", { method: "DELETE" });
     await signOut(auth);
   }
 </script>

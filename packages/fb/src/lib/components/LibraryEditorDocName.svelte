@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { enhance } from '$app/forms';
-  import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import type { DocSummary } from '$lib/models/libraries';
-  import type { Amendment, Proposal } from '$lib/models/proposals';
-  import { workingCallback } from '$lib/stores/working';
+  import { enhance } from "$app/forms";
+  import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
+  import type { DocSummary } from "$lib/models/libraries";
+  import type { Amendment, Proposal } from "$lib/models/proposals";
+  import { workingCallback } from "$lib/stores/working";
 
   export let doc: DocSummary & { displayName: string };
   export let amendment: Amendment | undefined = undefined;
@@ -14,8 +14,8 @@
   let removeDialog: HTMLDialogElement;
 
   function handleLoadDoc() {
-    $page.url.searchParams.set('doc_name', doc.name);
-    $page.url.searchParams.set('doc_id', doc.id);
+    $page.url.searchParams.set("doc_name", doc.name);
+    $page.url.searchParams.set("doc_id", doc.id);
     goto(`?${$page.url.searchParams.toString()}`);
   }
 </script>
@@ -24,10 +24,10 @@
   <button
     data-sveltekit-noscroll
     class="flex-1"
-    class:active={$page.url.searchParams.get('doc') === doc.name}
-    class:text-success={amendment?.type === 'create'}
-    class:text-warning={amendment?.type === 'update'}
-    class:text-error={amendment?.type === 'destroy'}
+    class:active={$page.url.searchParams.get("doc") === doc.name}
+    class:text-success={amendment?.type === "create"}
+    class:text-warning={amendment?.type === "update"}
+    class:text-error={amendment?.type === "destroy"}
     on:click={handleLoadDoc}
   >
     <span class="material-symbols-outlined">article</span>
@@ -35,15 +35,15 @@
     {#if amendment}
       <span
         class="badge badge-xs"
-        class:badge-success={amendment?.type === 'create'}
-        class:badge-warning={amendment?.type === 'update'}
-        class:badge-error={amendment?.type === 'destroy'}
+        class:badge-success={amendment?.type === "create"}
+        class:badge-warning={amendment?.type === "update"}
+        class:badge-error={amendment?.type === "destroy"}
       >
-        {#if amendment?.type === 'create'}
+        {#if amendment?.type === "create"}
           +
-        {:else if amendment.type === 'update'}
+        {:else if amendment.type === "update"}
           ~
-        {:else if amendment.type === 'destroy'}
+        {:else if amendment.type === "destroy"}
           -
         {/if}
       </span>

@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { doc as fdoc, serverTimestamp, updateDoc } from 'firebase/firestore';
-  import BlocksEditor from '$lib/components/BlocksEditor.svelte';
-  import { db, docStore, user } from '$lib/firebase';
-  import type { Block } from '$lib/models/blocks';
-  import type { Discussion } from '$lib/models/discussions';
-  import { formatRelative } from 'date-fns';
-  import { workingCallback } from '$lib/stores/working';
-  import { enhance } from '$app/forms';
-  import ProfileLink from '$lib/components/ProfileLink.svelte';
-  import type { DocProps } from '$lib/models/docs';
+  import { doc as fdoc, serverTimestamp, updateDoc } from "firebase/firestore";
+  import BlocksEditor from "$lib/components/BlocksEditor.svelte";
+  import { db, docStore, user } from "$lib/firebase";
+  import type { Block } from "$lib/models/blocks";
+  import type { Discussion } from "$lib/models/discussions";
+  import { formatRelative } from "date-fns";
+  import { workingCallback } from "$lib/stores/working";
+  import { enhance } from "$app/forms";
+  import ProfileLink from "$lib/components/ProfileLink.svelte";
+  import type { DocProps } from "$lib/models/docs";
 
   export let discussion: Discussion;
   export let editable: boolean;
@@ -20,14 +20,14 @@
 
   $: blocks = $doc?.blocks?.slice() ?? discussion.blocks.slice();
   $: state = $doc?.state ?? discussion.state;
-  $: isOpen = state === 'open';
+  $: isOpen = state === "open";
   $: ownerId = discussion.user_id;
   $: ownsDiscussion = $user!.uid === ownerId;
 
   async function saveBlocks(blocks: Block[]) {
     let nextBlocks = blocks.slice();
     if (!nextBlocks.length) {
-      nextBlocks = [{ uid: crypto.randomUUID(), content: '', type: 'text' }];
+      nextBlocks = [{ uid: crypto.randomUUID(), content: "", type: "text" }];
     }
     const docProps: Partial<DocProps> = { blocks: nextBlocks };
     await updateDoc(fdoc(db, discussion.path), {
@@ -51,10 +51,10 @@
       </h3>
       <span
         class="text-xs rounded-full py-1 px-2"
-        class:bg-info={state === 'draft'}
-        class:bg-success={state === 'open'}
-        class:bg-warning={state === 'dropped'}
-        class:bg-error={state === 'archived'}
+        class:bg-info={state === "draft"}
+        class:bg-success={state === "open"}
+        class:bg-warning={state === "dropped"}
+        class:bg-error={state === "archived"}
       >
         {state}
       </span>

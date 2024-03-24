@@ -1,8 +1,8 @@
 <script lang="ts">
-  import BasicSection from '$lib/components/BasicSection.svelte';
-  import type { PageData } from './$types';
-  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
-  import Replies from '$lib/components/Replies.svelte';
+  import BasicSection from "$lib/components/BasicSection.svelte";
+  import type { PageData } from "./$types";
+  import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
+  import Replies from "$lib/components/Replies.svelte";
 
   export let data: PageData;
 </script>

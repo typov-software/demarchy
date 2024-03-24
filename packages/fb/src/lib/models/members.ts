@@ -1,5 +1,5 @@
-import type { RoleAccess } from './roles';
-import type { DocumentMeta } from './utils';
+import type { RoleAccess } from "./roles";
+import type { DocumentMeta } from "./utils";
 
 /**
  * This document type belongs to a members collection on a group document.

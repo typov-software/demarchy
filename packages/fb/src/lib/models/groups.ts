@@ -1,4 +1,4 @@
-import type { DocumentMeta } from './utils';
+import type { DocumentMeta } from "./utils";
 
 /**
  * Demarchy organizations are made up of many groups -- including one for the org and one

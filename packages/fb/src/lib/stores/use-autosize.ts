@@ -1,4 +1,4 @@
-import _autosize from 'autosize';
+import _autosize from "autosize";
 
 /**
  * Applies the textarea "autosize" plugin to a given node

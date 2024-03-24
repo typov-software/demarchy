@@ -1,4 +1,4 @@
-import type { DocumentMeta } from './utils';
+import type { DocumentMeta } from "./utils";
 
 export interface ProfileProps {
   handle: string;
@@ -8,11 +8,11 @@ export interface ProfileProps {
 
 export type Profile = ProfileProps & DocumentMeta;
 
-export type AuthProvider = 'google.com' | 'github.com' | 'microsoft.com' | 'apple.com';
+export type AuthProvider = "google.com" | "github.com" | "microsoft.com" | "apple.com";
 
 export const SUPPORTED_PROVIDER_IDS: AuthProvider[] = [
-  'google.com',
-  'github.com',
-  'microsoft.com',
-  'apple.com'
+  "google.com",
+  "github.com",
+  "microsoft.com",
+  "apple.com"
 ];

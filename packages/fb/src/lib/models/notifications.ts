@@ -1,13 +1,13 @@
-import type { InboxCategory } from './inboxes';
-import type { DocumentMeta } from './utils';
-import type { VoucherType } from './vouchers';
+import type { InboxCategory } from "./inboxes";
+import type { DocumentMeta } from "./utils";
+import type { VoucherType } from "./vouchers";
 
 export type NotificationType =
-  | 'application'
-  | 'invitation'
-  | 'uninvite'
-  | 'voucher-requested'
-  | 'welcome';
+  | "application"
+  | "invitation"
+  | "uninvite"
+  | "voucher-requested"
+  | "welcome";
 
 export interface NotificationProps<T = unknown> {
   category: InboxCategory;

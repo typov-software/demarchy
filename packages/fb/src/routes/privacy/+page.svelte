@@ -1,18 +1,18 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { afterUpdate } from 'svelte';
+  import { goto } from "$app/navigation";
+  import { afterUpdate } from "svelte";
 
   $: showAck = false;
 
   afterUpdate(() => {
-    if (!sessionStorage.getItem('cookie-ack')) {
+    if (!sessionStorage.getItem("cookie-ack")) {
       showAck = true;
     }
   });
 
   function acknowledge() {
-    sessionStorage.setItem('cookie-ack', JSON.stringify({ ack: true, timestamp: Date.now() }));
-    goto('/');
+    sessionStorage.setItem("cookie-ack", JSON.stringify({ ack: true, timestamp: Date.now() }));
+    goto("/");
   }
 </script>
 

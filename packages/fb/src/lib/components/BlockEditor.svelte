@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { Block } from '$lib/models/blocks';
-  import MarkdownTextarea from '$lib/components/MarkdownTextarea.svelte';
-  import { createEventDispatcher } from 'svelte';
+  import type { Block } from "$lib/models/blocks";
+  import MarkdownTextarea from "$lib/components/MarkdownTextarea.svelte";
+  import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -9,7 +9,7 @@
   export let block: Block;
   export let focus: boolean = false;
   export let editable = true;
-  export let placeholder = '';
+  export let placeholder = "";
   $: placeholderText = placeholder;
 
   // export let onSaveBlock: (index: number, block: Block) => Promise<void>;
@@ -32,8 +32,8 @@
     if (!editable) return;
     dragging = true;
     e.dataTransfer!.clearData();
-    e.dataTransfer!.effectAllowed = 'move';
-    e.dataTransfer!.setData('text/plain', index.toString());
+    e.dataTransfer!.effectAllowed = "move";
+    e.dataTransfer!.setData("text/plain", index.toString());
   }
 
   function handleDragEnd() {
@@ -57,7 +57,7 @@
 
   function handleDragDrop(e: DragEvent) {
     if (!editable) return;
-    const previous = Number(e.dataTransfer!.getData('text/plain'));
+    const previous = Number(e.dataTransfer!.getData("text/plain"));
     if (previous === index) {
       return;
     }
@@ -93,26 +93,26 @@
       {editable}
       on:blur={() => {
         placeholderText = placeholder;
-        dispatch('blur', { index, content });
+        dispatch("blur", { index, content });
       }}
       on:focus={() => {
         placeholderText = `Empty ${block.type} block`;
-        dispatch('focus', index);
+        dispatch("focus", index);
       }}
       on:enter={() => {
-        dispatch('enter', index);
+        dispatch("enter", index);
       }}
       on:escape={() => {
-        dispatch('escape', index);
+        dispatch("escape", index);
       }}
       on:backspace={() => {
-        dispatch('backspace', index);
+        dispatch("backspace", index);
       }}
       on:up={() => {
-        dispatch('up', index - 1);
+        dispatch("up", index - 1);
       }}
       on:down={() => {
-        dispatch('up', index + 1);
+        dispatch("up", index + 1);
       }}
     />
 
@@ -168,7 +168,7 @@
 </div>
 
 <style lang="scss">
-  [draggable='true']:hover .options-btn {
+  [draggable="true"]:hover .options-btn {
     opacity: 1;
   }
 </style>

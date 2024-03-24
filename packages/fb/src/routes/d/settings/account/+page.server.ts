@@ -1,6 +1,6 @@
-import type { PageServerLoad } from './$types';
-import { adminAuth } from '$lib/server/admin';
-import { SUPPORTED_PROVIDER_IDS, type AuthProvider } from '$lib/models/profiles';
+import type { PageServerLoad } from "./$types";
+import { adminAuth } from "$lib/server/admin";
+import { SUPPORTED_PROVIDER_IDS, type AuthProvider } from "$lib/models/profiles";
 
 export const load = (async ({ locals }) => {
   const user_id = locals.user_id!;

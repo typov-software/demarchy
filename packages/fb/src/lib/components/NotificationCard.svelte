@@ -1,13 +1,13 @@
 <script lang="ts">
-  import type { Notification } from '$lib/models/notifications';
-  import { createEventDispatcher } from 'svelte';
-  import InvitationNotification from './notifications/InvitationNotification.svelte';
-  import WelcomeNotification from './notifications/WelcomeNotification.svelte';
-  import NotificationSeen from './NotificationSeen.svelte';
-  import { formatRelative } from 'date-fns';
-  import UninviteNotification from './notifications/UninviteNotification.svelte';
-  import ApplicationNotification from './notifications/ApplicationNotification.svelte';
-  import VoucherRequestedNotification from './notifications/VoucherRequestedNotification.svelte';
+  import type { Notification } from "$lib/models/notifications";
+  import { createEventDispatcher } from "svelte";
+  import InvitationNotification from "./notifications/InvitationNotification.svelte";
+  import WelcomeNotification from "./notifications/WelcomeNotification.svelte";
+  import NotificationSeen from "./NotificationSeen.svelte";
+  import { formatRelative } from "date-fns";
+  import UninviteNotification from "./notifications/UninviteNotification.svelte";
+  import ApplicationNotification from "./notifications/ApplicationNotification.svelte";
+  import VoucherRequestedNotification from "./notifications/VoucherRequestedNotification.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -16,7 +16,7 @@
 
   function handleDeleted(e: CustomEvent<Notification>) {
     // Forward event
-    dispatch('deleted', e.detail);
+    dispatch("deleted", e.detail);
   }
 </script>
 
@@ -29,15 +29,15 @@
     <NotificationSeen {notification} on:deleted={handleDeleted} />
   </div>
   <div class="card-body px-3 pt-0 pb-3">
-    {#if notification.type === 'application'}
+    {#if notification.type === "application"}
       <ApplicationNotification {notification} />
-    {:else if notification.type === 'invitation'}
+    {:else if notification.type === "invitation"}
       <InvitationNotification {notification} on:deleted={handleDeleted} />
-    {:else if notification.type === 'uninvite'}
+    {:else if notification.type === "uninvite"}
       <UninviteNotification {notification} />
-    {:else if notification.type === 'voucher-requested'}
+    {:else if notification.type === "voucher-requested"}
       <VoucherRequestedNotification {notification} />
-    {:else if notification.type === 'welcome'}
+    {:else if notification.type === "welcome"}
       <WelcomeNotification {notification} />
     {/if}
   </div>

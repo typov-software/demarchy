@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp } from "firebase/app";
 import {
   FirestoreError,
   collection,
@@ -8,11 +8,11 @@ import {
   onSnapshot,
   query,
   where
-} from 'firebase/firestore';
-import { getAuth, onAuthStateChanged, type User } from 'firebase/auth';
-import { getStorage } from 'firebase/storage';
-import { derived, writable, type Readable } from 'svelte/store';
-import type { Profile } from './models/profiles';
+} from "firebase/firestore";
+import { getAuth, onAuthStateChanged, type User } from "firebase/auth";
+import { getStorage } from "firebase/storage";
+import { derived, writable, type Readable } from "svelte/store";
+import type { Profile } from "./models/profiles";
 import {
   PUBLIC_FB_API_KEY,
   PUBLIC_FB_APP_ID,
@@ -21,11 +21,11 @@ import {
   PUBLIC_FB_PROJECT_ID,
   PUBLIC_FB_STORAGE_BUCKET,
   PUBLIC_USE_EMULATORS
-} from '$env/static/public';
-import { makeDocument, type DocumentMeta } from './models/utils';
-import type { Voucher } from './models/vouchers';
-import type { Inbox } from './models/inboxes';
-import { working } from './stores/working';
+} from "$env/static/public";
+import { makeDocument, type DocumentMeta } from "./models/utils";
+import type { Voucher } from "./models/vouchers";
+import type { Inbox } from "./models/inboxes";
+import { working } from "./stores/working";
 
 const firebaseConfig = {
   apiKey: PUBLIC_FB_API_KEY,
@@ -45,14 +45,14 @@ export const db = getFirestore();
 export const auth = getAuth();
 export const storage = getStorage();
 
-if (import.meta.env.DEV && PUBLIC_USE_EMULATORS === 'YES') {
-  console.warn('Dev environment detected');
-  const { connectAuthEmulator } = await import('firebase/auth');
-  const { connectFirestoreEmulator } = await import('firebase/firestore');
-  const { connectStorageEmulator } = await import('firebase/storage');
-  connectAuthEmulator(auth, 'http://localhost:9099');
-  connectFirestoreEmulator(db, 'localhost', 8080);
-  connectStorageEmulator(storage, 'localhost', 9199);
+if (import.meta.env.DEV && PUBLIC_USE_EMULATORS === "YES") {
+  console.warn("Dev environment detected");
+  const { connectAuthEmulator } = await import("firebase/auth");
+  const { connectFirestoreEmulator } = await import("firebase/firestore");
+  const { connectStorageEmulator } = await import("firebase/storage");
+  connectAuthEmulator(auth, "http://localhost:9099");
+  connectFirestoreEmulator(db, "localhost", 8080);
+  connectStorageEmulator(storage, "localhost", 9199);
 }
 
 /**
@@ -62,7 +62,7 @@ function userStore() {
   let unsubscribe: () => void;
 
   if (!auth) {
-    console.warn('Auth is not initialized');
+    console.warn("Auth is not initialized");
   }
 
   if (!auth || !globalThis.window) {
@@ -134,7 +134,7 @@ export function docStore<T extends DocumentMeta>(path: string) {
       },
       function onError(error: FirestoreError) {
         if (import.meta.env.DEV) {
-          console.warn('docStore error:', path);
+          console.warn("docStore error:", path);
         }
         console.error(error);
         set(null);
@@ -184,9 +184,9 @@ export const joinVoucher: Readable<Voucher | null> = derived(user, ($user, set) 
     };
     const unsubscribe = onSnapshot(
       query(
-        collection(db, 'vouchers'),
-        where('user_id', '==', $user.uid),
-        where('type', '==', '/join')
+        collection(db, "vouchers"),
+        where("user_id", "==", $user.uid),
+        where("type", "==", "/join")
       ),
       (snapshot) => {
         if (snapshot.empty) {
