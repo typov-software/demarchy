@@ -1,9 +1,9 @@
 import { pipeline } from "@xenova/transformers";
 import { QdrantClient } from "@qdrant/js-client-rest";
+import { QDRANT_URL } from "$env/static/private";
 
 export const qdrant = new QdrantClient({
-  host: "localhost",
-  port: 64325
+  url: QDRANT_URL
 });
 
 const generateEmbedding = await pipeline("feature-extraction", "Supabase/gte-small");
