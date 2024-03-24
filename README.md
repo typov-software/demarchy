@@ -10,4 +10,9 @@ bun install
 
 ## community
 
-## facility
+```
+bunx supabase start
+docker compose --file docker-compose.dev.yml up -d
+docker compose --file docker-compose.dev.yml down --remove-orphans
+bunx supabase stop
+```

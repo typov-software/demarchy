@@ -45,6 +45,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@qdrant/js-client-rest": "^1.8.1",
     "@supabase/supabase-js": "^2.39.8",
     "@xenova/transformers": "^2.16.1"
   }
