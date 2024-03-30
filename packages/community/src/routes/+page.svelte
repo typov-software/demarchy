@@ -2,12 +2,15 @@
   import { onMount } from "svelte";
   import { expoInOut } from "svelte/easing";
   import { fly } from "svelte/transition";
+  import { Auth } from "@supabase/auth-ui-svelte";
   import DemarchyLogo from "$lib/components/DemarchyLogo.svelte";
   import HomepageHero from "$lib/components/HomepageHero.svelte";
   import HeroCanvas from "$lib/components/HeroCanvas.svelte";
   import { theme, toggleTheme } from "$lib/stores/themes";
 
   const easing = expoInOut;
+
+  export let data;
 
   let showDescription = false;
   onMount(() => {
@@ -33,7 +36,7 @@
       >
         A <strong class="d-anim-text-walk">democratic</strong> toolkit for communities and cooperatives
       </p>
-      <div
+      <!-- <div
         class="flex flex-row gap-4 justify-center mt-2"
         transition:fly={{ delay: 400, duration: 1000, y: 20, easing }}
       >
@@ -53,6 +56,19 @@
           <span class="material-symbols-outlined">login</span>
           Login
         </a>
+      </div> -->
+      <div
+        class="row flex-center flex"
+        transition:fly={{ delay: 400, duration: 1000, y: 20, easing }}
+      >
+        <div class="col-6 form-widget">
+          <Auth
+            supabaseClient={data.supabase}
+            view="sign_in"
+            redirectTo={`${data.url}/auth/callback`}
+            appearance={{}}
+          />
+        </div>
       </div>
       <small
         class="text-neutral text-xs sm:text-sm"

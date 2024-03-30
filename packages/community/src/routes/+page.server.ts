@@ -1,19 +1,12 @@
-import type { Actions } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-export const load = (async ({ locals: { supabase } }) => {
-  const { data: communities, error } = await supabase.from("communities").select("*");
-  if (error) {
-    console.error(error);
+export const load = (async ({ url, locals: { getSession } }) => {
+  const session = await getSession();
+  if (session) {
+    redirect(303, "/community");
   }
-  console.log(communities);
   return {
-    communities
+    url: url.origin
   };
 }) satisfies PageServerLoad;
-
-export const actions = {
-  createCommunity: async () => {
-    //
-  }
-} satisfies Actions;
