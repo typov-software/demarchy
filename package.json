@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@isaacs/ttlcache": "^1.4.1",
-    "@playwright/test": "^1.40.1",
+    "@playwright/test": "^1.43.0",
     "@sveltejs/adapter-auto": "^3.0.1",
     "@sveltejs/kit": "^2.0.6",
     "@sveltejs/vite-plugin-svelte": "^3.0.1",
