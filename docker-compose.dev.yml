@@ -1,8 +1,0 @@
-version: '3.8'
-
-services:
-  vector:
-    container_name: qdrant_db_demarchy
-    image: qdrant/qdrant:latest
-    ports:
-      - "64325:6333"

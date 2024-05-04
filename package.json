@@ -8,10 +8,12 @@
     "packages/types"
   ],
   "scripts": {
-    "community:start": "cd packages/community && bun run dev",
-    "supabase:start": "bunx supabase start",
-    "supabase:stop": "bunx supabase stop",
-    "supabase:types": "bunx supabase gen types typescript --local > packages/types/generated/supabase.ts"
+    "db:types": "bunx supabase gen types typescript --local > packages/types/generated/supabase.ts",
+    "dev:community": "cd packages/community && bun run dev",
+    "start": "bun start:supabase",
+    "start:supabase": "bunx supabase start",
+    "stop": "bun stop:supabase",
+    "stop:supabase": "bunx supabase stop"
   },
   "devDependencies": {
     "@playwright/test": "^1.42.1",
