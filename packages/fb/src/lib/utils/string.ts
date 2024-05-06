@@ -1,4 +1,4 @@
-import { convert } from "url-slug";
+import { convert } from 'url-slug';
 
 const HANDLE_REGEXP = /^(?=[a-z0-9._]{3,33}$)(?!.*[_.]{2})[^_.].*[^_.]$/;
 
@@ -29,7 +29,7 @@ export function checkValidSlug(slug: string): boolean {
  */
 export function emptyString(str?: string) {
   if (!str) return true; // there's no string
-  return str.trim() === "";
+  return str.trim() === '';
 }
 
 /**
@@ -39,7 +39,7 @@ export function emptyString(str?: string) {
  * @param s The pluralizing suffix
  * @returns The possibly pluralized string
  */
-export function pluralize(text: string, n: number, s = "s") {
+export function pluralize(text: string, n: number, s = 's') {
   if (n === 1) {
     return text;
   } else {

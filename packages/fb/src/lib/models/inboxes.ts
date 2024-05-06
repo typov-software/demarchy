@@ -1,10 +1,10 @@
-import type { DocumentMeta } from "./utils";
+import type { DocumentMeta } from './utils';
 
 export const INBOX_CATEGORIES = {
-  applications: "Applications",
-  invitations: "Invitations",
-  uncategorized: "Uncategorized",
-  vouchers: "Vouchers"
+  applications: 'Applications',
+  invitations: 'Invitations',
+  uncategorized: 'Uncategorized',
+  vouchers: 'Vouchers',
 };
 
 export type InboxCategory = keyof typeof INBOX_CATEGORIES;

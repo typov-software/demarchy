@@ -1,8 +1,8 @@
 <script lang="ts">
-  import BasicSection from "$lib/components/BasicSection.svelte";
-  import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
-  import DocCard from "../DocCard.svelte";
-  import type { PageData } from "./$types";
+  import BasicSection from '$lib/components/BasicSection.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import DocCard from '../DocCard.svelte';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 </script>

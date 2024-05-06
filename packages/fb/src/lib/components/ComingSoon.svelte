@@ -1,5 +1,5 @@
 <script lang="ts">
-  import HeroCanvas from "../../routes/HeroCanvas.svelte";
+  import HeroCanvas from '../../routes/HeroCanvas.svelte';
   export let canvas: boolean;
   export let title: string;
 </script>

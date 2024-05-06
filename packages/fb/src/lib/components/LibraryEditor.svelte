@@ -1,24 +1,24 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
-  import type { Group } from "$lib/models/groups";
+  import { enhance } from '$app/forms';
+  import type { Group } from '$lib/models/groups';
   import {
     organizeLibrary,
     type Library,
     type LibraryShelf,
     amendLibrary,
-    type DocSummary
-  } from "$lib/models/libraries";
-  import type { Organization } from "$lib/models/organizations";
-  import type { Profile } from "$lib/models/profiles";
-  import type { Proposal } from "$lib/models/proposals";
-  import { workingCallback } from "$lib/stores/working";
-  import LibraryEditorDirectory from "./LibraryEditorDirectory.svelte";
-  import { emptyString } from "$lib/utils/string";
-  import { format } from "date-fns";
-  import { page } from "$app/stores";
-  import { onMount } from "svelte";
-  import { afterNavigate, goto } from "$app/navigation";
-  import DocEditor from "./DocEditor.svelte";
+    type DocSummary,
+  } from '$lib/models/libraries';
+  import type { Organization } from '$lib/models/organizations';
+  import type { Profile } from '$lib/models/profiles';
+  import type { Proposal } from '$lib/models/proposals';
+  import { workingCallback } from '$lib/stores/working';
+  import LibraryEditorDirectory from './LibraryEditorDirectory.svelte';
+  import { emptyString } from '$lib/utils/string';
+  import { format } from 'date-fns';
+  import { page } from '$app/stores';
+  import { onMount } from 'svelte';
+  import { afterNavigate, goto } from '$app/navigation';
+  import DocEditor from './DocEditor.svelte';
 
   export let organization: Organization;
   export let group: Group;
@@ -32,7 +32,7 @@
   $: amended = amendLibrary(library, amendments);
   $: shelf = organizeLibrary(amended);
 
-  $: addDocName = "";
+  $: addDocName = '';
   $: addDocNameDisabled = true;
   $: addDocUnique = false;
 
@@ -42,8 +42,8 @@
   let proposalDoc: null | DocSummary;
   $: proposalDoc = null;
 
-  $: viewingDocName = $page.url.searchParams.get("doc_name");
-  $: viewingDocId = $page.url.searchParams.get("doc_id");
+  $: viewingDocName = $page.url.searchParams.get('doc_name');
+  $: viewingDocId = $page.url.searchParams.get('doc_id');
   $: showDetails = false;
 
   function handleDetails(e: CustomEvent<boolean>) {
@@ -58,7 +58,7 @@
       originalDoc = null;
     }
     const amendedSummary = amended.docs[docName];
-    if (amendedSummary && amendedSummary?.path.includes("proposals")) {
+    if (amendedSummary && amendedSummary?.path.includes('proposals')) {
       proposalDoc = amendedSummary;
     } else {
       proposalDoc = null;
@@ -89,8 +89,8 @@
   }
 
   function handleLoadDoc(name: string, id: string) {
-    $page.url.searchParams.set("doc_name", name);
-    $page.url.searchParams.set("doc_id", id);
+    $page.url.searchParams.set('doc_name', name);
+    $page.url.searchParams.set('doc_id', id);
     goto(`?${$page.url.searchParams.toString()}`);
   }
 
@@ -110,7 +110,7 @@
   });
 
   afterNavigate(({ to }) => {
-    const toDoc = to?.url.searchParams.get("doc_name");
+    const toDoc = to?.url.searchParams.get('doc_name');
     if (toDoc) {
       loadDoc(toDoc);
     } else if (!toDoc) {
@@ -125,7 +125,7 @@
       <div class="flex items-center mb-1 min-w-72 py-2 pl-4 pr-2">
         <div class="flex flex-col flex-1">
           <span class="flex-1 text-sm">
-            {library.latest ? "Latest" : "Version: " + format(library.created_at, "yyyy/MM/dd p")}
+            {library.latest ? 'Latest' : 'Version: ' + format(library.created_at, 'yyyy/MM/dd p')}
           </span>
           <span class="flex-1 text-xs text-neutral">
             ({library.uid})
@@ -143,7 +143,7 @@
               class="flex flex-col gap-4"
               use:enhance={workingCallback({
                 reset: true,
-                invalidateAll: true
+                invalidateAll: true,
               })}
             >
               <input type="hidden" name="organization_id" value={organization.id} />
@@ -208,7 +208,7 @@
             action="?/editDoc"
             use:enhance={workingCallback({
               reset: false,
-              invalidateAll: true
+              invalidateAll: true,
             })}
           >
             <input type="hidden" name="profile_handle" value={profile.handle} />
@@ -240,7 +240,7 @@
       {#if proposalDoc}
         {#key proposalDoc.id}
           <DocEditor
-            editable={proposal.state === "draft" && profile.id === proposal.user_id}
+            editable={proposal.state === 'draft' && profile.id === proposal.user_id}
             path={proposalDoc.path}
             {showDetails}
             on:details={handleDetails}

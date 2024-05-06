@@ -1,4 +1,4 @@
-export type PlanType = "community" | "corporate";
+export type PlanType = 'community' | 'corporate';
 
 export interface PlanFeature {
   name: string;

@@ -1,26 +1,26 @@
-import type { NotificationProps } from "$lib/models/notifications";
-import { FieldValue, type WriteBatch } from "firebase-admin/firestore";
-import { adminInboxRef, adminNotificationRef, createdTimestamps, updatedTimestamps } from "./admin";
+import type { NotificationProps } from '$lib/models/notifications';
+import { FieldValue, type WriteBatch } from 'firebase-admin/firestore';
+import { adminInboxRef, adminNotificationRef, createdTimestamps, updatedTimestamps } from './admin';
 
 export function prepareNotification(
   notificationProps: NotificationProps<unknown>,
   userId: string,
-  batch: WriteBatch
+  batch: WriteBatch,
 ): WriteBatch {
   batch.create(adminNotificationRef(userId).doc(), {
     ...createdTimestamps(),
-    ...notificationProps
+    ...notificationProps,
   });
   batch.set(
     adminInboxRef().doc(userId),
     {
       ...updatedTimestamps(),
       [notificationProps.category]: FieldValue.increment(1),
-      unread: FieldValue.increment(1)
+      unread: FieldValue.increment(1),
     },
     {
-      merge: true
-    }
+      merge: true,
+    },
   );
   return batch;
 }

@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
-  import AuthCheck from "$lib/components/AuthCheck.svelte";
-  import { joinVoucher } from "$lib/firebase";
-  import { workingCallback } from "$lib/stores/working";
+  import { enhance } from '$app/forms';
+  import AuthCheck from '$lib/components/AuthCheck.svelte';
+  import { joinVoucher } from '$lib/firebase';
+  import { workingCallback } from '$lib/stores/working';
 
-  $: voucherId = "";
+  $: voucherId = '';
   $: redeeming = false;
 </script>
 
@@ -24,7 +24,7 @@
           },
           onEnd() {
             redeeming = false;
-          }
+          },
         })}
       >
         <div class="flex flex-col items-start w-full gap-2">

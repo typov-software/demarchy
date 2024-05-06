@@ -1,14 +1,14 @@
 <script lang="ts">
-  import type { Doc, DocProps } from "$lib/models/docs";
-  import type { Block } from "$lib/models/blocks";
-  import { doc as fdoc, serverTimestamp, updateDoc } from "firebase/firestore";
-  import { db, docStore } from "$lib/firebase";
-  import { format } from "date-fns";
-  import BlocksEditor from "$lib/components/BlocksEditor.svelte";
-  import ProfileLink from "$lib/components/ProfileLink.svelte";
-  import { fly } from "svelte/transition";
-  import { expoOut } from "svelte/easing";
-  import { createEventDispatcher } from "svelte";
+  import type { Doc, DocProps } from '$lib/models/docs';
+  import type { Block } from '$lib/models/blocks';
+  import { doc as fdoc, serverTimestamp, updateDoc } from 'firebase/firestore';
+  import { db, docStore } from '$lib/firebase';
+  import { format } from 'date-fns';
+  import BlocksEditor from '$lib/components/BlocksEditor.svelte';
+  import ProfileLink from '$lib/components/ProfileLink.svelte';
+  import { fly } from 'svelte/transition';
+  import { expoOut } from 'svelte/easing';
+  import { createEventDispatcher } from 'svelte';
 
   export let path: string;
   export let editable = true;
@@ -28,12 +28,12 @@
   async function saveBlocks(blocks: Block[]) {
     let nextBlocks = blocks.slice();
     if (!nextBlocks.length) {
-      nextBlocks = [{ uid: crypto.randomUUID(), content: "", type: "text" }];
+      nextBlocks = [{ uid: crypto.randomUUID(), content: '', type: 'text' }];
     }
     const docProps: Partial<DocProps> = { blocks: nextBlocks };
     await updateDoc(fdoc(db, path), {
       ...docProps,
-      updated_at: serverTimestamp()
+      updated_at: serverTimestamp(),
     });
   }
 </script>
@@ -43,7 +43,7 @@
     <div class="bg-base-200 rounded-box">
       <button
         class="w-full flex flex-row justify-between items-center p-4"
-        on:click={() => dispatch("details", !showDetails)}
+        on:click={() => dispatch('details', !showDetails)}
       >
         <span>
           {$doc.name}
@@ -64,13 +64,13 @@
           {#if $doc.updated_at}
             <p>
               <span class="text-neutral"> Updated </span>
-              {format($doc.updated_at, "MMMM d, yyyy p")}
+              {format($doc.updated_at, 'MMMM d, yyyy p')}
             </p>
           {/if}
           {#if $doc.created_at}
             <p>
               <span class="text-neutral"> Created </span>
-              {format($doc.created_at, "MMMM d, yyyy p")}
+              {format($doc.created_at, 'MMMM d, yyyy p')}
             </p>
           {/if}
           <p>

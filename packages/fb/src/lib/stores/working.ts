@@ -1,5 +1,5 @@
-import type { SubmitFunction } from "@sveltejs/kit";
-import { writable } from "svelte/store";
+import type { SubmitFunction } from '@sveltejs/kit';
+import { writable } from 'svelte/store';
 
 export function workingStore() {
   const jobs = writable<string[]>([]);
@@ -18,7 +18,7 @@ export function workingStore() {
   return {
     subscribe: jobs.subscribe,
     add,
-    remove
+    remove,
   };
 }
 
@@ -30,7 +30,7 @@ export const workingCallback = (
     onEnd?: () => void;
     reset?: boolean;
     invalidateAll?: boolean;
-  } = {}
+  } = {},
 ) => {
   return (() => {
     const jobId = working.add();
@@ -40,7 +40,7 @@ export const workingCallback = (
       working.remove(jobId);
       update({
         reset: options.reset ?? false,
-        invalidateAll: options.invalidateAll ?? false
+        invalidateAll: options.invalidateAll ?? false,
       });
     };
   }) as SubmitFunction;

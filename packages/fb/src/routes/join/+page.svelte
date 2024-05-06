@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { goto, invalidateAll } from "$app/navigation";
-  import AuthProviders from "$lib/components/AuthProviders.svelte";
-  import { auth, user } from "$lib/firebase";
-  import { type AuthProvider } from "$lib/models/profiles";
-  import { getProviders } from "$lib/utils/client-auth";
-  import { signInWithPopup, signOut } from "firebase/auth";
+  import { goto, invalidateAll } from '$app/navigation';
+  import AuthProviders from '$lib/components/AuthProviders.svelte';
+  import { auth, user } from '$lib/firebase';
+  import { type AuthProvider } from '$lib/models/profiles';
+  import { getProviders } from '$lib/utils/client-auth';
+  import { signInWithPopup, signOut } from 'firebase/auth';
 
   const providers = getProviders();
 
@@ -12,22 +12,22 @@
     const provider = providers[pid];
     const credential = await signInWithPopup(auth, provider);
     const idToken = await credential.user.getIdToken();
-    const res = await fetch("/api/session", {
-      method: "POST",
+    const res = await fetch('/api/session', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ idToken })
+      body: JSON.stringify({ idToken }),
     });
     const body = await res.json();
-    if (body.status === "started") {
+    if (body.status === 'started') {
       await invalidateAll();
-      await goto("/join/voucher");
+      await goto('/join/voucher');
     }
   }
 
   async function endSession() {
-    await fetch("/api/session", { method: "DELETE" });
+    await fetch('/api/session', { method: 'DELETE' });
     await signOut(auth);
     await invalidateAll();
   }

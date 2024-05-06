@@ -1,15 +1,15 @@
 <script lang="ts">
-  import AppBar from "$lib/components/AppBar.svelte";
-  import AuthCheck from "$lib/components/AuthCheck.svelte";
-  import { working } from "$lib/stores/working";
-  import { derived, type Readable } from "svelte/store";
-  import type { PageData } from "./$types";
-  import { useOrganization } from "$lib/stores/organization";
-  import DemarchyFooter from "$lib/components/DemarchyFooter.svelte";
-  import { profile } from "$lib/firebase";
-  import { navigating } from "$app/stores";
-  import HeroCanvas from "../HeroCanvas.svelte";
-  import { fly } from "svelte/transition";
+  import AppBar from '$lib/components/AppBar.svelte';
+  import AuthCheck from '$lib/components/AuthCheck.svelte';
+  import { working } from '$lib/stores/working';
+  import { derived, type Readable } from 'svelte/store';
+  import type { PageData } from './$types';
+  import { useOrganization } from '$lib/stores/organization';
+  import DemarchyFooter from '$lib/components/DemarchyFooter.svelte';
+  import { profile } from '$lib/firebase';
+  import { navigating } from '$app/stores';
+  import HeroCanvas from '../HeroCanvas.svelte';
+  import { fly } from 'svelte/transition';
 
   export let data: PageData;
 

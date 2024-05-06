@@ -1,5 +1,5 @@
 <script>
-  import DemarchyLogo from "./DemarchyLogo.svelte";
+  import DemarchyLogo from './DemarchyLogo.svelte';
   const version = __VERSION__;
 </script>
 

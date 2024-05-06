@@ -1,4 +1,4 @@
-import type { WriteBatch } from "firebase-admin/firestore";
+import type { WriteBatch } from 'firebase-admin/firestore';
 import {
   adminDB,
   adminGroupRef,
@@ -8,18 +8,18 @@ import {
   adminProfileRef,
   adminSlugRef,
   createdTimestamps,
-  updatedTimestamps
-} from "./admin";
-import type { GroupProps } from "$lib/models/groups";
-import type { MembershipProps } from "$lib/models/memberships";
-import type { MemberProps } from "$lib/models/members";
-import type { ProposalSettingsProps } from "$lib/models/settings";
-import { makeDocument } from "$lib/models/utils";
-import type { Profile } from "$lib/models/profiles";
-import type { VoucherProps } from "$lib/models/vouchers";
-import type { OrganizationProps } from "$lib/models/organizations";
-import { SLUGS } from "$lib/models/firestore";
-import type { LibraryProps } from "$lib/models/libraries";
+  updatedTimestamps,
+} from './admin';
+import type { GroupProps } from '$lib/models/groups';
+import type { MembershipProps } from '$lib/models/memberships';
+import type { MemberProps } from '$lib/models/members';
+import type { ProposalSettingsProps } from '$lib/models/settings';
+import { makeDocument } from '$lib/models/utils';
+import type { Profile } from '$lib/models/profiles';
+import type { VoucherProps } from '$lib/models/vouchers';
+import type { OrganizationProps } from '$lib/models/organizations';
+import { SLUGS } from '$lib/models/firestore';
+import type { LibraryProps } from '$lib/models/libraries';
 
 interface CreateOrganizationParams {
   // Who is creating the org?
@@ -41,11 +41,11 @@ export async function createOrganization(params: CreateOrganizationParams) {
 
   // Update the vouchers document so it can't be used again
   const voucherProps: Partial<VoucherProps> = {
-    redeemed: true
+    redeemed: true,
   };
   batch.update(adminDB.doc(`vouchers/${voucher_id}`), {
     ...updatedTimestamps(),
-    ...voucherProps
+    ...voucherProps,
   });
 
   // Create the slug document for this organization
@@ -56,11 +56,11 @@ export async function createOrganization(params: CreateOrganizationParams) {
     name,
     slug,
     user_id,
-    profile_handle
+    profile_handle,
   };
   batch.set(orgRef, {
     ...createdTimestamps(),
-    ...organizationProps
+    ...organizationProps,
   });
 
   // Create the organization group and memberships
@@ -71,16 +71,16 @@ export async function createOrganization(params: CreateOrganizationParams) {
       profile_name,
       organization_id: orgRef.id,
       // Manually set organization group reserved names
-      name: "Organization",
-      slug: "org",
+      name: 'Organization',
+      slug: 'org',
       description: `Main group for ${name}`,
-      creatingOrgGroup: true
+      creatingOrgGroup: true,
     },
-    batch
+    batch,
   );
   return {
     organization_id: orgRef.id,
-    group_id
+    group_id,
   };
 }
 
@@ -108,7 +108,7 @@ export async function createGroup(params: CreateGroupParams, batch?: WriteBatch)
     name,
     slug,
     description,
-    creatingOrgGroup = false
+    creatingOrgGroup = false,
   } = params;
   if (!batch) {
     batch = adminDB.batch();
@@ -123,7 +123,7 @@ export async function createGroup(params: CreateGroupParams, batch?: WriteBatch)
 
   const membershipRef = adminMembershipRef(organization_id).doc(user_id);
   const memberRef = adminMemberRef(organization_id, groupRef.id).doc(user_id);
-  const proposalSettingsRef = groupRef.collection("settings").doc("proposals");
+  const proposalSettingsRef = groupRef.collection('settings').doc('proposals');
   const slugRef = adminOrganizationRef().doc(organization_id).collection(SLUGS).doc(slug);
 
   // Create the slug document for this group
@@ -137,62 +137,62 @@ export async function createGroup(params: CreateGroupParams, batch?: WriteBatch)
     organization_id,
     user_id,
     profile_handle,
-    member_count: 1
+    member_count: 1,
   };
   batch.create(groupRef, {
     ...createdTimestamps(),
-    ...groupProps
+    ...groupProps,
   });
 
   const proposalSettingsProps: ProposalSettingsProps = {
     acceptance_threshold_ratio: 0.9,
-    block_threshold_ratio: 0.02
+    block_threshold_ratio: 0.02,
   };
   batch.create(proposalSettingsRef, {
     ...createdTimestamps(),
-    ...proposalSettingsProps
+    ...proposalSettingsProps,
   });
 
   const membershipProps: MembershipProps = {
     user_id,
     organization_id,
     roles: {
-      [groupRef.id]: "mem"
+      [groupRef.id]: 'mem',
     },
-    standing: "ok"
+    standing: 'ok',
   };
   batch.set(
     membershipRef,
     {
       ...(creatingOrgGroup ? createdTimestamps() : updatedTimestamps()),
-      ...membershipProps
+      ...membershipProps,
     },
     {
-      merge: true
-    }
+      merge: true,
+    },
   );
 
   const memberProps: MemberProps = {
     user_id,
     group_id: groupRef.id,
     organization_id,
-    role: "mem",
+    role: 'mem',
     name: profile_name,
-    handle: profile_handle
+    handle: profile_handle,
   };
   batch.set(
     memberRef,
     {
       ...createdTimestamps(),
-      ...memberProps
+      ...memberProps,
     },
     {
-      merge: true
-    }
+      merge: true,
+    },
   );
 
   // bootstrap libraries
-  const libraryRef = groupRef.collection("libraries").doc();
+  const libraryRef = groupRef.collection('libraries').doc();
   const libraryProps: LibraryProps = {
     uid: libraryRef.id,
     organization_id,
@@ -200,19 +200,19 @@ export async function createGroup(params: CreateGroupParams, batch?: WriteBatch)
     extends_library_id: null,
     assets: {},
     docs: {},
-    latest: true
+    latest: true,
   };
   batch.set(libraryRef, {
     ...createdTimestamps(),
-    ...libraryProps
+    ...libraryProps,
   });
-  batch.set(groupRef.collection("libraries").doc("latest"), {
+  batch.set(groupRef.collection('libraries').doc('latest'), {
     ...createdTimestamps(),
-    ...libraryProps
+    ...libraryProps,
   });
   await batch.commit();
 
   return {
-    group_id: groupRef.id
+    group_id: groupRef.id,
   };
 }

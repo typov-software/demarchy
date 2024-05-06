@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { db, user } from "$lib/firebase";
-  import type { Notification } from "$lib/models/notifications";
-  import { deleteDoc, doc, increment, serverTimestamp, writeBatch } from "firebase/firestore";
-  import { createEventDispatcher } from "svelte";
+  import { db, user } from '$lib/firebase';
+  import type { Notification } from '$lib/models/notifications';
+  import { deleteDoc, doc, increment, serverTimestamp, writeBatch } from 'firebase/firestore';
+  import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -23,11 +23,11 @@
       batch.update(inboxRef, {
         updated_at: serverTimestamp(),
         [notification.category]: increment(-1),
-        unread: increment(-1)
+        unread: increment(-1),
       });
       batch.update(notificationRef, {
         updated_at: serverTimestamp(),
-        seen: 1
+        seen: 1,
       });
       await batch.commit();
       notification = { ...notification, seen: 1 };
@@ -44,7 +44,7 @@
     try {
       const notificationRef = doc(db, notification.path);
       await deleteDoc(notificationRef);
-      dispatch("deleted", notification);
+      dispatch('deleted', notification);
     } catch (e) {
       console.error(e);
     } finally {
@@ -66,7 +66,7 @@
     <div class="loading loading-xs loading-spinner" />
   {:else}
     <span class="material-symbols-outlined text-base">
-      {notification.seen ? "visibility" : "visibility_off"}
+      {notification.seen ? 'visibility' : 'visibility_off'}
     </span>
   {/if}
 </button>

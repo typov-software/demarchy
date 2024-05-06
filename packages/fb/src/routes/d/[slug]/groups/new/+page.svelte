@@ -1,17 +1,17 @@
 <script lang="ts">
-  import BasicSection from "$lib/components/BasicSection.svelte";
-  import { checkValidSlug, slugify } from "$lib/utils/string";
-  import { doc, getDoc } from "firebase/firestore";
-  import type { PageData } from "./$types";
-  import { db } from "$lib/firebase";
-  import { enhance } from "$app/forms";
-  import { workingCallback } from "$lib/stores/working";
+  import BasicSection from '$lib/components/BasicSection.svelte';
+  import { checkValidSlug, slugify } from '$lib/utils/string';
+  import { doc, getDoc } from 'firebase/firestore';
+  import type { PageData } from './$types';
+  import { db } from '$lib/firebase';
+  import { enhance } from '$app/forms';
+  import { workingCallback } from '$lib/stores/working';
 
   export let data: PageData;
 
-  let slug = "";
-  let name = "";
-  let description = "";
+  let slug = '';
+  let name = '';
+  let description = '';
 
   let loading = false;
   let isAvailable = false;

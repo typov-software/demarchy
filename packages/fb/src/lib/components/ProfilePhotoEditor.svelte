@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { invalidateAll } from "$app/navigation";
-  import { db, storage } from "$lib/firebase";
-  import { getCroppedImg, type Crop } from "$lib/utils/canvas";
-  import { doc, setDoc } from "firebase/firestore";
-  import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-  import Cropper from "svelte-easy-crop";
-  import type { ChangeEventHandler } from "svelte/elements";
+  import { invalidateAll } from '$app/navigation';
+  import { db, storage } from '$lib/firebase';
+  import { getCroppedImg, type Crop } from '$lib/utils/canvas';
+  import { doc, setDoc } from 'firebase/firestore';
+  import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+  import Cropper from 'svelte-easy-crop';
+  import type { ChangeEventHandler } from 'svelte/elements';
 
   export let profileId: string;
 
@@ -39,7 +39,7 @@
     const storageRef = ref(storage, `profiles/${profileId}/profile.png`);
     const result = await uploadBytes(storageRef, croppedImage!);
     const url = await getDownloadURL(result.ref);
-    await setDoc(doc(db, "profiles", profileId), { photo_url: url }, { merge: true });
+    await setDoc(doc(db, 'profiles', profileId), { photo_url: url }, { merge: true });
     uploading = false;
     croppedImage = null;
     image = null;

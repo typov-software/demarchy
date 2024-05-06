@@ -1,16 +1,16 @@
 <script lang="ts">
-  import ProfileLink from "$lib/components/ProfileLink.svelte";
-  import type { Group } from "$lib/models/groups";
-  import type { Membership } from "$lib/models/memberships";
-  import type { Organization } from "$lib/models/organizations";
-  import { getRoleName } from "$lib/models/roles";
-  import { emptyString, pluralize } from "$lib/utils/string";
-  import { formatRelative } from "date-fns";
+  import ProfileLink from '$lib/components/ProfileLink.svelte';
+  import type { Group } from '$lib/models/groups';
+  import type { Membership } from '$lib/models/memberships';
+  import type { Organization } from '$lib/models/organizations';
+  import { getRoleName } from '$lib/models/roles';
+  import { emptyString, pluralize } from '$lib/utils/string';
+  import { formatRelative } from 'date-fns';
 
   export let group: Group;
   export let organization: Organization;
   export let memberships: Membership[];
-  export let subroute: string = "";
+  export let subroute: string = '';
   export let title: string = `Load ${group.name}`;
 
   function getMembershipRole(groupId: string) {
@@ -19,7 +19,7 @@
   }
 
   let role = getMembershipRole(group.id);
-  let allowed = ["obs", "mem", "mod", "adm"].includes(role);
+  let allowed = ['obs', 'mem', 'mod', 'adm'].includes(role);
   let emptyDescription = emptyString(group.description);
   $: role, allowed;
 </script>
@@ -40,16 +40,16 @@
       </span>
       <span
         class="badge font-normal"
-        class:badge-success={role === "mem"}
-        class:badge-info={role === "obs" || role === undefined}
-        class:badge-warning={role === "mod"}
-        class:badge-accent={role === "adm"}
+        class:badge-success={role === 'mem'}
+        class:badge-info={role === 'obs' || role === undefined}
+        class:badge-warning={role === 'mod'}
+        class:badge-accent={role === 'adm'}
       >
-        {role ? getRoleName(role) : "Observer"}
+        {role ? getRoleName(role) : 'Observer'}
       </span>
     </h3>
     <p class="" class:italic={emptyDescription}>
-      {emptyDescription ? "No description" : group.description}
+      {emptyDescription ? 'No description' : group.description}
     </p>
 
     <small class="flex flex-wrap gap-x-2 text-neutral">
@@ -58,7 +58,7 @@
       {formatRelative(group.created_at, new Date())}
       <span class="flex-1" />
       <span class="text-base-content"
-        >{group.member_count} {pluralize("member", group.member_count)}</span
+        >{group.member_count} {pluralize('member', group.member_count)}</span
       >
     </small>
   </div>

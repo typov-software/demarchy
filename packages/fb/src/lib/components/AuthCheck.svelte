@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { user } from "$lib/firebase";
-  import BasicSection from "./BasicSection.svelte";
-  import DemarchyLogo from "./DemarchyLogo.svelte";
+  import { user } from '$lib/firebase';
+  import BasicSection from './BasicSection.svelte';
+  import DemarchyLogo from './DemarchyLogo.svelte';
 
   export let inline = false;
-  export let back = "/login";
+  export let back = '/login';
   export let condition = true;
 </script>
 
 {#if $user && condition}
   <slot />
 {:else}
-  <BasicSection otherClass={`h-full hero justify-center ${inline ? "" : "min-h-screen"}`}>
+  <BasicSection otherClass={`h-full hero justify-center ${inline ? '' : 'min-h-screen'}`}>
     <div class="hero-content flex-col p-8">
       {#if !inline}
         <DemarchyLogo />

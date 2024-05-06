@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Notification, UninviteNotificationData } from "$lib/models/notifications";
+  import type { Notification, UninviteNotificationData } from '$lib/models/notifications';
 
   export let notification: Notification<UninviteNotificationData>;
 

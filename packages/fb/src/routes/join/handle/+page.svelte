@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
-  import AuthCheck from "$lib/components/AuthCheck.svelte";
-  import HandleEditor from "$lib/components/HandleEditor.svelte";
-  import { joinVoucher } from "$lib/firebase";
-  import { workingCallback } from "$lib/stores/working";
-  import type { PageData } from "./$types";
+  import { enhance } from '$app/forms';
+  import AuthCheck from '$lib/components/AuthCheck.svelte';
+  import HandleEditor from '$lib/components/HandleEditor.svelte';
+  import { joinVoucher } from '$lib/firebase';
+  import { workingCallback } from '$lib/stores/working';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 </script>
@@ -19,11 +19,11 @@
     action="?/updateHandle"
     use:enhance={workingCallback({
       reset: false,
-      invalidateAll: true
+      invalidateAll: true,
     })}
     class="w-full"
   >
-    <HandleEditor currentHandle={data.profile?.handle ?? ""} />
+    <HandleEditor currentHandle={data.profile?.handle ?? ''} />
   </form>
   <p class="w-full max-w-xs text-right pt-4 text-neutral text-sm self-end">
     You can change your handle later, so don't sweat it

@@ -1,21 +1,21 @@
-import type { MembershipProps } from "$lib/models/memberships";
-import type { RoleAccess } from "$lib/models/roles";
-import { error } from "@sveltejs/kit";
-import { adminDB, adminMembershipRef } from "./admin";
+import type { MembershipProps } from '$lib/models/memberships';
+import type { RoleAccess } from '$lib/models/roles';
+import { error } from '@sveltejs/kit';
+import { adminDB, adminMembershipRef } from './admin';
 
 export interface MembershipInfo {
-  standing: MembershipProps["standing"];
-  roles: MembershipProps["roles"];
+  standing: MembershipProps['standing'];
+  roles: MembershipProps['roles'];
 }
 
 export async function getMembershipInfo(
   organization_id: string,
-  user_id: string
+  user_id: string,
 ): Promise<MembershipInfo> {
   const doc = await adminMembershipRef(organization_id).doc(user_id).get();
   return {
-    standing: doc.data()?.standing ?? "pause",
-    roles: doc.data()?.roles ?? {}
+    standing: doc.data()?.standing ?? 'pause',
+    roles: doc.data()?.roles ?? {},
   };
 }
 
@@ -27,7 +27,7 @@ export async function getMembershipInfo(
  * @returns Whether the user has proper access
  */
 export function verifyRoles(group_id: string, levels: RoleAccess[], info: MembershipInfo) {
-  return info.standing === "ok" && levels.includes(info.roles[group_id]);
+  return info.standing === 'ok' && levels.includes(info.roles[group_id]);
 }
 
 /**
@@ -39,7 +39,7 @@ export function verifyRoles(group_id: string, levels: RoleAccess[], info: Member
  */
 export async function canReadOrg(organization_id: string, user_id: string, info?: MembershipInfo) {
   info = info ? info : await getMembershipInfo(organization_id, user_id);
-  return verifyRoles(organization_id, ["obs", "mem", "mod", "adm"], info);
+  return verifyRoles(organization_id, ['obs', 'mem', 'mod', 'adm'], info);
 }
 
 /**
@@ -52,10 +52,10 @@ export async function canReadOrg(organization_id: string, user_id: string, info?
 export async function isOrgMemberOrHigher(
   organization_id: string,
   user_id: string,
-  info?: MembershipInfo
+  info?: MembershipInfo,
 ) {
   info = info ? info : await getMembershipInfo(organization_id, user_id);
-  return verifyRoles(organization_id, ["mem", "mod", "adm"], info);
+  return verifyRoles(organization_id, ['mem', 'mod', 'adm'], info);
 }
 
 /**
@@ -70,11 +70,11 @@ export async function isGroupObserverOrHigher(
   organization_id: string,
   group_id: string,
   user_id: string,
-  info?: MembershipInfo
+  info?: MembershipInfo,
 ) {
   info = info ? info : await getMembershipInfo(organization_id, user_id);
-  const org = verifyRoles(organization_id, ["obs", "mem", "mod", "adm"], info);
-  const group = verifyRoles(group_id, ["obs", "mem", "mod", "adm"], info);
+  const org = verifyRoles(organization_id, ['obs', 'mem', 'mod', 'adm'], info);
+  const group = verifyRoles(group_id, ['obs', 'mem', 'mod', 'adm'], info);
   return org && group;
 }
 
@@ -90,11 +90,11 @@ export async function isGroupMemberOrHigher(
   organization_id: string,
   group_id: string,
   user_id: string,
-  info?: MembershipInfo
+  info?: MembershipInfo,
 ) {
   info = info ? info : await getMembershipInfo(organization_id, user_id);
-  const org = verifyRoles(organization_id, ["mem", "mod", "adm"], info);
-  const group = verifyRoles(group_id, ["mem", "mod", "adm"], info);
+  const org = verifyRoles(organization_id, ['mem', 'mod', 'adm'], info);
+  const group = verifyRoles(group_id, ['mem', 'mod', 'adm'], info);
   return org && group;
 }
 
@@ -110,11 +110,11 @@ export async function isGroupAdmin(
   organization_id: string,
   group_id: string,
   user_id: string,
-  info?: MembershipInfo
+  info?: MembershipInfo,
 ) {
   info = info ? info : await getMembershipInfo(organization_id, user_id);
-  const org = verifyRoles(organization_id, ["mem", "mod", "adm"], info);
-  const group = verifyRoles(group_id, ["adm"], info);
+  const org = verifyRoles(organization_id, ['mem', 'mod', 'adm'], info);
+  const group = verifyRoles(group_id, ['adm'], info);
   return org && group;
 }
 
@@ -127,17 +127,17 @@ export async function isGroupAdmin(
 export async function verifyDocument(path: string, userId?: string) {
   if (!path) {
     // ensure form has not been tampered with
-    error(403, "unauthorized");
+    error(403, 'unauthorized');
   }
   const doc = await adminDB.doc(path).get();
   if (!doc.exists) {
     // proposal must exist, sanity check
-    error(403, "unauthorized");
+    error(403, 'unauthorized');
   }
   if (userId) {
     const data = doc.data() ?? {};
     if (!data.user_id || data.user_id !== userId) {
-      error(403, "unauthorized");
+      error(403, 'unauthorized');
     }
   }
   return doc;

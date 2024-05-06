@@ -8,19 +8,19 @@ import {
   adminNotificationRef,
   adminOrganizationRef,
   adminProfileRef,
-  createdTimestamps
-} from "$lib/server/admin";
-import { FieldValue } from "firebase-admin/firestore";
-import type { PageServerLoad } from "./$types";
-import { error, type Actions, redirect } from "@sveltejs/kit";
-import type { Invitation } from "$lib/models/invitations";
-import type { MembershipProps } from "$lib/models/memberships";
-import type { MemberProps } from "$lib/models/members";
-import type { Profile } from "$lib/models/profiles";
-import { makeDocument } from "$lib/models/utils";
-import { type Group } from "$lib/models/groups";
-import { type Organization } from "$lib/models/organizations";
-import { isGroupMemberOrHigher } from "$lib/server/access";
+  createdTimestamps,
+} from '$lib/server/admin';
+import { FieldValue } from 'firebase-admin/firestore';
+import type { PageServerLoad } from './$types';
+import { error, type Actions, redirect } from '@sveltejs/kit';
+import type { Invitation } from '$lib/models/invitations';
+import type { MembershipProps } from '$lib/models/memberships';
+import type { MemberProps } from '$lib/models/members';
+import type { Profile } from '$lib/models/profiles';
+import { makeDocument } from '$lib/models/utils';
+import { type Group } from '$lib/models/groups';
+import { type Organization } from '$lib/models/organizations';
+import { isGroupMemberOrHigher } from '$lib/server/access';
 
 export const load = (async () => {
   return {};
@@ -30,9 +30,9 @@ export const actions = {
   rejectInvitation: async ({ request, locals }) => {
     const user_id = locals.user_id!;
     const formData = await request.formData();
-    const invitation_id = formData.get("invitation_id") as string;
-    const organization_id = formData.get("organization_id") as string;
-    const notification_id = formData.get("notification_id") as string;
+    const invitation_id = formData.get('invitation_id') as string;
+    const organization_id = formData.get('organization_id') as string;
+    const notification_id = formData.get('notification_id') as string;
 
     const inboxRef = adminInboxRef().doc(user_id);
     const notificationRef = adminNotificationRef(user_id).doc(notification_id);
@@ -46,7 +46,7 @@ export const actions = {
     }
     batch.update(inboxRef, {
       invitations: FieldValue.increment(-1),
-      unread: FieldValue.increment(-1)
+      unread: FieldValue.increment(-1),
     });
     batch.delete(notificationRef);
     await batch.commit();
@@ -54,15 +54,15 @@ export const actions = {
   acceptInvitation: async ({ request, locals }) => {
     const user_id = locals.user_id!;
     const formData = await request.formData();
-    const invitation_id = formData.get("invitation_id") as string;
-    const organization_id = formData.get("organization_id") as string;
-    const group_id = formData.get("group_id") as string;
-    const notification_id = formData.get("notification_id") as string;
+    const invitation_id = formData.get('invitation_id') as string;
+    const organization_id = formData.get('organization_id') as string;
+    const group_id = formData.get('group_id') as string;
+    const notification_id = formData.get('notification_id') as string;
 
     const invitationDoc = await adminInvitationRef(organization_id).doc(invitation_id).get();
     const profileDoc = await adminProfileRef().doc(user_id).get();
     if (!invitationDoc.exists || !profileDoc.exists) {
-      error(401, "unauthorized");
+      error(401, 'unauthorized');
     }
 
     const isAlreadyMember = await isGroupMemberOrHigher(organization_id, group_id, user_id);
@@ -73,7 +73,7 @@ export const actions = {
     const notificationRef = adminNotificationRef(user_id).doc(notification_id);
 
     if (!orgDoc.exists || !groupDoc.exists) {
-      error(401, "unauthorized");
+      error(401, 'unauthorized');
     }
 
     const group = makeDocument<Group>(groupDoc);
@@ -88,20 +88,20 @@ export const actions = {
       const membershipProps: MembershipProps = {
         organization_id,
         user_id: profile.id,
-        standing: "ok",
+        standing: 'ok',
         roles: {
-          [invitation.group_id]: invitation.role
-        }
+          [invitation.group_id]: invitation.role,
+        },
       };
       batch.set(
         adminMembershipRef(organization_id).doc(invitation.invited_user_id),
         {
           ...createdTimestamps(),
-          ...membershipProps
+          ...membershipProps,
         },
         {
-          merge: true
-        }
+          merge: true,
+        },
       );
       const memberProps: MemberProps = {
         user_id: profile.id,
@@ -109,26 +109,26 @@ export const actions = {
         handle: profile.handle,
         role: invitation.role,
         group_id: invitation.group_id,
-        organization_id: invitation.organization_id
+        organization_id: invitation.organization_id,
       };
       batch.set(
         adminMemberRef(organization_id, invitation.group_id).doc(invitation.invited_user_id),
         {
           ...createdTimestamps(),
-          ...memberProps
+          ...memberProps,
         },
-        { merge: true }
+        { merge: true },
       );
       batch.update(groupRef, { member_count: FieldValue.increment(1) });
     }
     batch.update(inboxRef, {
       invitations: FieldValue.increment(-1),
-      unread: FieldValue.increment(-1)
+      unread: FieldValue.increment(-1),
     });
     batch.delete(notificationRef);
     batch.delete(invitationDoc.ref);
     await batch.commit();
 
     redirect(301, redirectTo);
-  }
+  },
 } satisfies Actions;

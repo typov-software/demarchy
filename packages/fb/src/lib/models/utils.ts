@@ -27,6 +27,6 @@ export function makeDocument<T extends DocumentMeta>(d: {
     path: d.ref.path,
     created_at,
     updated_at,
-    archived_at
+    archived_at,
   } as T;
 }

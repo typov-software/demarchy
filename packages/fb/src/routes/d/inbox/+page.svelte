@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { page } from "$app/stores";
-  import BasicSection from "$lib/components/BasicSection.svelte";
-  import { inbox } from "$lib/firebase";
-  import { type InboxCategory } from "$lib/models/inboxes";
-  import NotificationFeed from "./NotificationFeed.svelte";
+  import { page } from '$app/stores';
+  import BasicSection from '$lib/components/BasicSection.svelte';
+  import { inbox } from '$lib/firebase';
+  import { type InboxCategory } from '$lib/models/inboxes';
+  import NotificationFeed from './NotificationFeed.svelte';
 
   let activeCategory: null | InboxCategory;
-  $: activeCategory = ($page.url.searchParams.get("category") as InboxCategory) ?? null;
+  $: activeCategory = ($page.url.searchParams.get('category') as InboxCategory) ?? null;
 </script>
 
 <BasicSection otherClass="w-full items-stretch">
@@ -26,7 +26,7 @@
           </li>
           <li />
           <li>
-            <a href={`?category=applications`} class:active={activeCategory === "applications"}>
+            <a href={`?category=applications`} class:active={activeCategory === 'applications'}>
               Applications
               {#if $inbox?.applications > 0}
                 <span class="badge badge-sm">{$inbox.applications}</span>
@@ -34,7 +34,7 @@
             </a>
           </li>
           <li>
-            <a href={`?category=invitations`} class:active={activeCategory === "invitations"}>
+            <a href={`?category=invitations`} class:active={activeCategory === 'invitations'}>
               Invitations
               {#if $inbox?.invitations > 0}
                 <span class="badge badge-sm">{$inbox.invitations}</span>
@@ -42,7 +42,7 @@
             </a>
           </li>
           <li>
-            <a href={`?category=uncategorized`} class:active={activeCategory === "uncategorized"}>
+            <a href={`?category=uncategorized`} class:active={activeCategory === 'uncategorized'}>
               Uncategorized
               {#if $inbox?.uncategorized > 0}
                 <span class="badge badge-sm">{$inbox.uncategorized}</span>
@@ -50,7 +50,7 @@
             </a>
           </li>
           <li>
-            <a href={`?category=vouchers`} class:active={activeCategory === "vouchers"}>
+            <a href={`?category=vouchers`} class:active={activeCategory === 'vouchers'}>
               Vouchers
               {#if $inbox?.vouchers > 0}
                 <span class="badge badge-sm">{$inbox.vouchers}</span>

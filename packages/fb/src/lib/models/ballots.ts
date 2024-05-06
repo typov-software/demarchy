@@ -1,5 +1,5 @@
-import type { DocumentMeta } from "./utils";
-import type { VoteContext } from "./votes";
+import type { DocumentMeta } from './utils';
+import type { VoteContext } from './votes';
 
 export interface BallotProps {
   organization_id: string;
@@ -7,7 +7,7 @@ export interface BallotProps {
   context: VoteContext;
   context_id: string;
   description: null | string;
-  state: "open" | "closed";
+  state: 'open' | 'closed';
 }
 
 export type Ballot = BallotProps & DocumentMeta;

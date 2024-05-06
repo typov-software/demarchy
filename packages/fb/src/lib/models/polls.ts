@@ -1,4 +1,4 @@
-import type { DocumentMeta } from "./utils";
+import type { DocumentMeta } from './utils';
 
 export interface PollProps {}
 

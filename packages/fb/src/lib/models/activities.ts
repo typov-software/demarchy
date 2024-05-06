@@ -1,6 +1,6 @@
-import type { DocumentMeta } from "./utils";
+import type { DocumentMeta } from './utils';
 
-export type ActivityType = "proposal/opened" | "proposal/adopted" | "proposal/rejected";
+export type ActivityType = 'proposal/opened' | 'proposal/adopted' | 'proposal/rejected';
 
 export interface ActivityProps {
   organization_id: string;

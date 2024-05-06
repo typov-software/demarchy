@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
-  import { beforeNavigate, goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import ProfileLink from "$lib/components/ProfileLink.svelte";
-  import { db, profile, user } from "$lib/firebase";
-  import type { Group } from "$lib/models/groups";
-  import type { Member } from "$lib/models/members";
-  import type { Organization } from "$lib/models/organizations";
-  import type { Profile } from "$lib/models/profiles";
-  import { makeDocument } from "$lib/models/utils";
-  import { workingCallback } from "$lib/stores/working";
-  import { emptyString } from "$lib/utils/string";
-  import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+  import { enhance } from '$app/forms';
+  import { beforeNavigate, goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import ProfileLink from '$lib/components/ProfileLink.svelte';
+  import { db, profile, user } from '$lib/firebase';
+  import type { Group } from '$lib/models/groups';
+  import type { Member } from '$lib/models/members';
+  import type { Organization } from '$lib/models/organizations';
+  import type { Profile } from '$lib/models/profiles';
+  import { makeDocument } from '$lib/models/utils';
+  import { workingCallback } from '$lib/stores/working';
+  import { emptyString } from '$lib/utils/string';
+  import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 
   export let open: boolean;
   export let organization: Organization;
@@ -35,7 +35,7 @@
   let invitees: Profile[] = [];
   $: invitees;
 
-  let search: string = "";
+  let search: string = '';
   $: search;
 
   function handleClose() {
@@ -56,10 +56,10 @@
       if (!isOrgGroup) {
         const groupMembersQuery = query(
           collection(db, `organizations/${organization.id}/groups/${group.id}/members`),
-          orderBy("handle", "asc"),
-          where("handle", ">=", search),
-          where("handle", "<=", `${search}~`),
-          limit(5)
+          orderBy('handle', 'asc'),
+          where('handle', '>=', search),
+          where('handle', '<=', `${search}~`),
+          limit(5),
         );
         const snapshotGroupMembers = await getDocs(groupMembersQuery);
         groupMembers = snapshotGroupMembers.docs.length
@@ -68,17 +68,17 @@
       }
       const orgMembersQuery = query(
         collection(db, `organizations/${organization.id}/groups/${organization.id}/members`),
-        orderBy("handle", "asc"),
-        where("handle", ">=", search),
-        where("handle", "<=", `${search}~`),
-        limit(5)
+        orderBy('handle', 'asc'),
+        where('handle', '>=', search),
+        where('handle', '<=', `${search}~`),
+        limit(5),
       );
       const profilesQuery = query(
-        collection(db, "profiles"),
-        orderBy("handle", "asc"),
-        where("handle", ">=", search),
-        where("handle", "<=", `${search}~`),
-        limit(5)
+        collection(db, 'profiles'),
+        orderBy('handle', 'asc'),
+        where('handle', '>=', search),
+        where('handle', '<=', `${search}~`),
+        limit(5),
       );
       const snapshotOrgMembers = await getDocs(orgMembersQuery);
       const snapshotProfiles = await getDocs(profilesQuery);
@@ -92,7 +92,7 @@
       results = profiles.map((profile) => ({
         profile,
         orgMember: orgMembers.find((m) => m.id === profile.id) ?? null,
-        groupMember: groupMembers.find((m) => m.id === profile.id) ?? null
+        groupMember: groupMembers.find((m) => m.id === profile.id) ?? null,
       }));
 
       searching = false;
@@ -116,7 +116,7 @@
   }
 
   beforeNavigate(() => {
-    search = "";
+    search = '';
     profiles = [];
     orgMembers = [];
     groupMembers = [];
@@ -150,7 +150,7 @@
         action="?/sendInvitations"
         use:enhance={workingCallback({
           reset: true,
-          invalidateAll: true
+          invalidateAll: true,
         })}
       >
         <input type="hidden" name="organization_id" value={organization.id} />
@@ -172,7 +172,7 @@
                   />
                   <input type="hidden" name={`invitee-${invitee.handle}[id]`} value={invitee.id} />
                   <img
-                    src={invitee.photo_url ?? "/user.png"}
+                    src={invitee.photo_url ?? '/user.png'}
                     class="avatar rounded-full w-10 bg-success"
                     alt={invitee.name}
                   />
@@ -214,7 +214,7 @@
         name="search"
         autocomplete="off"
         spellcheck="false"
-        placeholder={isOrgGroup ? "Search profiles" : "Search members"}
+        placeholder={isOrgGroup ? 'Search profiles' : 'Search members'}
         class="input input-bordered w-full pl-12"
         bind:value={search}
         on:input={updateResults}
@@ -244,7 +244,7 @@
               }}
             >
               <img
-                src={result.profile.photo_url ?? "/user.png"}
+                src={result.profile.photo_url ?? '/user.png'}
                 class="avatar rounded-full w-10 bg-success"
                 alt={result.profile.name}
               />

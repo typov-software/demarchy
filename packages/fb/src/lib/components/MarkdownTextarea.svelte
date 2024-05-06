@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { autosize } from "$lib/stores/use-autosize";
-  import SvelteMarkdown from "svelte-markdown";
-  import HtmlRenderer from "./HtmlRenderer.svelte";
-  import { afterUpdate, createEventDispatcher, onMount } from "svelte";
+  import { autosize } from '$lib/stores/use-autosize';
+  import SvelteMarkdown from 'svelte-markdown';
+  import HtmlRenderer from './HtmlRenderer.svelte';
+  import { afterUpdate, createEventDispatcher, onMount } from 'svelte';
 
   export let value: string;
   export let name: string;
 
-  export let placeholder = "placeholder";
+  export let placeholder = 'placeholder';
   export let editable = true;
   export let requestFocus = false;
 
@@ -29,44 +29,44 @@
 
   async function handleBlur() {
     focused = false;
-    dispatch("blur");
+    dispatch('blur');
   }
 
   function handleFocus() {
     focused = true;
-    dispatch("focus");
+    dispatch('focus');
   }
 
   function handleKeydown(e: KeyboardEvent) {
     switch (e.key) {
-      case "Enter": {
+      case 'Enter': {
         if (!e.shiftKey) {
           e.preventDefault();
-          dispatch("enter");
+          dispatch('enter');
           element.blur();
         }
         break;
       }
-      case "Escape": {
+      case 'Escape': {
         e.preventDefault();
-        dispatch("escape");
+        dispatch('escape');
         element.blur();
         break;
       }
-      case "Backspace": {
+      case 'Backspace': {
         // don't trim as we might be deleting spaces
-        if ((e.target as HTMLTextAreaElement).value === "") {
+        if ((e.target as HTMLTextAreaElement).value === '') {
           e.preventDefault();
-          dispatch("backspace");
+          dispatch('backspace');
         }
         break;
       }
-      case "ArrowUp": {
-        dispatch("up");
+      case 'ArrowUp': {
+        dispatch('up');
         break;
       }
-      case "ArrowDown": {
-        dispatch("down");
+      case 'ArrowDown': {
+        dispatch('down');
         break;
       }
       default:
@@ -106,7 +106,7 @@
         source={value.trim().length ? value : placeholder}
         options={{ breaks: true }}
         renderers={{
-          html: HtmlRenderer
+          html: HtmlRenderer,
         }}
       />
     </button>

@@ -1,10 +1,10 @@
 <script lang="ts">
-  import "../app.scss";
-  import { invalidate } from "$app/navigation";
-  import { onMount } from "svelte";
-  import { applyStoredTheme } from "$lib/stores/themes";
+  import '../app.scss';
+  import { invalidate } from '$app/navigation';
+  import { onMount } from 'svelte';
+  import { applyStoredTheme } from '$lib/stores/themes';
 
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     applyStoredTheme();
   }
 
@@ -16,7 +16,7 @@
   onMount(() => {
     const { data } = supabase.auth.onAuthStateChange((event, _session) => {
       if (_session?.expires_at !== session?.expires_at) {
-        invalidate("supabase:auth");
+        invalidate('supabase:auth');
       }
     });
 

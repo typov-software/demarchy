@@ -1,5 +1,5 @@
 <script lang="ts">
-  import BasicSection from "$lib/components/BasicSection.svelte";
+  import BasicSection from '$lib/components/BasicSection.svelte';
 </script>
 
 <BasicSection otherClass="w-full items-stretch">

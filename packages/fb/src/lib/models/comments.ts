@@ -1,7 +1,7 @@
-import type { Block } from "./blocks";
-import type { DocumentMeta } from "./utils";
+import type { Block } from './blocks';
+import type { DocumentMeta } from './utils';
 
-export type CommentContext = "feedback" | "proposals" | "polls" | "discussions";
+export type CommentContext = 'feedback' | 'proposals' | 'polls' | 'discussions';
 
 // https://fireship.io/courses/firestore-data-modeling/models-tree/
 export interface CommentProps {

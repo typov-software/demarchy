@@ -1,1 +1,1 @@
-export * from "./generated/supabase";
+export * from './generated/supabase';

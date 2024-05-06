@@ -1,4 +1,4 @@
-import _autosize from "autosize";
+import _autosize from 'autosize';
 
 /**
  * Applies the textarea "autosize" plugin to a given node
@@ -13,6 +13,6 @@ export function autosize(node: HTMLTextAreaElement) {
     },
     destroy() {
       _autosize.destroy(node);
-    }
+    },
   };
 }

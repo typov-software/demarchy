@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { user } from "$lib/firebase";
+  import { user } from '$lib/firebase';
 </script>
 
 <div class="hero min-h-screen">

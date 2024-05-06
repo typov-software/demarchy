@@ -1,7 +1,7 @@
 <!-- src/routes/account/Avatar.svelte -->
 <script lang="ts">
-  import type { SupabaseClient } from "@supabase/supabase-js";
-  import { createEventDispatcher } from "svelte";
+  import type { SupabaseClient } from '@supabase/supabase-js';
+  import { createEventDispatcher } from 'svelte';
 
   export let size = 10;
   export let url: string;
@@ -15,7 +15,7 @@
 
   const downloadImage = async (path: string) => {
     try {
-      const { data, error } = await supabase.storage.from("avatars").download(path);
+      const { data, error } = await supabase.storage.from('avatars').download(path);
 
       if (error) {
         throw error;
@@ -25,7 +25,7 @@
       avatarUrl = url;
     } catch (error) {
       if (error instanceof Error) {
-        console.log("Error downloading image: ", error.message);
+        console.log('Error downloading image: ', error.message);
       }
     }
   };
@@ -35,14 +35,14 @@
       uploading = true;
 
       if (!files || files.length === 0) {
-        throw new Error("You must select an image to upload.");
+        throw new Error('You must select an image to upload.');
       }
 
       const file = files[0];
-      const fileExt = file.name.split(".").pop();
+      const fileExt = file.name.split('.').pop();
       const filePath = `${Math.random()}.${fileExt}`;
 
-      const { error } = await supabase.storage.from("avatars").upload(filePath, file);
+      const { error } = await supabase.storage.from('avatars').upload(filePath, file);
 
       if (error) {
         throw error;
@@ -50,7 +50,7 @@
 
       url = filePath;
       setTimeout(() => {
-        dispatch("upload");
+        dispatch('upload');
       }, 100);
     } catch (error) {
       if (error instanceof Error) {
@@ -68,7 +68,7 @@
   {#if avatarUrl}
     <img
       src={avatarUrl}
-      alt={avatarUrl ? "Avatar" : "No image"}
+      alt={avatarUrl ? 'Avatar' : 'No image'}
       class="avatar image"
       style="height: {size}em; width: {size}em;"
     />
@@ -79,7 +79,7 @@
 
   <div style="width: {size}em;">
     <label class="button primary block" for="single">
-      {uploading ? "Uploading ..." : "Upload"}
+      {uploading ? 'Uploading ...' : 'Upload'}
     </label>
     <input
       style="visibility: hidden; position:absolute;"

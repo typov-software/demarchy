@@ -1,5 +1,5 @@
-import { getContext, hasContext, setContext } from "svelte";
-import { readable, writable } from "svelte/store";
+import { getContext, hasContext, setContext } from 'svelte';
+import { readable, writable } from 'svelte/store';
 
 /**
  * Taken from:
