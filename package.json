@@ -8,11 +8,11 @@
     "packages/types"
   ],
   "scripts": {
-    "clean": "rimraf bun.lockb node_modules packages/*/node_modules packages/app/build packages/app/.svelte-kit",
-    "lint": "eslint .",
+    "clean": "rimraf bun.lockb node_modules packages/*/node_modules packages/community/build packages/community/.svelte-kit",
+    "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
-    "check": "bun check:app",
-    "check:app": "bun --cwd packages/app check",
+    "check": "bun check:community",
+    "check:community": "bun --cwd packages/community check",
     "db:reset": "bunx supabase db reset --local",
     "db:types": "bunx supabase gen types typescript --local > packages/types/generated/supabase.ts",
     "dev:community": "bun --cwd packages/community dev",

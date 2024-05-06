@@ -1,5 +1,4 @@
 import daisyui from 'daisyui';
-import typography from '@tailwindcss/typography';
 import { type Config } from 'tailwindcss';
 
 const sharedThemeOptions = {
@@ -29,7 +28,7 @@ const sharedThemeOptions = {
 /** @type {import('tailwindcss').Config} */
 const config: Config = {
   content: ['./src/**/*.{html,js,svelte,ts}'],
-  plugins: [typography, daisyui],
+  plugins: [daisyui],
   theme: {
     extend: {},
     fontFamily: {
