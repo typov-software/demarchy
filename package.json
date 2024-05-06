@@ -15,6 +15,7 @@
     "check:community": "bun --cwd packages/community check",
     "db:reset": "bunx supabase db reset --local",
     "db:types": "bunx supabase gen types typescript --local > packages/types/generated/supabase.ts",
+    "dev": "bun run-p dev:community",
     "dev:community": "bun --cwd packages/community dev",
     "start": "bun start:supabase",
     "start:supabase": "bunx supabase start",
@@ -29,8 +30,10 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-svelte": "^2.38.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "^3.2.5",
-    "prettier-plugin-svelte": "^3.2.3"
+    "prettier-plugin-svelte": "^3.2.3",
+    "run-p": "^0.0.0"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
