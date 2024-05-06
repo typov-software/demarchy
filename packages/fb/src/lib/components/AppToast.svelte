@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { toast } from "$lib/stores/toast";
-  import SvelteMarkdown from "svelte-markdown";
+  import { toast } from '$lib/stores/toast';
+  import SvelteMarkdown from 'svelte-markdown';
 </script>
 
 <div class="toast toast-bottom z-10 w-full sm:w-auto">
@@ -8,17 +8,17 @@
     <div
       role="alert"
       class="alert"
-      class:alert-info={alert.level === "info"}
-      class:alert-success={alert.level === "success"}
-      class:alert-warning={alert.level === "warning"}
-      class:alert-error={alert.level === "error"}
+      class:alert-info={alert.level === 'info'}
+      class:alert-success={alert.level === 'success'}
+      class:alert-warning={alert.level === 'warning'}
+      class:alert-error={alert.level === 'error'}
     >
-      <span class="material-symbols-outlined" class:text-info={alert.level === "neutral"}>
-        {#if alert.level === "success"}
+      <span class="material-symbols-outlined" class:text-info={alert.level === 'neutral'}>
+        {#if alert.level === 'success'}
           check_circle
-        {:else if alert.level === "warning"}
+        {:else if alert.level === 'warning'}
           warning
-        {:else if alert.level === "error"}
+        {:else if alert.level === 'error'}
           error
         {:else}
           info

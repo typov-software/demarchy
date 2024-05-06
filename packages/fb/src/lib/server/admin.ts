@@ -1,7 +1,7 @@
-import { getAuth } from "firebase-admin/auth";
-import { FieldValue, getFirestore } from "firebase-admin/firestore";
-import { FB_CLIENT_EMAIL, FB_PRIVATE_KEY, FB_PROJECT_ID } from "$env/static/private";
-import pkg from "firebase-admin";
+import { getAuth } from 'firebase-admin/auth';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
+import { FB_CLIENT_EMAIL, FB_PRIVATE_KEY, FB_PROJECT_ID } from '$env/static/private';
+import pkg from 'firebase-admin';
 import {
   HANDLES,
   INBOXES,
@@ -19,21 +19,21 @@ import {
   LIBRARIES,
   DOCS,
   DISCUSSIONS,
-  APPLICATIONS
-} from "$lib/models/firestore";
+  APPLICATIONS,
+} from '$lib/models/firestore';
 
 try {
   pkg.initializeApp({
     credential: pkg.credential.cert({
       projectId: FB_PROJECT_ID,
       clientEmail: FB_CLIENT_EMAIL,
-      privateKey: atob(FB_PRIVATE_KEY)
-    })
+      privateKey: atob(FB_PRIVATE_KEY),
+    }),
   });
 } catch (err: unknown) {
   const error = err as Error;
   if (!/already exists/u.test(error.message)) {
-    console.error("Firebase Admin Error: ", error.stack);
+    console.error('Firebase Admin Error: ', error.stack);
   }
 }
 
@@ -44,7 +44,7 @@ export function createdTimestamps() {
   return {
     created_at: FieldValue.serverTimestamp(),
     updated_at: FieldValue.serverTimestamp(),
-    archived_at: null
+    archived_at: null,
   };
 }
 

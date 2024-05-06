@@ -1,23 +1,23 @@
 <script lang="ts">
-  import _get from "lodash/get";
-  import type { DocSummary, LibraryDirectory, LibraryShelf } from "$lib/models/libraries";
-  import { getComparator, stableSort } from "$lib/utils/sorting";
-  import { page } from "$app/stores";
+  import _get from 'lodash/get';
+  import type { DocSummary, LibraryDirectory, LibraryShelf } from '$lib/models/libraries';
+  import { getComparator, stableSort } from '$lib/utils/sorting';
+  import { page } from '$app/stores';
 
   export let dir: string;
   export let shelf: LibraryShelf;
   let dirs: LibraryDirectory;
   let docs: (DocSummary & { displayName: string })[];
 
-  $: dirs = dir === "" ? { ...shelf.dirs } : _get(shelf.dirs, dir.replaceAll("/", ".")) ?? {};
+  $: dirs = dir === '' ? { ...shelf.dirs } : _get(shelf.dirs, dir.replaceAll('/', '.')) ?? {};
   $: dirnames = Object.keys(dirs).sort();
   $: docs = stableSort(
-    (shelf.rows.get(dir) ?? []).map((d) => ({ ...d, displayName: d.name.split("/").pop()! })),
-    getComparator("asc", "displayName")
+    (shelf.rows.get(dir) ?? []).map((d) => ({ ...d, displayName: d.name.split('/').pop()! })),
+    getComparator('asc', 'displayName'),
   );
 </script>
 
-{#if dir === ""}
+{#if dir === ''}
   <ul class="menu menu-sm w-full sm:w-auto sm:min-w-56 bg-base-200 rounded-box">
     {#each dirnames as dirname (dirname)}
       <li>
@@ -29,7 +29,7 @@
       <li>
         <a
           href={`?library=${shelf.library_id}&doc=${doc.id}`}
-          class:active={$page.url.searchParams.get("doc") === doc.id}
+          class:active={$page.url.searchParams.get('doc') === doc.id}
         >
           <span class="material-symbols-outlined">article</span>
           {doc.displayName}
@@ -41,7 +41,7 @@
   <details>
     <summary>
       <span class="material-symbols-outlined">folder</span>
-      {dir.split("/").pop()}
+      {dir.split('/').pop()}
     </summary>
 
     <ul>
@@ -55,7 +55,7 @@
         <li>
           <a
             href={`?library=${shelf.library_id}&doc=${doc.id}`}
-            class:bg-primary={$page.url.searchParams.get("doc") === doc.id}
+            class:bg-primary={$page.url.searchParams.get('doc') === doc.id}
           >
             <span class="material-symbols-outlined">article</span>
             {doc.displayName}

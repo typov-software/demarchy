@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { inview } from "svelte-inview";
-  import { formatRelative } from "date-fns";
-  import type { Comment, CommentContext } from "$lib/models/comments";
-  import { type Reaction, type ReactionTally } from "$lib/models/reactions";
-  import { doc as fdoc, getDoc, onSnapshot } from "firebase/firestore";
-  import { db, user } from "$lib/firebase";
-  import { createEventDispatcher, onMount } from "svelte";
-  import { fade } from "svelte/transition";
-  import { makeDocument } from "$lib/models/utils";
-  import BlocksEditor from "./BlocksEditor.svelte";
-  import ReactionSelector from "./ReactionSelector.svelte";
-  import SeenCounter from "./SeenCounter.svelte";
-  import ProfileLink from "./ProfileLink.svelte";
+  import { inview } from 'svelte-inview';
+  import { formatRelative } from 'date-fns';
+  import type { Comment, CommentContext } from '$lib/models/comments';
+  import { type Reaction, type ReactionTally } from '$lib/models/reactions';
+  import { doc as fdoc, getDoc, onSnapshot } from 'firebase/firestore';
+  import { db, user } from '$lib/firebase';
+  import { createEventDispatcher, onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
+  import { makeDocument } from '$lib/models/utils';
+  import BlocksEditor from './BlocksEditor.svelte';
+  import ReactionSelector from './ReactionSelector.svelte';
+  import SeenCounter from './SeenCounter.svelte';
+  import ProfileLink from './ProfileLink.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -50,7 +50,7 @@
     disposers = [
       onSnapshot(tallyRef, function onNext(snapshot) {
         tally = makeDocument<ReactionTally>(snapshot);
-      })
+      }),
     ];
     // We only need to fetch the reaction document once and don't need to subscribe to live updates done by the user
     if (!reaction) {
@@ -87,7 +87,7 @@
           <ProfileLink handle={comment.profile_handle} />
         {/if}
         said
-        {comment.created_at ? formatRelative(comment.created_at, now) : ""}
+        {comment.created_at ? formatRelative(comment.created_at, now) : ''}
       </small>
 
       <div class="flex pl-2 gap-2">
@@ -101,8 +101,8 @@
             on:seen={(r) => (reaction = r.detail)}
           />
           {#if threaded && reaction}
-            <button class="btn btn-xs btn-neutral" on:click={() => dispatch("reply", { comment })}>
-              {tally.replies || ""}
+            <button class="btn btn-xs btn-neutral" on:click={() => dispatch('reply', { comment })}>
+              {tally.replies || ''}
               <span class="material-symbols-outlined">reply</span>
             </button>
           {/if}
@@ -127,7 +127,7 @@
                 <li>
                   <button
                     class="hover:text-warning"
-                    on:click={() => dispatch("pin:clarification", comment)}
+                    on:click={() => dispatch('pin:clarification', comment)}
                   >
                     <span class="material-symbols-outlined">push_pin</span>
                     Pin for Clarification
@@ -136,7 +136,7 @@
                 <li>
                   <button
                     class="hover:text-warning"
-                    on:click={() => dispatch("pin:concern", comment)}
+                    on:click={() => dispatch('pin:concern', comment)}
                   >
                     <span class="material-symbols-outlined">push_pin</span>
                     Pin as Concern

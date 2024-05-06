@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
-  import BasicSection from "$lib/components/BasicSection.svelte";
-  import ProfilePhotoEditor from "$lib/components/ProfilePhotoEditor.svelte";
-  import type { PageData } from "./$types";
-  import { working, workingCallback } from "$lib/stores/working";
-  import HandleEditor from "$lib/components/HandleEditor.svelte";
+  import { enhance } from '$app/forms';
+  import BasicSection from '$lib/components/BasicSection.svelte';
+  import ProfilePhotoEditor from '$lib/components/ProfilePhotoEditor.svelte';
+  import type { PageData } from './$types';
+  import { working, workingCallback } from '$lib/stores/working';
+  import HandleEditor from '$lib/components/HandleEditor.svelte';
 
   export let data: PageData;
   let name = data.profile.name;
@@ -19,7 +19,7 @@
     </p>
     <div class="w-full max-w-md self-center flex flex-col gap-4">
       <img
-        src={data.profile.photo_url ?? "/user.png"}
+        src={data.profile.photo_url ?? '/user.png'}
         alt="photo_url"
         class="mx-auto my-4 rounded-full w-2/3"
       />
@@ -29,7 +29,7 @@
         method="POST"
         action="?/updateName"
         use:enhance={workingCallback({
-          invalidateAll: true
+          invalidateAll: true,
         })}
         class="flex items-end gap-4 w-full"
       >

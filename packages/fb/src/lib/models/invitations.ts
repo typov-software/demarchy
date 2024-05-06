@@ -1,5 +1,5 @@
-import type { RoleAccess } from "./roles";
-import type { DocumentMeta } from "./utils";
+import type { RoleAccess } from './roles';
+import type { DocumentMeta } from './utils';
 
 export interface InvitationProps {
   organization_id: string;

@@ -1,8 +1,8 @@
 <!-- src/routes/account/+page.svelte -->
 <script lang="ts">
-  import { enhance } from "$app/forms";
-  import type { SubmitFunction } from "@sveltejs/kit";
-  import Avatar from "./Avatar.svelte";
+  import { enhance } from '$app/forms';
+  import type { SubmitFunction } from '@sveltejs/kit';
+  import Avatar from './Avatar.svelte';
 
   export let data;
   export let form;
@@ -12,10 +12,10 @@
 
   let profileForm: HTMLFormElement;
   let loading = false;
-  let fullName: string = profile?.full_name ?? "";
-  let username: string = profile?.username ?? "";
-  let website: string = profile?.website ?? "";
-  let avatarUrl: string = profile?.avatar_url ?? "";
+  let fullName: string = profile?.full_name ?? '';
+  let username: string = profile?.username ?? '';
+  let website: string = profile?.website ?? '';
+  let avatarUrl: string = profile?.avatar_url ?? '';
 
   const handleSubmit: SubmitFunction = () => {
     loading = true;
@@ -74,7 +74,7 @@
       <input
         type="submit"
         class="button block primary"
-        value={loading ? "Loading..." : "Update"}
+        value={loading ? 'Loading...' : 'Update'}
         disabled={loading}
       />
     </div>

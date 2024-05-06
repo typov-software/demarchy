@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { expoInOut } from "svelte/easing";
-  import { fly } from "svelte/transition";
-  import { Auth } from "@supabase/auth-ui-svelte";
-  import DemarchyLogo from "$lib/components/DemarchyLogo.svelte";
-  import HomepageHero from "$lib/components/HomepageHero.svelte";
-  import HeroCanvas from "$lib/components/HeroCanvas.svelte";
-  import { theme, toggleTheme } from "$lib/stores/themes";
+  import { onMount } from 'svelte';
+  import { expoInOut } from 'svelte/easing';
+  import { fly } from 'svelte/transition';
+  import { Auth } from '@supabase/auth-ui-svelte';
+  import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
+  import HomepageHero from '$lib/components/HomepageHero.svelte';
+  import HeroCanvas from '$lib/components/HeroCanvas.svelte';
+  import { theme, toggleTheme } from '$lib/stores/themes';
 
   const easing = expoInOut;
 
@@ -198,7 +198,7 @@
     id="theme-toggle"
     type="checkbox"
     class="toggle toggle-xs"
-    checked={$theme === "dark"}
+    checked={$theme === 'dark'}
     on:change={toggleTheme}
   />
   <span class="material-symbols-outlined text-sm">dark_mode</span>

@@ -1,40 +1,40 @@
-import _set from "lodash/set";
-import type { Actions, PageServerLoad } from "./$types";
+import _set from 'lodash/set';
+import type { Actions, PageServerLoad } from './$types';
 import {
   adminDB,
   adminGroupApplicationRef,
   adminGroupRef,
   adminInvitationRef,
   adminMemberRef,
-  adminMembershipRef
-} from "$lib/server/admin";
-import type { Member } from "$lib/models/members";
-import { error, redirect } from "@sveltejs/kit";
-import { FieldValue, type OrderByDirection } from "firebase-admin/firestore";
-import { makeDocument } from "$lib/models/utils";
-import type { Invitation } from "$lib/models/invitations";
-import type { NotificationProps, UninviteNotificationData } from "$lib/models/notifications";
-import type { Application } from "$lib/models/applications";
-import { addDays } from "date-fns";
-import { resendInvitation, sendInvitation } from "$lib/server/invitation-actions";
-import { prepareNotification } from "$lib/server/notification-actions";
+  adminMembershipRef,
+} from '$lib/server/admin';
+import type { Member } from '$lib/models/members';
+import { error, redirect } from '@sveltejs/kit';
+import { FieldValue, type OrderByDirection } from 'firebase-admin/firestore';
+import { makeDocument } from '$lib/models/utils';
+import type { Invitation } from '$lib/models/invitations';
+import type { NotificationProps, UninviteNotificationData } from '$lib/models/notifications';
+import type { Application } from '$lib/models/applications';
+import { addDays } from 'date-fns';
+import { resendInvitation, sendInvitation } from '$lib/server/invitation-actions';
+import { prepareNotification } from '$lib/server/notification-actions';
 
 export const load = (async ({ url, parent }) => {
-  const direction: OrderByDirection = (url.searchParams.get("direction") ??
-    "asc") as OrderByDirection;
-  const sortField = url.searchParams.get("sortBy") ?? "handle";
+  const direction: OrderByDirection = (url.searchParams.get('direction') ??
+    'asc') as OrderByDirection;
+  const sortField = url.searchParams.get('sortBy') ?? 'handle';
   const { organization, group } = await parent();
   const snapshot = await adminMemberRef(organization.id, group.id)
     .orderBy(sortField, direction)
     .get();
   const invitationsSnapshot = await adminInvitationRef(organization.id)
-    .where("group_id", "==", group.id)
+    .where('group_id', '==', group.id)
     .get();
 
   const applicationsSnapshot = await adminDB
     .doc(group.path)
-    .collection("applications")
-    .where("created_at", ">=", addDays(new Date(), -7))
+    .collection('applications')
+    .where('created_at', '>=', addDays(new Date(), -7))
     .get();
 
   const members: Member[] = snapshot.docs.map((doc) => makeDocument(doc));
@@ -44,7 +44,7 @@ export const load = (async ({ url, parent }) => {
   return {
     members,
     invitations,
-    applications
+    applications,
   };
 }) satisfies PageServerLoad;
 
@@ -55,20 +55,20 @@ export const actions = {
   leaveGroup: async ({ request, locals, params }) => {
     const user_id = locals.user_id!;
     const formData = await request.formData();
-    const context = formData.get("context") as "organization" | "group";
-    const organizationId = formData.get("organization_id") as string;
-    const groupId = formData.get("group_id") as string;
+    const context = formData.get('context') as 'organization' | 'group';
+    const organizationId = formData.get('organization_id') as string;
+    const groupId = formData.get('group_id') as string;
 
     // We need to make sure that this user isn't the only member left of the group
     const membersRef = adminMemberRef(organizationId, groupId);
     const membersSnapshot = await membersRef.limit(2).get();
     if (membersSnapshot.docs.length === 1 && membersSnapshot.docs.at(0)?.id === user_id) {
-      error(403, "forbidden");
+      error(403, 'forbidden');
     }
 
     const batch = adminDB.batch();
 
-    if (context === "group") {
+    if (context === 'group') {
       const memberRef = adminMemberRef(organizationId, groupId).doc(user_id);
       const membershipRef = adminMembershipRef(organizationId).doc(user_id);
       const membershipDoc = await membershipRef.get();
@@ -78,7 +78,7 @@ export const actions = {
 
       batch.update(membershipRef, { roles });
       batch.delete(memberRef);
-    } else if (context === "organization") {
+    } else if (context === 'organization') {
       const membershipRef = adminMembershipRef(organizationId).doc(user_id);
       const membershipDoc = await membershipRef.get();
       const roles = membershipDoc.data()?.roles ?? {};
@@ -98,9 +98,9 @@ export const actions = {
 
     await batch.commit();
 
-    if (context === "group") {
+    if (context === 'group') {
       redirect(301, `/d/${params.slug}/groups`);
-    } else if (context === "organization") {
+    } else if (context === 'organization') {
       redirect(301, `/d`);
     }
   },
@@ -108,18 +108,18 @@ export const actions = {
   sendInvitations: async ({ request, url }) => {
     const formData = await request.formData();
     const entries = Array.from(formData.entries());
-    const organization_id = formData.get("organization_id") as string;
-    const organization_name = formData.get("organization_name") as string;
-    const group_id = formData.get("group_id") as string;
-    const group_name = formData.get("group_name") as string;
-    const user_id = formData.get("user_id") as string;
-    const profile_handle = formData.get("profile_handle") as string;
+    const organization_id = formData.get('organization_id') as string;
+    const organization_name = formData.get('organization_name') as string;
+    const group_id = formData.get('group_id') as string;
+    const group_name = formData.get('group_name') as string;
+    const user_id = formData.get('user_id') as string;
+    const profile_handle = formData.get('profile_handle') as string;
     if (!organization_id || !group_id || !user_id || !profile_handle) {
-      error(401, "unauthorized");
+      error(401, 'unauthorized');
     }
     const inviteMap: Record<string, Record<string, string>> = {};
     for (const [key, value] of entries) {
-      if (!key.startsWith("invitee-")) {
+      if (!key.startsWith('invitee-')) {
         continue;
       }
       const handle = /invitee-(.*)\[/.exec(key)?.at(1);
@@ -133,14 +133,14 @@ export const actions = {
       const pair = inviteMap[key];
       const invitee = {
         id: pair.id,
-        handle: pair.handle
+        handle: pair.handle,
       };
       if (!invitee.id || !invitee.handle) {
         // invalid entry
         failures.push({
           id: pair.id,
           handle: pair.handle,
-          reason: "invalid"
+          reason: 'invalid',
         });
         continue;
       }
@@ -154,13 +154,13 @@ export const actions = {
         invited_profile_handle: invitee.handle,
         user_id,
         profile_handle,
-        role: "mem"
+        role: 'mem',
       });
 
-      if (result !== "sent") {
+      if (result !== 'sent') {
         failures.push({
           ...invitee,
-          reason: result
+          reason: result,
         });
       }
     }
@@ -174,11 +174,11 @@ export const actions = {
 
   uninvite: async ({ request }) => {
     const formData = await request.formData();
-    const organization_id = formData.get("organization_id") as string;
-    const organization_name = formData.get("organization_name") as string;
-    const group_id = formData.get("group_id") as string;
-    const group_name = formData.get("group_name") as string;
-    const invitation_id = formData.get("invitation_id") as string;
+    const organization_id = formData.get('organization_id') as string;
+    const organization_name = formData.get('organization_name') as string;
+    const group_id = formData.get('group_id') as string;
+    const group_name = formData.get('group_name') as string;
+    const invitation_id = formData.get('invitation_id') as string;
     const invitationRef = adminInvitationRef(organization_id).doc(invitation_id);
     const invitationDoc = await invitationRef.get();
     const invitation = makeDocument<Invitation>(invitationDoc);
@@ -187,13 +187,13 @@ export const actions = {
       organization_id,
       organization_name,
       group_id,
-      group_name
+      group_name,
     };
     const notificationProps: NotificationProps = {
-      category: "invitations",
-      type: "uninvite",
+      category: 'invitations',
+      type: 'uninvite',
       seen: 0,
-      data: notificationData
+      data: notificationData,
     };
     const batch = adminDB.batch();
     batch.delete(invitationRef);
@@ -204,9 +204,9 @@ export const actions = {
 
   resend: async ({ request }) => {
     const formData = await request.formData();
-    const invitation_path = formData.get("invitation_path") as string;
+    const invitation_path = formData.get('invitation_path') as string;
     const result = await resendInvitation({ invitation_path });
-    if (result !== "sent") {
+    if (result !== 'sent') {
       console.error(`Failed to resend invitation: ${result}`);
     }
   },
@@ -214,12 +214,12 @@ export const actions = {
   acceptApplication: async ({ request, locals }) => {
     const user_id = locals.user_id!;
     const formData = await request.formData();
-    const application_id = formData.get("application_id") as string;
-    const organization_id = formData.get("organization_id") as string;
-    const organization_name = formData.get("organization_name") as string;
-    const group_id = formData.get("group_id") as string;
-    const group_name = formData.get("group_name") as string;
-    const profile_handle = formData.get("profile_handle") as string;
+    const application_id = formData.get('application_id') as string;
+    const organization_id = formData.get('organization_id') as string;
+    const organization_name = formData.get('organization_name') as string;
+    const group_id = formData.get('group_id') as string;
+    const group_name = formData.get('group_name') as string;
+    const profile_handle = formData.get('profile_handle') as string;
 
     const applicationDoc = await adminGroupApplicationRef(organization_id, group_id)
       .doc(application_id)
@@ -231,7 +231,7 @@ export const actions = {
       application.organization_id !== organization_id ||
       application.group_id !== group_id
     ) {
-      error(401, "Missing application");
+      error(401, 'Missing application');
     }
 
     const result = await sendInvitation({
@@ -243,13 +243,13 @@ export const actions = {
       invited_profile_handle: application.profile_handle,
       user_id,
       profile_handle,
-      role: "mem"
+      role: 'mem',
     });
 
-    if (result !== "sent") {
+    if (result !== 'sent') {
       console.error(`Failed to resend invitation: ${result}`);
     } else {
       await applicationDoc.ref.delete();
     }
-  }
+  },
 } satisfies Actions;

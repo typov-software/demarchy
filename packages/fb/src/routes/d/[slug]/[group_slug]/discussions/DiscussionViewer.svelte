@@ -1,24 +1,24 @@
 <script lang="ts">
-  import { doc as fdoc } from "firebase/firestore";
-  import BlocksEditor from "$lib/components/BlocksEditor.svelte";
-  import { db, docStore, user } from "$lib/firebase";
-  import type { Discussion } from "$lib/models/discussions";
-  import { formatRelative } from "date-fns";
-  import { workingCallback } from "$lib/stores/working";
-  import { enhance } from "$app/forms";
-  import { type Reaction, type ReactionTally } from "$lib/models/reactions";
-  import SeenCounter from "$lib/components/SeenCounter.svelte";
-  import { fade } from "svelte/transition";
-  import ReactionSelector from "$lib/components/ReactionSelector.svelte";
-  import ThreadedReplies from "$lib/components/ThreadedReplies.svelte";
-  import ProfileLink from "$lib/components/ProfileLink.svelte";
-  import type { Comment } from "$lib/models/comments";
+  import { doc as fdoc } from 'firebase/firestore';
+  import BlocksEditor from '$lib/components/BlocksEditor.svelte';
+  import { db, docStore, user } from '$lib/firebase';
+  import type { Discussion } from '$lib/models/discussions';
+  import { formatRelative } from 'date-fns';
+  import { workingCallback } from '$lib/stores/working';
+  import { enhance } from '$app/forms';
+  import { type Reaction, type ReactionTally } from '$lib/models/reactions';
+  import SeenCounter from '$lib/components/SeenCounter.svelte';
+  import { fade } from 'svelte/transition';
+  import ReactionSelector from '$lib/components/ReactionSelector.svelte';
+  import ThreadedReplies from '$lib/components/ThreadedReplies.svelte';
+  import ProfileLink from '$lib/components/ProfileLink.svelte';
+  import type { Comment } from '$lib/models/comments';
 
   export let can_write: boolean;
   export let discussion: Discussion;
 
-  $: editable = discussion.state === "draft";
-  $: isOpen = discussion.state === "open";
+  $: editable = discussion.state === 'draft';
+  $: isOpen = discussion.state === 'open';
   $: ownsDiscussion = $user!.uid === discussion.user_id;
 
   // Sub doc refs
@@ -29,7 +29,7 @@
   let reactionRef = fdoc(db, reactionPath);
   let tallyRef = fdoc(
     db,
-    `/organizations/${discussion.organization_id}/groups/${discussion.group_id}/discussions/${discussion.id}/tallies/reactions`
+    `/organizations/${discussion.organization_id}/groups/${discussion.group_id}/discussions/${discussion.id}/tallies/reactions`,
   );
 
   let reactionDoc = docStore<Reaction>(reactionRef.path);
@@ -42,11 +42,11 @@
   let dropModal: HTMLDialogElement;
 
   function handlePinClarification(e: CustomEvent<Comment>) {
-    console.log("clarification", e.detail);
+    console.log('clarification', e.detail);
   }
 
   function handlePinConcern(e: CustomEvent<Comment>) {
-    console.log("concern", e.detail);
+    console.log('concern', e.detail);
   }
 </script>
 
@@ -64,10 +64,10 @@
       </h3>
       <span
         class="text-xs rounded-full py-1 px-2"
-        class:bg-info={discussion.state === "draft"}
-        class:bg-success={discussion.state === "open"}
-        class:bg-warning={discussion.state === "dropped"}
-        class:bg-error={discussion.state === "archived"}
+        class:bg-info={discussion.state === 'draft'}
+        class:bg-success={discussion.state === 'open'}
+        class:bg-warning={discussion.state === 'dropped'}
+        class:bg-error={discussion.state === 'archived'}
       >
         {discussion.state}
       </span>
@@ -157,7 +157,7 @@
           onStart() {
             dropModal?.close();
           },
-          reset: true
+          reset: true,
         })}
       >
         <input type="hidden" name="path" value={discussion.path} />

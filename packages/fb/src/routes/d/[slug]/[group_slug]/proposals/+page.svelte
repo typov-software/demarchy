@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { page } from "$app/stores";
-  import BasicSection from "$lib/components/BasicSection.svelte";
-  import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
-  import { formatRelative } from "date-fns";
-  import type { PageData } from "./$types";
-  import { enhance } from "$app/forms";
-  import { workingCallback } from "$lib/stores/working";
+  import { page } from '$app/stores';
+  import BasicSection from '$lib/components/BasicSection.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import { formatRelative } from 'date-fns';
+  import type { PageData } from './$types';
+  import { enhance } from '$app/forms';
+  import { workingCallback } from '$lib/stores/working';
 
   export let data: PageData;
 </script>
@@ -58,7 +58,7 @@
           {#each data.drafts as proposal (proposal.id)}
             <tr>
               <td>
-                <a href={$page.url.pathname + "/" + proposal.id} class="link">
+                <a href={$page.url.pathname + '/' + proposal.id} class="link">
                   <span>{proposal.title}</span>
                 </a>
               </td>
@@ -85,7 +85,7 @@
           {#each data.open as proposal (proposal.id)}
             <tr>
               <td>
-                <a href={$page.url.pathname + "/" + proposal.id} class="link link-hover">
+                <a href={$page.url.pathname + '/' + proposal.id} class="link link-hover">
                   <span>{proposal.title}</span>
                 </a>
               </td>
@@ -112,7 +112,7 @@
           {#each data.adopted as proposal (proposal.id)}
             <tr>
               <td>
-                <a href={$page.url.pathname + "/" + proposal.id} class="link">
+                <a href={$page.url.pathname + '/' + proposal.id} class="link">
                   <span>{proposal.title}</span>
                 </a>
               </td>

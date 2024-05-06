@@ -1,30 +1,30 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { auth } from "$lib/firebase";
-  import type { Inbox } from "$lib/models/inboxes";
-  import { theme, toggleTheme } from "$lib/stores/themes";
-  import { signOut } from "firebase/auth";
-  import { elasticOut } from "svelte/easing";
-  import { scale } from "svelte/transition";
+  import { goto } from '$app/navigation';
+  import { auth } from '$lib/firebase';
+  import type { Inbox } from '$lib/models/inboxes';
+  import { theme, toggleTheme } from '$lib/stores/themes';
+  import { signOut } from 'firebase/auth';
+  import { elasticOut } from 'svelte/easing';
+  import { scale } from 'svelte/transition';
 
   export let photo_url: string | undefined;
   export let name: string | undefined;
   export let inbox: Inbox | undefined;
 
-  $: initials = (name ?? "")
-    .split(" ")
+  $: initials = (name ?? '')
+    .split(' ')
     .map((part) => part.at(0))
-    .join("");
+    .join('');
 
   function closeDrawer() {
     const node = document.querySelector('[for="user-nav"].drawer-overlay');
-    node?.dispatchEvent(new MouseEvent("click"));
+    node?.dispatchEvent(new MouseEvent('click'));
   }
 
   async function endSession() {
-    await fetch("/api/session", { method: "DELETE" });
+    await fetch('/api/session', { method: 'DELETE' });
     await signOut(auth);
-    await goto("/login");
+    await goto('/login');
   }
 </script>
 
@@ -150,7 +150,7 @@
               id="theme-toggle"
               type="checkbox"
               class="toggle"
-              checked={$theme === "dark"}
+              checked={$theme === 'dark'}
               on:change={toggleTheme}
             />
             <span class="material-symbols-outlined">dark_mode</span>

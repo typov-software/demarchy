@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
-  import AppToast from "$lib/components/AppToast.svelte";
-  import BasicSection from "$lib/components/BasicSection.svelte";
-  import ProfileLink from "$lib/components/ProfileLink.svelte";
-  import { toast } from "$lib/stores/toast";
-  import { workingCallback } from "$lib/stores/working";
-  import { emptyString } from "$lib/utils/string";
-  import type { PageData } from "./$types";
+  import { enhance } from '$app/forms';
+  import AppToast from '$lib/components/AppToast.svelte';
+  import BasicSection from '$lib/components/BasicSection.svelte';
+  import ProfileLink from '$lib/components/ProfileLink.svelte';
+  import { toast } from '$lib/stores/toast';
+  import { workingCallback } from '$lib/stores/working';
+  import { emptyString } from '$lib/utils/string';
+  import type { PageData } from './$types';
 
   export let data: PageData;
 
   $: requestingInvite = false;
   $: requestingVoucher = false;
   $: subscribing = false;
-  $: email = "";
+  $: email = '';
 </script>
 
 <BasicSection otherClass="w-full items-stretch">
@@ -49,10 +49,10 @@
             onEnd() {
               requestingInvite = false;
               toast.add({
-                level: "info",
-                content: `Your request to join has be received`
+                level: 'info',
+                content: `Your request to join has be received`,
               });
-            }
+            },
           })}
         >
           <input type="hidden" name="profile_handle" value={data.profile.handle} />
@@ -102,11 +102,11 @@
             onEnd() {
               subscribing = false;
               toast.add({
-                level: "success",
+                level: 'success',
                 content:
-                  "Thanks for subscribing to the Devlog! You can [unsubscribe](/unsubscribe) at any time."
+                  'Thanks for subscribing to the Devlog! You can [unsubscribe](/unsubscribe) at any time.',
               });
-            }
+            },
           })}
         >
           <div class="flex flex-col sm:flex-row gap-2 w-full sm:max-w-md">
@@ -148,10 +148,10 @@
               onEnd() {
                 requestingVoucher = false;
                 toast.add({
-                  level: "info",
-                  content: "Voucher requested"
+                  level: 'info',
+                  content: 'Voucher requested',
                 });
-              }
+              },
             })}
           >
             <input type="hidden" name="type" value="/join" />
@@ -172,10 +172,10 @@
               onEnd() {
                 requestingVoucher = false;
                 toast.add({
-                  level: "info",
-                  content: "Voucher requested"
+                  level: 'info',
+                  content: 'Voucher requested',
                 });
-              }
+              },
             })}
           >
             <input type="hidden" name="type" value="/d/organizations/new" />

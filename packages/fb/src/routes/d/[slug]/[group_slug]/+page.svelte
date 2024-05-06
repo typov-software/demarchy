@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
-  import BasicSection from "$lib/components/BasicSection.svelte";
-  import Breadcrumbs from "$lib/components/Breadcrumbs.svelte";
-  import { workingCallback } from "$lib/stores/working";
-  import type { PageData } from "./$types";
+  import { enhance } from '$app/forms';
+  import BasicSection from '$lib/components/BasicSection.svelte';
+  import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+  import { workingCallback } from '$lib/stores/working';
+  import type { PageData } from './$types';
 
   export let data: PageData;
   let isOrgGroup = data.organization.id === data.group.id;
@@ -45,16 +45,16 @@
                 value={`You requested an invitation to ${
                   isOrgGroup
                     ? data.organization.name
-                    : data.organization.name + " > " + data.group.name
+                    : data.organization.name + ' > ' + data.group.name
                 }`}
               />
             </form>
             <button
-              form={data.application ? "" : "submit-application"}
+              form={data.application ? '' : 'submit-application'}
               class="btn btn-success sm:self-center mt-4"
               class:btn-warning={data.application}
             >
-              {data.application ? "Application pending" : "Send Application"}
+              {data.application ? 'Application pending' : 'Send Application'}
             </button>
           </div>
         </div>
@@ -65,7 +65,7 @@
           <div class="flex flex-col gap-2">
             <h3 class="card-title">Manage Access</h3>
             <p>
-              Invite new {isOrgGroup ? "Organization" : "group"} members and see existing ones.
+              Invite new {isOrgGroup ? 'Organization' : 'group'} members and see existing ones.
             </p>
           </div>
           <a

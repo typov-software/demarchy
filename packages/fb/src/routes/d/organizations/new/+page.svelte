@@ -1,18 +1,18 @@
 <script lang="ts">
-  import { doc, getDoc } from "firebase/firestore";
-  import type { PageData } from "./$types";
-  import { db } from "$lib/firebase";
-  import { checkValidSlug, slugify } from "$lib/utils/string";
-  import AuthCheck from "$lib/components/AuthCheck.svelte";
-  import DemarchyLogo from "$lib/components/DemarchyLogo.svelte";
-  import { enhance } from "$app/forms";
-  import { workingCallback } from "$lib/stores/working";
+  import { doc, getDoc } from 'firebase/firestore';
+  import type { PageData } from './$types';
+  import { db } from '$lib/firebase';
+  import { checkValidSlug, slugify } from '$lib/utils/string';
+  import AuthCheck from '$lib/components/AuthCheck.svelte';
+  import DemarchyLogo from '$lib/components/DemarchyLogo.svelte';
+  import { enhance } from '$app/forms';
+  import { workingCallback } from '$lib/stores/working';
 
   export let data: PageData;
 
-  let slug = "";
-  let name = "";
-  let voucher_id = "";
+  let slug = '';
+  let name = '';
+  let voucher_id = '';
 
   let loading = false;
   let isAvailable = false;
@@ -35,7 +35,7 @@
 
     loading = true;
     debounceTimer = setTimeout(async () => {
-      const ref = doc(db, "slugs", slug);
+      const ref = doc(db, 'slugs', slug);
       const exists = await getDoc(ref).then((doc) => doc.exists());
       isAvailable = !exists;
       loading = false;

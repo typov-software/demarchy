@@ -8,8 +8,8 @@ export interface Crop {
 export const createImage = (url: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const image = new Image();
-    image.addEventListener("load", () => resolve(image));
-    image.addEventListener("error", (error) => reject(error));
+    image.addEventListener('load', () => resolve(image));
+    image.addEventListener('error', (error) => reject(error));
     image.src = url;
   });
 
@@ -25,7 +25,7 @@ export function rotateSize(width: number, height: number, rotation: number) {
 
   return {
     width: Math.abs(Math.cos(rotRad) * width) + Math.abs(Math.sin(rotRad) * height),
-    height: Math.abs(Math.sin(rotRad) * width) + Math.abs(Math.cos(rotRad) * height)
+    height: Math.abs(Math.sin(rotRad) * width) + Math.abs(Math.cos(rotRad) * height),
   };
 }
 
@@ -35,11 +35,11 @@ export function rotateSize(width: number, height: number, rotation: number) {
 export async function getCroppedImg(
   imageSrc: string,
   pixelCrop: Crop,
-  rotation = 0
+  rotation = 0,
 ): Promise<Blob | null> {
   const image = await createImage(imageSrc);
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
 
   if (!ctx) {
     return null;
@@ -69,7 +69,7 @@ export async function getCroppedImg(
     pixelCrop.x,
     pixelCrop.y,
     pixelCrop.width ?? image.width,
-    pixelCrop.height ?? image.height
+    pixelCrop.height ?? image.height,
   );
 
   // set canvas width to final desired crop size - this will clear existing context
@@ -85,21 +85,21 @@ export async function getCroppedImg(
   return new Promise((resolve) => {
     scaledCanvas.toBlob((file) => {
       resolve(file);
-    }, "image/jpeg");
+    }, 'image/jpeg');
   });
 }
 
 function scaleCanvasToSquare(
   canvas: HTMLCanvasElement,
-  squareSize: number
+  squareSize: number,
 ): {
   canvas: HTMLCanvasElement;
 } {
-  const newCanvas = document.createElement("canvas");
-  const context = newCanvas.getContext("2d");
+  const newCanvas = document.createElement('canvas');
+  const context = newCanvas.getContext('2d');
 
   if (!context) {
-    console.error("Canvas 2D context not available");
+    console.error('Canvas 2D context not available');
     return { canvas };
   }
 

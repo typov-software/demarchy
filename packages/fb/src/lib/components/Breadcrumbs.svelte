@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { page } from "$app/stores";
-  import type { Group } from "$lib/models/groups";
-  import type { Organization } from "$lib/models/organizations";
-  import { titleCase } from "$lib/utils/string";
+  import { page } from '$app/stores';
+  import type { Group } from '$lib/models/groups';
+  import type { Organization } from '$lib/models/organizations';
+  import { titleCase } from '$lib/utils/string';
 
   export let organization: Organization;
   export let groups: undefined | Group[];
   export let group: undefined | Group;
 
   $: root = `/d/${organization.slug}/`;
-  $: parts = $page.url.pathname.split("/");
+  $: parts = $page.url.pathname.split('/');
   $: matchedRoute = parts.at(4);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,31 +21,31 @@
     //   symbol: 'timeline'
     // },
     docs: {
-      path: root + group?.slug + "/docs",
-      symbol: "article"
+      path: root + group?.slug + '/docs',
+      symbol: 'article',
     },
     feedback: {
-      path: root + group?.slug + "/feedback",
-      symbol: "feedback"
+      path: root + group?.slug + '/feedback',
+      symbol: 'feedback',
     },
     discussions: {
-      path: root + group?.slug + "/discussions",
-      symbol: "forum"
+      path: root + group?.slug + '/discussions',
+      symbol: 'forum',
     },
     proposals: {
-      path: root + group?.slug + "/proposals",
-      symbol: "history_edu",
-      divider: true
+      path: root + group?.slug + '/proposals',
+      symbol: 'history_edu',
+      divider: true,
     },
     access: {
-      path: root + group?.slug + "/access",
-      symbol: "key"
+      path: root + group?.slug + '/access',
+      symbol: 'key',
     },
     settings: {
       disabled: true,
-      path: root + group?.slug + "/settings",
-      symbol: "settings"
-    }
+      path: root + group?.slug + '/settings',
+      symbol: 'settings',
+    },
   };
 </script>
 
@@ -54,7 +54,7 @@
     {#if groups}
       <li class="dropdown dropdown-start dropdown-bottom">
         <div role="button" tabindex="0" class="btn btn-sm" class:btn-success={group}>
-          {group ? group.name : "Select group"}
+          {group ? group.name : 'Select group'}
         </div>
         <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
         <ul tabindex="0" class="menu w-60 dropdown-content z-[1] shadow bg-base-300 rounded-box">
@@ -65,7 +65,7 @@
           </li>
           {#each groups as g (g.id)}
             <li>
-              <a href={root + g.slug + (matchedRoute ? `/${matchedRoute}` : "")} title={g.name}>
+              <a href={root + g.slug + (matchedRoute ? `/${matchedRoute}` : '')} title={g.name}>
                 {g.name}
               </a>
             </li>
@@ -120,7 +120,7 @@
       {#if parts.at(5)}
         <!-- breadcrumbs class may have precedence here -->
         <li class="!hidden sm:!flex">
-          <a class="btn btn-sm btn-ghost text-neutral" href={`${parts.slice(0, 6).join("/")}`}>
+          <a class="btn btn-sm btn-ghost text-neutral" href={`${parts.slice(0, 6).join('/')}`}>
             {titleCase(parts[5])}
           </a>
         </li>

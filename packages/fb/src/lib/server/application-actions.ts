@@ -1,7 +1,7 @@
-import type { ApplicationProps } from "$lib/models/applications";
-import { adminDB, adminGroupRef, createdTimestamps } from "./admin";
-import type { ApplicationNotificationData, NotificationProps } from "$lib/models/notifications";
-import { prepareNotification } from "./notification-actions";
+import type { ApplicationProps } from '$lib/models/applications';
+import { adminDB, adminGroupRef, createdTimestamps } from './admin';
+import type { ApplicationNotificationData, NotificationProps } from '$lib/models/notifications';
+import { prepareNotification } from './notification-actions';
 
 interface SubmitApplicationParams {
   user_id: string;
@@ -20,25 +20,25 @@ export async function submitApplication(params: SubmitApplicationParams) {
     profile_handle,
     organization_id,
     group_id,
-    text
+    text,
   };
   const notificationData: ApplicationNotificationData = { text };
   const notificationProps: NotificationProps = {
-    category: "applications",
-    type: "application",
+    category: 'applications',
+    type: 'application',
     seen: 0,
-    data: notificationData
+    data: notificationData,
   };
 
   const batch = adminDB.batch();
   // create the application
   const applicationRef = adminGroupRef(organization_id)
     .doc(group_id)
-    .collection("applications")
+    .collection('applications')
     .doc(user_id);
   batch.set(applicationRef, {
     ...createdTimestamps(),
-    ...applicationProps
+    ...applicationProps,
   });
   prepareNotification(notificationProps, user_id, batch);
   try {

@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import type { Organization } from "$lib/models/organizations";
-  import { useOrganization } from "$lib/stores/organization";
-  import DemarchyLogo from "./DemarchyLogo.svelte";
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import type { Organization } from '$lib/models/organizations';
+  import { useOrganization } from '$lib/stores/organization';
+  import DemarchyLogo from './DemarchyLogo.svelte';
 
   export let organizations: Organization[] = [];
   let organization = useOrganization();
 
   function closeDrawer() {
     const node = document.querySelector('[for="app-nav"].drawer-overlay');
-    node?.dispatchEvent(new MouseEvent("click"));
+    node?.dispatchEvent(new MouseEvent('click'));
   }
 
   async function loadOrganization(slug: string) {

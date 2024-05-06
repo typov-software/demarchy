@@ -1,7 +1,7 @@
-import type { Block } from "./blocks";
-import type { DocumentMeta } from "./utils";
+import type { Block } from './blocks';
+import type { DocumentMeta } from './utils';
 
-export type PinType = "block" | "clarification" | "concern";
+export type PinType = 'block' | 'clarification' | 'concern';
 
 export interface Pin {
   comment_id: string;
@@ -19,7 +19,7 @@ export interface DiscussionProps {
   profile_handle: string;
 
   blocks: Block[];
-  state: "draft" | "open" | "dropped" | "archived";
+  state: 'draft' | 'open' | 'dropped' | 'archived';
 
   pins: Record<string, Pin>;
 }
