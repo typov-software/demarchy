@@ -1,7 +1,6 @@
 {
   "name": "community",
-  "version": "0.0.1",
-  "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
@@ -14,7 +13,6 @@
     "test:integration": "playwright test",
     "test:unit": "vitest"
   },
-  "type": "module",
   "dependencies": {
     "types": "workspace:*",
     "@supabase/auth-ui-shared": "^0.1.8",
