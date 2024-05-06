@@ -5,18 +5,21 @@
   "license": "GPL-3.0-only",
   "workspaces": [
     "packages/community",
+    "packages/jobs",
     "packages/types"
   ],
   "scripts": {
     "clean": "rimraf bun.lockb node_modules packages/*/node_modules packages/community/build packages/community/.svelte-kit",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
+    "copy:env": "cp .env packages/community/.env && cp .env packages/jobs/.env",
     "check": "bun check:community",
     "check:community": "bun --cwd packages/community check",
     "db:reset": "bunx supabase db reset --local",
     "db:types": "bunx supabase gen types typescript --local > packages/types/generated/supabase.ts",
-    "dev": "bun run-p dev:community",
+    "dev": "bun run-p dev:community dev:jobs",
     "dev:community": "bun --cwd packages/community dev",
+    "dev:jobs": "bun --cwd packages/jobs dev",
     "start": "bun start:supabase",
     "start:supabase": "bunx supabase start",
     "stop": "bun stop:supabase",
